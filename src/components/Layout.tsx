@@ -225,19 +225,21 @@ export default function Layout({
           )}
 
           {/* Super Power User Sandbox Quick Switch Button */}
-          <button
-            onClick={() => setShowSandboxCenter(!showSandboxCenter)}
-            className="flex items-center gap-1.5 text-xs bg-purple-50 text-purple-700 border border-purple-200 px-3 py-1.5 rounded-lg hover:bg-purple-100 cursor-pointer duration-150 font-semibold"
-            id="btn-sandbox-switch"
-          >
-            <Sliders className="w-3.5 h-3.5 text-purple-600" />
-            <span className="hidden md:inline font-mono">Control Center</span>
-          </button>
+          {currentUser && currentUser.role !== 'SHOPKEEPER' && (
+            <button
+              onClick={() => setShowSandboxCenter(!showSandboxCenter)}
+              className="flex items-center gap-1.5 text-xs bg-purple-50 text-purple-700 border border-purple-200 px-3 py-1.5 rounded-lg hover:bg-purple-100 cursor-pointer duration-150 font-semibold"
+              id="btn-sandbox-switch"
+            >
+              <Sliders className="w-3.5 h-3.5 text-purple-600" />
+              <span className="hidden md:inline font-mono">Control Center</span>
+            </button>
+          )}
         </div>
       </header>
 
       {/* 2. SaaS Sandbox Swapper Drawer (Interactive Preview Help) */}
-      {showSandboxCenter && (
+      {showSandboxCenter && currentUser && currentUser.role !== 'SHOPKEEPER' && (
         <div className="bg-gradient-to-r from-purple-50 via-indigo-50 to-slate-100 border-b border-purple-100 p-4 relative" id="sandbox-drawer">
           <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
@@ -251,19 +253,19 @@ export default function Layout({
             <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => { onRoleSwitch('SHOPKEEPER'); setActiveTab('merchant-ops'); }}
-                className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold duration-150 cursor-pointer ${currentUser?.role === 'SHOPKEEPER' ? 'bg-emerald-600 text-white shadow-xs' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'}`}
+                className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold duration-150 cursor-pointer ${(currentUser?.role as string) === 'SHOPKEEPER' ? 'bg-emerald-600 text-white shadow-xs' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'}`}
               >
                 [1] Shopkeeper Mode
               </button>
               <button
                 onClick={() => { onRoleSwitch('MARKET_ADMIN'); setActiveTab('market-shops'); }}
-                className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold duration-150 cursor-pointer ${currentUser?.role === 'MARKET_ADMIN' ? 'bg-amber-600 text-white shadow-xs' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'}`}
+                className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold duration-150 cursor-pointer ${(currentUser?.role as string) === 'MARKET_ADMIN' ? 'bg-amber-600 text-white shadow-xs' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'}`}
               >
                 [2] Market Inspector
               </button>
               <button
                 onClick={() => { onRoleSwitch('SUPER_ADMIN'); setActiveTab('super-overview'); }}
-                className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold duration-150 cursor-pointer ${currentUser?.role === 'SUPER_ADMIN' ? 'bg-blue-600 text-white shadow-xs' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'}`}
+                className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold duration-150 cursor-pointer ${(currentUser?.role as string) === 'SUPER_ADMIN' ? 'bg-blue-600 text-white shadow-xs' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'}`}
               >
                 [3] Super Admin
               </button>
