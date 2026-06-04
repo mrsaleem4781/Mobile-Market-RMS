@@ -38,8 +38,213 @@ interface SuccessStory {
   fullStoryUrdu: string;
 }
 
+interface StoryComment {
+  id: string;
+  storyId: string;
+  author: string;
+  date: string;
+  text: string;
+  textUrdu?: string;
+}
+
+const defaultComments: StoryComment[] = [
+  {
+    id: 'c1',
+    storyId: 'story-spark-20c',
+    author: 'Zia Khan Mehsood (President)',
+    date: 'May 03, 2026',
+    text: 'Suspicious IMEI matching successfully triggered early dispatch. Quaidabad Zone notified.',
+    textUrdu: 'مشکوک فون کی اطلاع ملتی ہی ہم نے پولیس کو الرٹ کیا اور موقع پر پہنچے تا کہ گاہک بھاگ نہ سکے۔'
+  },
+  {
+    id: 'c2',
+    storyId: 'story-spark-20c',
+    author: 'Hassan Shopkeeper',
+    date: 'May 05, 2026',
+    text: 'Truly thankful for President Sadar Zia Khan Mehsood for immediate legal representation and support.',
+    textUrdu: 'صدر ضیاء خان محسود صاحب کا بے حد شکریہ جنہوں نے فوری آ کر ہماری رہنمائی اور حوصلہ افزائی کی۔'
+  },
+  {
+    id: 'c3',
+    storyId: 'story-spark-go2',
+    author: 'CPLC Technical Team',
+    date: 'May 14, 2026',
+    text: 'Device tracking system detected SIM swapping on IMEI. Alert generated.',
+    textUrdu: 'ہم نے رن ٹائم پر نئے سم کے ایکٹیویشن کا سگنل حاصل کر کے فوری قائدآباد کمیڈا ٹیم کو آگاہ کیا۔'
+  },
+  {
+    id: 'c4',
+    storyId: 'story-rafiq-center',
+    author: 'Sadar Zia Khan Mehsood',
+    date: 'April 22, 2026',
+    text: 'Strict instructions issued to Rafiq Market watchmen. Double locks are now mandatory.',
+    textUrdu: 'مارکیٹ چوکیداروں کی تعداد بڑھا دی ہے اور تمام دکانوں کو ڈبل تالے لگانے کی وارننگ دی گئی ہے۔'
+  }
+];
+
+const defaultStories: SuccessStory[] = [
+  {
+    id: 'story-spark-20c',
+    title: "Tecno Spark 20C Snatched Mobile Swift Recovery",
+    titleUrdu: "ٹیکنو اسپارک 20C چھینے گئے موبائل کی کامیاب واپسی",
+    date: "May 2026",
+    brand: "Tecno",
+    model: "Spark 20C",
+    keyActors: "Shopkeeper Hassan, President Zia Khan Mehsood, KMEDA Quaidabad Office",
+    badge: "RECOVERED",
+    badgeStyle: "bg-emerald-100 text-emerald-800 border-emerald-250",
+    summary: "Suspicious buyer approached Shopkeeper Hassan with a Spark 20C. Hassan immediately stalled and verified the device.",
+    summaryUrdu: "دکاندار حسن نے ایک مشکوک گاہک سے اسپارک 20C فون آنے پر فوری کارروائی کی اور کمیڈا صڈر ضیاء خان محسود کو مطلع کیا۔",
+    fullStory: "A customer brought a Tecno Spark 20C to Shopkeeper Hassan's outlet. Detecting suspicious behavior, Hassan cross-checked the database and immediately contacted Quaidabad Zone President Zia Khan Mehsood. The owner was contacted who verified with the original box, and the recovered device was formally returned at the KMEDA Quaidabad executive assembly.",
+    fullStoryUrdu: "ایک مشکوک گاہک حسن دکاندار کے پاس ٹیکنو اسپارک 20C فروخت کرنے لایا۔ حسن نے عقلمندی کا ثبوت دیتے ہوئے صڈر ضیاء خان محسود کو مطلع کیا۔ موبائل کا اصل مالک تلاش کیا گیا جو اپنا موبائل باکس لے کر کمیڈا کے دفتر پہنچا، اور مکمل تصدیق کے بعد موبائل فون ان کے حوالے کر دیا گیا۔"
+  },
+  {
+    id: 'story-spark-go2',
+    title: "Tecno Spark Go 2 Recovered via CPLC & Technical Cell",
+    titleUrdu: "ٹیکنو اسپارک گو 2 کی بذریعہ سی پی ایل سی ٹریکنگ اور بازیابی",
+    date: "May 2026",
+    brand: "Tecno",
+    model: "Spark Go 2",
+    keyActors: "KMEDA Leadership, CPLC Sindh, Police IT Technical Branch",
+    badge: "RETURNED",
+    badgeStyle: "bg-blue-105 text-blue-800 border-blue-200",
+    summary: "Snatched device retrieved through systematic tracking and returned to its verified owner at KMEDA Headquarters.",
+    summaryUrdu: "چھینا گیا اسپارک گو 2 موبائل فون سی پی ایل سی اور پولیس کے ٹیکنیکل ڈیپارٹمنٹ کی مدد سے ٹریس کر کے بازیاب کرایا گیا۔",
+    fullStory: "Through state monitoring networks and coordination with the Sindh CPLC and police technical departments, KMEDA successfully locked the coordinates and recovered a stolen Tecno Spark Go 2. The phone was handed back to the grateful citizen at KMEDA office.",
+    fullStoryUrdu: "سندھ سی پی ایل سی اور پولیس آئی ٹی ٹیکنیکل برانچ کے اشتراک سے چھینا گیا اسپارک گو 2 موبائل فون ٹریس کیا گیا۔ کمیڈا کے عہدیداران نے کارروائی کرتے ہوئے موبائل فون واپس حاصل کیا اور دفتر میں اصل مالک کے سپرد کیا۔"
+  },
+  {
+    id: 'story-rafiq-center',
+    title: "Rafiq Shopping Center Robbery Solved, Thieves Arrested",
+    titleUrdu: "رفیق شاپنگ سینٹر تالے توڑ چوری کا معمہ حل، چور گرفتار",
+    date: "April 2026",
+    brand: "Multiple Devices",
+    model: "Various Mobile Phones",
+    keyActors: "Shopkeeper Zulfiqar, Quaidabad Police, CPLC Sindh, KMEDA Cabinet",
+    badge: "ARRESTED",
+    badgeStyle: "bg-rose-100 text-rose-800 border-rose-250",
+    summary: "Burglars broke lock of Zulfiqar's shop. Technical institutions tracked they are now behind bars and all products returned.",
+    summaryUrdu: "رفیق شاپنگ سینٹر میں دکاندار ذوالفقار کی دکان کے تالے توڑ کر چوری کی گئی تھی، چور مال سمیت قانون کی گرفت میں۔",
+    fullStory: "Robbers cut the padlocks of Merchant Zulfiqar's shop at Rafiq Shopping Center Quaidabad, carting away heavy inventory. Upon coordination with intelligence cells and tactical police branches by President Zia Khan Mehsood, the offenders were apprehended with the stolen merchandise, sent to jail, and the clearing items returned to Zulfiqar.",
+    fullStoryUrdu: "رفیق شاپنگ سینٹر قائد آباد میں دکاندار ذوالفقار کی دکان کے تالے توڑ کر چوری کا بڑا واقعہ ہوا تھا۔ تاجر برادری اور صڈر ضیاء خان محسود نے تکنیکی اداروں اور پولیس کے ساتھ تال میل کر کے چوروں کو رنگے ہاتھوں گرفتار کروایا۔ مال برآمد کر کے مالک ذوالفقار کو واپس فراہم کیا گیا۔"
+  }
+];
+
 export default function KmedaHub() {
   const [selectedStory, setSelectedStory] = useState<string | null>(null);
+
+  const [stories, setStories] = useState<SuccessStory[]>(() => {
+    const saved = localStorage.getItem('kmeda_success_stories');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    return defaultStories;
+  });
+
+  const [comments, setComments] = useState<StoryComment[]>(() => {
+    const saved = localStorage.getItem('kmeda_story_comments');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    return defaultComments;
+  });
+
+  // State controls for New Story Form
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [newTitle, setNewTitle] = useState('');
+  const [newTitleUrdu, setNewTitleUrdu] = useState('');
+  const [newBrand, setNewBrand] = useState('');
+  const [newModel, setNewModel] = useState('');
+  const [newActors, setNewActors] = useState('');
+  const [newBadge, setNewBadge] = useState<'RECOVERED' | 'ARRESTED' | 'RETURNED'>('RECOVERED');
+  const [newSummary, setNewSummary] = useState('');
+  const [newSummaryUrdu, setNewSummaryUrdu] = useState('');
+  const [newFullStory, setNewFullStory] = useState('');
+  const [newFullStoryUrdu, setNewFullStoryUrdu] = useState('');
+
+  // Comment input form variables
+  const [commentAuthor, setCommentAuthor] = useState('');
+  const [commentText, setCommentText] = useState('');
+  const [commentTextUrdu, setCommentTextUrdu] = useState('');
+
+  const handleCreateStory = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newTitle || !newFullStory) {
+      alert("Please fill in the title and the detailed report!");
+      return;
+    }
+
+    const badgeStyleMap = {
+      RECOVERED: 'bg-emerald-100 text-emerald-800 border-emerald-250',
+      RETURNED: 'bg-blue-100 text-blue-800 border-blue-200',
+      ARRESTED: 'bg-rose-100 text-rose-800 border-rose-250',
+    };
+
+    const newStory: SuccessStory = {
+      id: `story-${Date.now()}`,
+      title: newTitle,
+      titleUrdu: newTitleUrdu || newTitle,
+      date: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
+      brand: newBrand || 'Various',
+      model: newModel || 'Devices',
+      keyActors: newActors || 'KMEDA Management Council',
+      badge: newBadge,
+      badgeStyle: badgeStyleMap[newBadge],
+      summary: newSummary || newTitle,
+      summaryUrdu: newSummaryUrdu || newTitleUrdu || newTitle,
+      fullStory: newFullStory,
+      fullStoryUrdu: newFullStoryUrdu || newFullStory,
+    };
+
+    const updated = [newStory, ...stories];
+    setStories(updated);
+    localStorage.setItem('kmeda_success_stories', JSON.stringify(updated));
+
+    // Reset Form
+    setNewTitle('');
+    setNewTitleUrdu('');
+    setNewBrand('');
+    setNewModel('');
+    setNewActors('');
+    setNewBadge('RECOVERED');
+    setNewSummary('');
+    setNewSummaryUrdu('');
+    setNewFullStory('');
+    setNewFullStoryUrdu('');
+    setShowAddForm(false);
+  };
+
+  const handleAddComment = (storyId: string) => {
+    if (!commentAuthor || !commentText) {
+      alert("Please enter both Name and Comment details!");
+      return;
+    }
+
+    const newCommentObj: StoryComment = {
+      id: `comment-${Date.now()}`,
+      storyId,
+      author: commentAuthor,
+      date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+      text: commentText,
+      textUrdu: commentTextUrdu || undefined,
+    };
+
+    const updated = [...comments, newCommentObj];
+    setComments(updated);
+    localStorage.setItem('kmeda_story_comments', JSON.stringify(updated));
+
+    setCommentAuthor('');
+    setCommentText('');
+    setCommentTextUrdu('');
+  };
 
   const officialSOPs = [
     {
@@ -142,7 +347,7 @@ export default function KmedaHub() {
           {/* Presidential cabinet card badges */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
             <div className="p-3 bg-white/5 border border-white/10 rounded-xl flex items-center gap-3">
-              <div className="w-10 h-10 bg-indigo-505/10 rounded-lg flex items-center justify-center shrink-0 border border-indigo-400/25">
+              <div className="w-10 h-10 bg-indigo-500/10 rounded-lg flex items-center justify-center shrink-0 border border-indigo-400/25">
                 <UserCheck className="w-5 h-5 text-indigo-400" />
               </div>
               <div>
@@ -169,27 +374,200 @@ export default function KmedaHub() {
         
         {/* LEFT COLUMN: Success Honor Board */}
         <div className="lg:col-span-7 space-y-4" id="honor-column">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/60 pb-3 mb-2">
             <div>
-              <h2 className="text-sm font-black text-slate-900 uppercase tracking-wider flex items-center gap-1 font-mono">
+              <h2 className="text-sm font-black text-slate-900 uppercase tracking-wider flex items-center gap-1.5 font-mono">
                 <Award className="w-5 h-5 text-indigo-600" /> KMEDA Recovery Honor Board
               </h2>
               <p className="text-[11px] text-slate-500 font-sans mt-0.5">
                 Documented success stories of anti-theft compliance and recoveries at Quaidabad Market
               </p>
             </div>
+            <button
+              onClick={() => setShowAddForm(!showAddForm)}
+              className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold leading-none shadow-xs hover:shadow-sm duration-150 flex items-center gap-1.5 shrink-0 self-start sm:self-auto cursor-pointer"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-emerald-100" />
+              <span>{showAddForm ? 'Close Form / بند کریں' : 'Log New Recovery / نئی رپورٹ درج کریں'}</span>
+            </button>
           </div>
 
+          {showAddForm && (
+            <form onSubmit={handleCreateStory} className="bg-white border-2 border-emerald-500/30 rounded-2xl p-5 md:p-6 space-y-4 shadow-md animate-fade-in text-slate-800">
+              <div className="bg-gradient-to-r from-emerald-500/10 to-transparent p-3 -m-5 md:-m-6 mb-4 rounded-t-xl border-b border-emerald-500/10 flex items-center justify-between">
+                <span className="text-xs font-extrabold text-emerald-800 font-mono tracking-widest uppercase flex items-center gap-1.5">
+                  <Sparkles className="w-4 h-4 text-emerald-600" /> New Success Story / کامیابی کی نئی رپورٹ
+                </span>
+                <span className="text-[9.5px] text-slate-400 font-mono italic">KMEDA Quaidabad Registry Control</span>
+              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Title (English) */}
+                <div className="space-y-1">
+                  <label className="text-[11px] text-slate-500 font-bold block uppercase font-mono">Incident Title (English)</label>
+                  <input 
+                    type="text" 
+                    required
+                    value={newTitle}
+                    onChange={(e) => setNewTitle(e.target.value)}
+                    placeholder="e.g. iPhone 13 Pro Recovered in 24 Hours" 
+                    className="w-full text-xs font-semibold px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 focus:outline-hidden focus:ring-1 focus:ring-emerald-500"
+                  />
+                </div>
+                
+                {/* Title (Urdu) */}
+                <div className="space-y-1">
+                  <label className="text-[11px] text-slate-500 font-bold block text-right font-mono font-sans">رپورٹ کا عنوان (اردو)</label>
+                  <input 
+                    type="text" 
+                    dir="rtl"
+                    value={newTitleUrdu}
+                    onChange={(e) => setNewTitleUrdu(e.target.value)}
+                    placeholder="مثال: ایک دن میں آئی فون 13 کی کامیاب بازیابی" 
+                    className="w-full text-xs font-extrabold px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 text-right focus:outline-hidden focus:ring-1 focus:ring-emerald-500"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {/* Brand */}
+                <div className="space-y-1">
+                  <label className="text-[11px] text-slate-500 font-bold block uppercase font-mono">Device Brand / برانڈ</label>
+                  <input 
+                    type="text" 
+                    value={newBrand}
+                    onChange={(e) => setNewBrand(e.target.value)}
+                    placeholder="e.g. Samsung, Apple, Tecno" 
+                    className="w-full text-xs font-semibold px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-hidden focus:ring-1 focus:ring-emerald-500"
+                  />
+                </div>
+                {/* Model */}
+                <div className="space-y-1">
+                  <label className="text-[11px] text-slate-500 font-bold block uppercase font-mono">Device Model / ماڈل</label>
+                  <input 
+                    type="text" 
+                    value={newModel}
+                    onChange={(e) => setNewModel(e.target.value)}
+                    placeholder="e.g. Galaxy S24, Spark Go" 
+                    className="w-full text-xs font-semibold px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-hidden focus:ring-1 focus:ring-emerald-500"
+                  />
+                </div>
+                {/* Badge Status */}
+                <div className="space-y-1">
+                  <label className="text-[11px] text-slate-500 font-bold block uppercase font-mono">Resolution status / پوزیشن</label>
+                  <select
+                    value={newBadge}
+                    onChange={(e) => setNewBadge(e.target.value as any)}
+                    className="w-full text-xs font-semibold px-2 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-hidden focus:ring-1 focus:ring-emerald-500"
+                  >
+                    <option value="RECOVERED">RECOVERED / بازیاب شدہ</option>
+                    <option value="RETURNED">RETURNED / سپرد شدہ</option>
+                    <option value="ARRESTED">ARRESTED / گرفتار مجرم</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Key Actors */}
+              <div className="space-y-1">
+                <label className="text-[11px] text-slate-500 font-bold block uppercase font-mono">Key Actors Involved / شریک برادری و پولیس</label>
+                <input 
+                  type="text" 
+                  value={newActors}
+                  onChange={(e) => setNewActors(e.target.value)}
+                  placeholder="e.g. Shopkeeper Bilal, Sadar Zia Khan Mehsood, Quaidabad Police" 
+                  className="w-full text-xs font-semibold px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-hidden focus:ring-1 focus:ring-emerald-500"
+                />
+              </div>
+
+              {/* Summaries */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-[11px] text-slate-500 font-bold block uppercase font-mono">Brief Summary (English)</label>
+                  <textarea 
+                    value={newSummary}
+                    onChange={(e) => setNewSummary(e.target.value)}
+                    rows={2}
+                    placeholder="Brief 1-sentence summary of what happened." 
+                    className="w-full text-xs font-medium px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-hidden focus:ring-1 focus:ring-emerald-500"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[11px] text-slate-500 font-bold block text-right font-mono font-sans">مختصر خلاصہ (اردو)</label>
+                  <textarea 
+                    value={newSummaryUrdu}
+                    onChange={(e) => setNewSummaryUrdu(e.target.value)}
+                    rows={2}
+                    dir="rtl"
+                    placeholder="کیس کی مختصر صورتحال اردو میں تحریر کریں۔" 
+                    className="w-full text-xs font-semibold px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-right focus:outline-hidden focus:ring-1 focus:ring-emerald-500"
+                  />
+                </div>
+              </div>
+
+              {/* Full Stories */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-[11px] text-slate-500 font-bold block uppercase font-mono">Full Incident Story (English)</label>
+                  <textarea 
+                    required
+                    value={newFullStory}
+                    onChange={(e) => setNewFullStory(e.target.value)}
+                    rows={4}
+                    placeholder="Comprehensive description of tracking process, database verifications, and KMEDA return Ceremony..." 
+                    className="w-full text-xs font-medium px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-hidden focus:ring-1 focus:ring-emerald-500"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[11px] text-slate-500 font-bold block text-right font-mono font-sans">تفصیلی رپورٹ (اردو)</label>
+                  <textarea 
+                    value={newFullStoryUrdu}
+                    onChange={(e) => setNewFullStoryUrdu(e.target.value)}
+                    rows={4}
+                    dir="rtl"
+                    placeholder="پوری کہانی، اور صڈر ضیاء خان محسود صاحب کی موجودگی میں واپس ملنے کی تقریب کی تفصیل..." 
+                    className="w-full text-xs font-semibold px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-right focus:outline-hidden focus:ring-1 focus:ring-emerald-500"
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowAddForm(false)}
+                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg cursor-pointer transition duration-150"
+                >
+                  Cancel / منسوخ
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg cursor-pointer flex items-center gap-1.5 transition duration-150 shadow-sm"
+                >
+                  <CheckCircle className="w-4 h-4 text-emerald-100" />
+                  <span>Publish / شائع کریں</span>
+                </button>
+              </div>
+            </form>
+          )}
+
           <div className="space-y-4">
-            {successStories.map((story) => {
+            {stories.map((story) => {
               const isExpanded = selectedStory === story.id;
+              const storyComments = comments.filter(c => c.storyId === story.id);
+              
               return (
                 <div 
                   key={story.id} 
                   className={`bg-white border text-slate-800 rounded-2xl p-5 hover:shadow-md transition duration-200 cursor-pointer ${
-                    isExpanded ? 'border-indigo-600 ring-2 ring-indigo-50' : 'border-slate-200'
+                    isExpanded ? 'border-indigo-600 ring-2 ring-indigo-55/60' : 'border-slate-200'
                   }`}
-                  onClick={() => setSelectedStory(isExpanded ? null : story.id)}
+                  onClick={(e) => {
+                    // Prevent closing if clicking inside input boxes or buttons
+                    const target = e.target as HTMLElement;
+                    if (target.closest('input') || target.closest('textarea') || target.closest('button')) {
+                      return;
+                    }
+                    setSelectedStory(isExpanded ? null : story.id);
+                  }}
                 >
                   <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 border-b border-slate-100 pb-3 mb-3">
                     <div className="space-y-0.5">
@@ -212,11 +590,11 @@ export default function KmedaHub() {
 
                   <div className="space-y-2">
                     <p className="text-xs text-slate-650 leading-relaxed font-sans">{story.summary}</p>
-                    <p className="text-xs text-slate-500 leading-relaxed font-sans font-medium" dir="rtl">{story.summaryUrdu}</p>
+                    <p className="text-xs text-slate-550 leading-relaxed font-sans font-semibold text-right" dir="rtl">{story.summaryUrdu}</p>
                   </div>
 
                   {isExpanded ? (
-                    <div className="mt-4 pt-4 border-t border-slate-100 space-y-4 bg-slate-50 p-4 rounded-xl animate-fade-in text-xs">
+                    <div className="mt-4 pt-4 border-t border-slate-150 space-y-4 bg-slate-50/70 p-4 rounded-xl animate-fade-in text-xs">
                       <div className="space-y-1">
                         <span className="text-[9px] text-indigo-600 font-black tracking-widest uppercase font-mono block">PARTICIPATING INTEL & OFFICERS:</span>
                         <div className="font-extrabold text-slate-800 flex items-center gap-1.5 leading-tight">
@@ -224,23 +602,112 @@ export default function KmedaHub() {
                         </div>
                       </div>
 
-                      <div className="space-y-2">
-                        <span className="text-[9px] text-slate-400 font-bold block">FULL RESOLUTION REPORT (ENGLISH):</span>
-                        <p className="text-slate-700 leading-relaxed font-sans select-all">{story.fullStory}</p>
-                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
+                        <div className="space-y-2 bg-white p-3 rounded-lg border border-slate-200/50">
+                          <span className="text-[9px] text-slate-400 font-bold block font-mono">FULL RESOLUTION REPORT (ENGLISH):</span>
+                          <p className="text-slate-700 leading-relaxed font-sans select-all font-medium">{story.fullStory}</p>
+                        </div>
 
-                      <div className="space-y-2 pt-2 border-t border-slate-200/50">
-                        <span className="text-[9px] text-slate-400 font-bold block">تفصیلی رپورٹ (اردو):</span>
-                        <p className="text-slate-650 leading-relaxed font-sans font-medium select-all" dir="rtl">{story.fullStoryUrdu}</p>
+                        <div className="space-y-2 bg-white p-3 rounded-lg border border-slate-200/50 text-right" dir="rtl">
+                          <span className="text-[9px] text-slate-400 font-bold block font-sans text-left">تفصیلی رپورٹ (اردو):</span>
+                          <p className="text-slate-650 leading-relaxed font-sans font-extrabold select-all">{story.fullStoryUrdu}</p>
+                        </div>
                       </div>
 
                       <div className="flex items-center gap-1.5 text-[10px] text-emerald-700 font-black uppercase font-mono pt-1">
                         <CheckCircle className="w-4 h-4 text-emerald-600" /> Case catalogued on live anti-theft register.
                       </div>
+
+                      {/* COMMUNITY FEEDBACK & REPLIES SECTION */}
+                      <div className="mt-6 pt-5 border-t border-slate-200 space-y-4">
+                        <div className="flex items-center justify-between">
+                          <h4 className="text-[10.5px] font-black text-indigo-950 uppercase tracking-widest font-mono flex items-center gap-1">
+                            <HeartHandshake className="w-4 h-4 text-indigo-500" /> Cases Responses & Updates / کیس اپڈیٹس اور تبصرے
+                          </h4>
+                          <span className="text-[9.5px] bg-indigo-50 text-indigo-800 px-2 py-0.5 rounded-full font-bold font-mono">
+                            {storyComments.length} Records
+                          </span>
+                        </div>
+
+                        {/* Story Response Feed */}
+                        <div className="space-y-2.5 max-h-72 overflow-y-auto pr-1">
+                          {storyComments.length === 0 ? (
+                            <p className="text-[11px] text-slate-400 italic py-2 bg-white border border-slate-100 rounded-xl text-center">
+                              No formal feedback logs posted yet. Be the first to type an update below!
+                            </p>
+                          ) : (
+                            storyComments.map((comment) => (
+                              <div key={comment.id} className="bg-white p-3 rounded-xl border border-slate-200/80 shadow-3xs space-y-1.5 hover:border-slate-300 transition duration-150">
+                                <div className="flex items-center justify-between text-[10px] border-b border-dashed border-slate-100 pb-1.5">
+                                  <span className="font-extrabold text-indigo-900 flex items-center gap-1">
+                                    <div className="w-2 h-2 rounded-full bg-indigo-550 shrink-0"></div>
+                                    {comment.author}
+                                  </span>
+                                  <span className="text-slate-400 font-mono font-medium">{comment.date}</span>
+                                </div>
+                                <div className="space-y-1 text-xs">
+                                  <p className="text-slate-700 font-sans leading-relaxed">{comment.text}</p>
+                                  {comment.textUrdu && (
+                                    <p className="text-slate-550 font-semibold leading-relaxed text-right font-sans" dir="rtl">
+                                      {comment.textUrdu}
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+                            ))
+                          )}
+                        </div>
+
+                        {/* Inline Comments Submit Box */}
+                        <div className="bg-slate-100/70 p-4 rounded-xl border border-slate-200/60 space-y-3">
+                          <h5 className="text-[10px] text-slate-650 font-black uppercase tracking-wider font-mono">
+                            ✍️ Log Response or Legal Instruction / تفصیلی معلومات یا جواب تحریر کریں
+                          </h5>
+
+                          <div className="space-y-3">
+                            <input 
+                              type="text"
+                              required
+                              placeholder="Your Name & Title (e.g., Sub-Inspector Muhammad Bilal / دکاندار سلیم)"
+                              value={commentAuthor}
+                              onChange={(e) => setCommentAuthor(e.target.value)}
+                              className="w-full text-xs font-semibold px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-hidden focus:ring-1 focus:ring-indigo-500"
+                            />
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                              <textarea
+                                value={commentText}
+                                onChange={(e) => setCommentText(e.target.value)}
+                                rows={2}
+                                placeholder="Write update in English (e.g. Device returned successfully...)"
+                                className="w-full text-xs font-medium px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-hidden focus:ring-1 focus:ring-indigo-500"
+                              />
+                              <textarea
+                                value={commentTextUrdu}
+                                onChange={(e) => setCommentTextUrdu(e.target.value)}
+                                rows={2}
+                                dir="rtl"
+                                placeholder="اردو میں تفصیل لکھیں (مثال: موبائل فون دکان پر باقاعدہ وریفائی کر کے واپس کیا گیا)"
+                                className="w-full text-xs font-semibold px-3 py-2 bg-white border border-slate-200 rounded-lg text-right focus:outline-hidden focus:ring-1 focus:ring-indigo-500"
+                              />
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={() => handleAddComment(story.id)}
+                              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-black text-[10px] tracking-wider uppercase font-mono rounded-lg ml-auto block shadow-xs hover:shadow-sm duration-150 cursor-pointer"
+                            >
+                              Post Response / جواب پوسٹ کریں 
+                            </button>
+                          </div>
+                        </div>
+
+                      </div>
+
                     </div>
                   ) : (
-                    <div className="text-[10px] text-blue-600 hover:text-blue-700 font-black uppercase font-mono tracking-wider mt-3 flex items-center gap-1">
-                      <span>Click to view detailed story / تفصیل دیکھیں</span>
+                    <div className="text-[10px] text-indigo-600 hover:text-indigo-700 font-black uppercase font-mono tracking-wider mt-3 flex items-center gap-1">
+                      <span>Click to view detailed story & case timeline / تفصیل اور کیس اپڈیٹس دیکھیں</span>
                       <span>→</span>
                     </div>
                   )}

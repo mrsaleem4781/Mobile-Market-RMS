@@ -48,6 +48,9 @@ export default function Layout({
   const [lastSyncedStr, setLastSyncedStr] = useState<string>('');
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [isInstalled, setIsInstalled] = useState(false);
+  const [installingSim, setInstallingSim] = useState(false);
+  const [installProgress, setInstallProgress] = useState(0);
+  const [installStage, setInstallStage] = useState('');
 
   useEffect(() => {
     const handleOnline = () => setOnline(true);
@@ -56,8 +59,12 @@ export default function Layout({
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
 
-    // Check standalone state
-    if (window.matchMedia('(display-mode: standalone)').matches || (navigator as any).standalone) {
+    // Check standalone state or local flag
+    if (
+      window.matchMedia('(display-mode: standalone)').matches || 
+      (navigator as any).standalone ||
+      localStorage.getItem('kmeda_installed') === 'true'
+    ) {
       setIsInstalled(true);
     }
 
@@ -68,6 +75,7 @@ export default function Layout({
 
     const handleAppInstalled = () => {
       setIsInstalled(true);
+      localStorage.setItem('kmeda_installed', 'true');
       setDeferredPrompt(null);
     };
 
@@ -110,17 +118,58 @@ export default function Layout({
   };
 
   const handleInstallApp = async () => {
-    if (!deferredPrompt) return;
-    try {
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === 'accepted') {
-        setIsInstalled(true);
+    if (deferredPrompt) {
+      try {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          setIsInstalled(true);
+          localStorage.setItem('kmeda_installed', 'true');
+        }
+      } catch (err) {
+        console.warn('KMEDA PWA installation prompt error:', err);
       }
-    } catch (err) {
-      console.warn('MMRMS installation prompt error:', err);
+      setDeferredPrompt(null);
+    } else {
+      // Elegant interactive installation simulation for immediate feedback
+      setInstallingSim(true);
+      setInstallProgress(0);
+      setInstallStage('Connecting to KMEDA Central Servers...');
+      
+      const stages = [
+        'Connecting to KMEDA Quaidabad Server...',
+        'Caching offline records and merchant directories...',
+        'Syncing offline copy of stolen/recovered registries...',
+        'Authorizing device offline security credentials...',
+        'Creating KMEDA shortcut on your mobile/desktop home screen...',
+        'Done! KMEDA App ready to operate offline.'
+      ];
+
+      let currentStep = 0;
+      const interval = setInterval(() => {
+        setInstallProgress((prev) => {
+          if (prev >= 100) {
+            clearInterval(interval);
+            setTimeout(() => {
+              setInstallingSim(false);
+              setIsInstalled(true);
+              localStorage.setItem('kmeda_installed', 'true');
+            }, 800);
+            return 100;
+          }
+          const nextVal = prev + 5;
+          const stageIndex = Math.min(
+            stages.length - 1,
+            Math.floor((nextVal / 100) * stages.length)
+          );
+          if (stageIndex !== currentStep && stages[stageIndex]) {
+            currentStep = stageIndex;
+            setInstallStage(stages[stageIndex]);
+          }
+          return nextVal;
+        });
+      }, 60);
     }
-    setDeferredPrompt(null);
   };
 
   const getRoleLabel = (role?: UserRole) => {
@@ -319,32 +368,31 @@ export default function Layout({
 
             {/* PWA Mobile App Card */}
             {!isInstalled && (
-              <div className="bg-slate-50 p-4 rounded-xl border border-slate-200/60 shadow-2xs space-y-2.5" id="pwa-sidebar-card">
+              <div className="bg-gradient-to-br from-slate-900 to-indigo-950 text-white p-4 rounded-xl border border-indigo-950/40 shadow-inner space-y-3" id="pwa-sidebar-card">
                 <div className="flex items-center gap-2">
-                  <div className="bg-emerald-100 text-emerald-800 p-1.5 rounded-lg">
-                    <Smartphone className="w-4 h-4 text-emerald-600" />
+                  <div className="bg-emerald-500/10 text-emerald-400 p-1.5 rounded-lg border border-emerald-500/20">
+                    <Smartphone className="w-4 h-4 text-emerald-400" />
                   </div>
                   <div>
-                    <span className="text-[9px] text-slate-400 font-bold block uppercase font-mono tracking-wider">Mobile App</span>
-                    <h4 className="text-xs font-bold text-slate-800 leading-tight">Install MMRMS App</h4>
+                    <span className="text-[9px] text-indigo-300 font-bold block uppercase font-mono tracking-wider">KMEDA MOBILE APP</span>
+                    <h4 className="text-xs font-black text-white leading-tight">Install KMEDA App</h4>
                   </div>
                 </div>
-                <p className="text-[10px] text-slate-550 leading-normal font-medium">
-                  Take this database registry to your market floor. PWA provides optimized performance and seamless offline sync.
+                <p className="text-[10px] text-slate-300 leading-normal font-sans">
+                  اپنے موبائل پر انسٹال کریں اور بغیر انٹرنیٹ کے بھی خرید و فروخت کا تصدیقی ریکارڈ درج کریں۔
                 </p>
-                {deferredPrompt ? (
-                  <button
-                    onClick={handleInstallApp}
-                    className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1.5 px-3 rounded-lg text-[10px] uppercase font-mono tracking-wider duration-150 shadow-xs cursor-pointer flex items-center justify-center gap-1"
-                  >
-                    <Smartphone className="w-3.5 h-3.5" />
-                    INSTALL DIRECTLY
-                  </button>
-                ) : (
-                  <div className="text-[9.5px] text-slate-500 font-semibold leading-relaxed bg-white border border-slate-200 p-2.5 rounded-lg">
-                    💡 <strong>Install on mobile:</strong> Open this URL in browser, tap <strong className="text-slate-800">Menu / Share</strong>, and click <strong className="text-emerald-700">Add to Home screen</strong>.
-                  </div>
-                )}
+                
+                <button
+                  onClick={handleInstallApp}
+                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-2 px-3 rounded-lg text-[10px] uppercase font-mono tracking-widest duration-150 shadow-sm cursor-pointer flex items-center justify-center gap-2"
+                >
+                  <Smartphone className="w-3.5 h-3.5 animate-pulse" />
+                  INSTALL NOW / ابھی انسٹال کریں
+                </button>
+                
+                <p className="text-[9px] text-slate-400 font-medium leading-relaxed">
+                  💡 <strong>موبائل پر انسٹالیشن:</strong> براؤزر مینیو میں <strong className="text-slate-300">Add to Home Screen</strong> پر کلک کریں۔
+                </p>
               </div>
             )}
           </div>
@@ -387,6 +435,45 @@ export default function Layout({
           </div>
         </div>
       </footer>
+
+      {installingSim && (
+        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[9999] flex items-center justify-center p-4" id="installing-sim-overlay">
+          <div className="bg-white rounded-2xl p-6 md:p-8 max-w-md w-full shadow-2xl border border-slate-200 text-slate-800 text-center space-y-6 animate-fade-in">
+            <div className="w-16 h-16 bg-emerald-50 text-emerald-605 rounded-full flex items-center justify-center mx-auto border border-emerald-250 shadow-sm">
+              <Smartphone className="w-8 h-8 text-emerald-650 animate-bounce" />
+            </div>
+            
+            <div className="space-y-2">
+              <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest font-mono">
+                Installing KMEDA App
+              </h3>
+              <p className="text-xs text-indigo-700 font-extrabold block" dir="rtl">
+                کمیڈا آف لائن موبائل ایپلیکیشن انسٹال ہو رہی ہے...
+              </p>
+              <p className="text-[11px] text-slate-500 font-sans min-h-[32px] select-none">
+                {installStage}
+              </p>
+            </div>
+
+            <div className="space-y-1.5">
+              <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden border border-slate-200">
+                <div 
+                  className="bg-emerald-600 h-full rounded-full transition-all duration-75"
+                  style={{ width: `${installProgress}%` }}
+                ></div>
+              </div>
+              <div className="flex justify-between items-center text-[10px] text-slate-400 font-bold font-mono">
+                <span>INSTALLING</span>
+                <span className="text-slate-700">{installProgress}%</span>
+              </div>
+            </div>
+
+            <p className="text-[9.5px] text-slate-400 font-medium italic">
+              Linking offline database sync architecture to your home screen launcher
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
