@@ -70,6 +70,95 @@ export default function ShopkeeperDashboard({ currentUser, activeTab }: Shopkeep
   const [localExistsDetails, setLocalExistsDetails] = useState<Transaction | null>(null);
   const [checkingImei, setCheckingImei] = useState(false);
 
+  // Stolen Device Report Registry States
+  const [stolenBrand, setStolenBrand] = useState('');
+  const [stolenModel, setStolenModel] = useState('');
+  const [stolenImei1, setStolenImei1] = useState('');
+  const [stolenImei2, setStolenImei2] = useState('');
+  const [stolenOwnerName, setStolenOwnerName] = useState('');
+  const [stolenOwnerContact, setStolenOwnerContact] = useState('');
+  const [stolenOwnerCnic, setStolenOwnerCnic] = useState('');
+  const [stolenFir, setStolenFir] = useState('');
+  const [stolenPS, setStolenPS] = useState('');
+  const [stolenDate, setStolenDate] = useState('');
+  const [stolenStatus, setStolenStatus] = useState<'STOLEN' | 'SNATCHED'>('SNATCHED');
+  const [stolenMessage, setStolenMessage] = useState<string | null>(null);
+  const [stolenSuccessMessage, setStolenSuccessMessage] = useState<string | null>(null);
+  const [reportedMobilesList, setReportedMobilesList] = useState<any[]>([]);
+
+  const fetchReportedMobilesList = async () => {
+    try {
+      const list = await db.reportedMobiles.toArray();
+      setReportedMobilesList(list.reverse());
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'merchant-reported') {
+      fetchReportedMobilesList();
+    }
+  }, [activeTab]);
+
+  const handleReportStolenMobile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setStolenMessage(null);
+    setStolenSuccessMessage(null);
+
+    const cleanImei = stolenImei1.replace(/[^0-9]/g, '');
+    if (!stolenBrand || !stolenModel || cleanImei.length < 14 || !stolenOwnerName || !stolenOwnerContact || !stolenOwnerCnic || !stolenDate) {
+      setStolenMessage("Please complete all mandatory credentials (brand, model, 14-15 digit IMEI, owner data).");
+      return;
+    }
+
+    const cleanCnicObj = validateAndCleanCNIC(stolenOwnerCnic);
+    if (!cleanCnicObj.isValid) {
+      setStolenMessage("Owner's CNIC must contain exactly 13 digits (XXXXX-XXXXXXX-X).");
+      return;
+    }
+
+    try {
+      const reportId = `report-${Math.random().toString(36).substr(2, 9)}`;
+      const newReport = {
+        id: reportId,
+        imei1: cleanImei,
+        imei2: stolenImei2.replace(/[^0-9]/g, '') || undefined,
+        brand: stolenBrand,
+        model: stolenModel,
+        ownerName: stolenOwnerName,
+        ownerContact: stolenOwnerContact,
+        ownerCnic: cleanCnicObj.formatted,
+        firNumber: stolenFir || undefined,
+        policeStation: stolenPS || undefined,
+        incidentDate: stolenDate,
+        reportedAt: new Date().toISOString(),
+        reportedBy: currentUser.id,
+        reportedByName: currentUser.name,
+        status: stolenStatus
+      };
+
+      await db.reportedMobiles.put(newReport);
+      setStolenSuccessMessage("✔️ Success: Mobile theft / snatching incident recorded successfully.");
+      
+      // Clear Form
+      setStolenBrand('');
+      setStolenModel('');
+      setStolenImei1('');
+      setStolenImei2('');
+      setStolenOwnerName('');
+      setStolenOwnerContact('');
+      setStolenOwnerCnic('');
+      setStolenFir('');
+      setStolenPS('');
+      setStolenDate('');
+      
+      fetchReportedMobilesList();
+    } catch (err) {
+      setStolenMessage("Failed to register database record.");
+    }
+  };
+
   const handleVerifyImeiStatus = async (e: React.FormEvent) => {
     e.preventDefault();
     const cleaned = verifyImei.replace(/[^0-9]/g, '');
@@ -119,6 +208,28 @@ export default function ShopkeeperDashboard({ currentUser, activeTab }: Shopkeep
           authority: 'CPLC Sindh Security Division'
         }
       };
+
+      // 1. Query the live user-reported snatched & stolen database
+      const matchedReport = await db.reportedMobiles
+        .where('imei1')
+        .equals(cleaned)
+        .or('imei2')
+        .equals(cleaned)
+        .first();
+
+      if (matchedReport) {
+        setVerifyDetails({
+          model: `${matchedReport.brand} ${matchedReport.model}`,
+          reportType: `OFFICIALLY REPORTED ${matchedReport.status} DEVICE`,
+          date: matchedReport.incidentDate,
+          reportNumber: `FIR/Diary: ${matchedReport.firNumber || 'Not Logged'} (${matchedReport.policeStation || 'N/A'} PS)`,
+          location: matchedReport.policeStation || 'N/A',
+          authority: `Reported by ${matchedReport.reportedByName} on ${new Date(matchedReport.reportedAt).toLocaleDateString()}`
+        });
+        setVerifyResult('STOLEN');
+        setCheckingImei(false);
+        return;
+      }
 
       const matchedStolen = blacklisted[cleaned];
       if (matchedStolen) {
@@ -170,7 +281,20 @@ export default function ShopkeeperDashboard({ currentUser, activeTab }: Shopkeep
     }
 
     if (cleaned.length >= 14) {
-      // Check existing transactions
+      // 1. Check if IMEI is registered in snatched/stolen database
+      const matchedReported = await db.reportedMobiles
+        .where('imei1')
+        .equals(cleaned)
+        .or('imei2')
+        .equals(cleaned)
+        .first();
+
+      if (matchedReported) {
+        setImeiDuplicateWarning(`🚨 POLICE & CPLC CRITICAL CHECK Match: This device (IMEI ${cleaned}) is registered in the Security Database as ${matchedReported.status}! Owner: ${matchedReported.ownerName}, FIR: ${matchedReported.firNumber || 'N/A'}. DO NOT PURCHASE OR SELL!`);
+        return;
+      }
+
+      // 2. Check existing transactions
       const duplicateTxCount = await db.transactions
         .where('imei1')
         .equals(cleaned)
@@ -318,6 +442,267 @@ export default function ShopkeeperDashboard({ currentUser, activeTab }: Shopkeep
   const totalBuy = transactions.filter(t => t.type === 'BUY').length;
   const totalSell = transactions.filter(t => t.type === 'SELL').length;
   const pendingSync = transactions.filter(t => t.syncStatus === 'pending').length;
+
+  if (activeTab === 'merchant-reported') {
+    return (
+      <div className="space-y-6 animate-fadeIn" id="reported-scope">
+        <div className="bg-gradient-to-r from-rose-500 to-rose-700 text-white p-6 rounded-2xl shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <h2 className="text-base font-bold uppercase tracking-wider flex items-center gap-2 font-mono">
+              <AlertTriangle className="w-5 h-5 text-white animate-pulse" /> Snatched & Stolen Mobile Registry
+            </h2>
+            <p className="text-xs text-rose-100 leading-normal max-w-xl">
+              Report new stolen or snatched mobile phone records directly to the registry database. These IMEIs are instantly blocked across the system to prevent illegal buy and sell activities.
+            </p>
+          </div>
+          <span className="bg-white/10 border border-white/20 text-white px-3 py-1 rounded-full text-[10px] font-mono uppercase font-bold self-start md:self-auto uppercase tracking-widest">
+            REGULATOR PORTAL
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 pb-12">
+          {/* Section 1: Record a Report Form (5 Cols) */}
+          <div className="lg:col-span-5 bg-white border border-slate-200 rounded-2xl p-5 shadow-xs space-y-4">
+            <div className="border-b border-slate-100 pb-2">
+              <h3 className="text-xs font-bold text-slate-800 font-mono uppercase tracking-wider flex items-center gap-1.5">
+                ⚖️ Record Theft Incident File
+              </h3>
+            </div>
+
+            {stolenMessage && (
+              <div className="p-3 bg-rose-50 text-rose-800 border-l-4 border-rose-500 text-[11px] font-medium rounded-lg animate-shake">
+                {stolenMessage}
+              </div>
+            )}
+
+            {stolenSuccessMessage && (
+              <div className="p-3 bg-emerald-50 text-emerald-800 border-l-4 border-emerald-500 text-[11px] font-medium rounded-lg">
+                {stolenSuccessMessage}
+              </div>
+            )}
+
+            <form onSubmit={handleReportStolenMobile} className="space-y-4 text-xs">
+              {/* Type toggle status */}
+              <div className="space-y-1">
+                <label className="text-[10px] text-slate-500 font-bold uppercase block tracking-wider font-mono">Incident Status *</label>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setStolenStatus('SNATCHED')}
+                    className={`flex-1 py-2.5 rounded-xl text-xs font-bold font-mono transition-colors cursor-pointer ${stolenStatus === 'SNATCHED' ? 'bg-rose-600 text-white shadow-xs' : 'bg-slate-50 border border-slate-205 text-slate-600 hover:bg-slate-100'}`}
+                  >
+                    🚨 SNATCHED (Robbery)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setStolenStatus('STOLEN')}
+                    className={`flex-1 py-2.5 rounded-xl text-xs font-bold font-mono transition-colors cursor-pointer ${stolenStatus === 'STOLEN' ? 'bg-amber-600 text-white shadow-xs' : 'bg-slate-50 border border-slate-205 text-slate-600 hover:bg-slate-100'}`}
+                  >
+                    ⚠️ STOLEN (Theft/Lost)
+                  </button>
+                </div>
+              </div>
+
+              {/* Brand & Model */}
+              <div className="grid grid-cols-2 gap-2">
+                <div className="space-y-1">
+                  <label className="text-[10px] text-slate-500 font-bold block uppercase tracking-wider font-mono">Brand *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Samsung, Apple"
+                    value={stolenBrand}
+                    onChange={(e) => setStolenBrand(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-250 rounded-xl px-3 py-2 font-medium text-slate-800 focus:outline-none focus:bg-white focus:border-blue-500"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] text-slate-500 font-bold block uppercase tracking-wider font-mono">Model *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. S24, iPhone 15"
+                    value={stolenModel}
+                    onChange={(e) => setStolenModel(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-250 rounded-xl px-3 py-2 font-medium text-slate-800 focus:outline-none focus:bg-white focus:border-blue-500"
+                  />
+                </div>
+              </div>
+
+              {/* IMEI 1 and 2 */}
+              <div className="space-y-1">
+                <label className="text-[10px] text-slate-500 font-bold block font-mono uppercase tracking-wider">Primary IMEI (14-15 Digits) *</label>
+                <input
+                  type="text"
+                  required
+                  maxLength={15}
+                  placeholder="Enter primary electronic IMEI"
+                  value={stolenImei1}
+                  onChange={(e) => setStolenImei1(e.target.value.replace(/[^0-9]/g, ''))}
+                  className="w-full bg-slate-50 border border-slate-250 rounded-xl px-3 py-2 font-mono tracking-widest font-bold text-slate-800 focus:outline-none focus:bg-white focus:border-blue-500"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[10px] text-slate-500 font-bold block font-mono uppercase tracking-wider">IMEI Slot 2 (Optional)</label>
+                <input
+                  type="text"
+                  maxLength={15}
+                  placeholder="Enter secondary IMEI if available"
+                  value={stolenImei2}
+                  onChange={(e) => setStolenImei2(e.target.value.replace(/[^0-9]/g, ''))}
+                  className="w-full bg-slate-50 border border-slate-250 rounded-xl px-3 py-2 font-mono tracking-widest text-slate-850 focus:outline-none focus:bg-white focus:border-blue-500"
+                />
+              </div>
+
+              <div className="border-t border-slate-100 pt-3 shrink-0">
+                <p className="text-[10px] text-slate-400 font-mono font-bold uppercase tracking-wider mb-2">Owner Identity Credentials</p>
+                <div className="space-y-2.5">
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-1">
+                      <label className="text-[10px] text-slate-500 font-bold block uppercase tracking-wider font-mono">Owner Full Name *</label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="Name on CNIC card"
+                        value={stolenOwnerName}
+                        onChange={(e) => setStolenOwnerName(e.target.value)}
+                        className="w-full bg-slate-50 border border-slate-250 rounded-xl px-3 py-2 text-slate-800 focus:outline-none focus:bg-white focus:border-blue-500"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] text-slate-500 font-bold block uppercase tracking-wider font-mono">Owner Phone *</label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="Phone contact"
+                        value={stolenOwnerContact}
+                        onChange={(e) => setStolenOwnerContact(e.target.value)}
+                        className="w-full bg-slate-50 border border-slate-250 rounded-xl px-3 py-2 font-mono text-slate-800 focus:outline-none focus:bg-white focus:border-blue-500"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] text-slate-500 font-bold block font-mono uppercase tracking-wider">Owner CNIC Number *</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="13 Numeric digits"
+                      maxLength={15}
+                      value={stolenOwnerCnic}
+                      onChange={(e) => setStolenOwnerCnic(formatCNICInput(e.target.value))}
+                      className="w-full bg-slate-50 border border-slate-250 rounded-xl px-3 py-2 font-mono text-slate-850 focus:outline-none focus:bg-white focus:border-blue-500"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="border-t border-slate-100 pt-3 shrink-0">
+                <p className="text-[10px] text-slate-400 font-mono font-bold uppercase tracking-wider mb-2">Legal Incident Records</p>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="space-y-1">
+                    <label className="text-[10px] text-slate-500 font-bold block uppercase tracking-wider font-mono">FIR / Diary No.</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. 104/26"
+                      value={stolenFir}
+                      onChange={(e) => setStolenFir(e.target.value)}
+                      className="w-full bg-slate-50 border border-slate-250 rounded-xl px-3 py-2 text-slate-800 focus:outline-none focus:bg-white focus:border-blue-500"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] text-slate-500 font-bold block uppercase tracking-wider font-mono">Incident Date *</label>
+                    <input
+                      type="date"
+                      required
+                      value={stolenDate}
+                      onChange={(e) => setStolenDate(e.target.value)}
+                      className="w-full bg-slate-50 border border-slate-250 rounded-xl px-3 py-1.5 text-slate-800 focus:outline-none focus:bg-white focus:border-blue-500"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-1 mt-2.5">
+                  <label className="text-[10px] text-slate-500 font-bold block uppercase tracking-wider font-mono">Police Station Location</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Saddar PS, Quaidabad PS"
+                    value={stolenPS}
+                    onChange={(e) => setStolenPS(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-250 rounded-xl px-3 py-2 text-slate-800 focus:outline-none focus:bg-white focus:border-blue-500"
+                  />
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                className="w-full bg-rose-600 hover:bg-rose-700 text-white font-extrabold py-3 px-4 rounded-xl text-xs uppercase font-mono tracking-wider duration-150 cursor-pointer text-center shadow-md hover:shadow-lg"
+              >
+                🚨 Log Incident & Synchronize
+              </button>
+            </form>
+          </div>
+
+          {/* Section 2: Active Stolen Registry (7 Cols) */}
+          <div className="lg:col-span-7 bg-white border border-slate-200 rounded-2xl p-5 shadow-xs flex flex-col justify-between">
+            <div className="space-y-4">
+              <div className="border-b border-slate-100 pb-2.5 flex justify-between items-center gap-4">
+                <h3 className="text-xs font-bold text-slate-800 font-mono uppercase tracking-wider flex items-center gap-1.5">
+                  📁 Active Snatched Registry List ({reportedMobilesList.length})
+                </h3>
+                <span className="text-[10px] text-slate-400 font-semibold font-mono uppercase">REGULATORY CONTROL</span>
+              </div>
+
+              {reportedMobilesList.length === 0 ? (
+                <div className="p-8 text-center text-slate-400 font-mono text-xs">
+                  No active snatching reports recorded inside the registry database currently.
+                </div>
+              ) : (
+                <div className="space-y-3.5 max-h-[640px] overflow-y-auto pr-1">
+                  {reportedMobilesList.map((rep) => (
+                    <div key={rep.id} className="p-4 bg-slate-50 border border-slate-200 rounded-xl hover:border-slate-300 hover:bg-slate-50/80 transition-all duration-150 space-y-2.5">
+                      <div className="flex justify-between items-start gap-4">
+                        <div>
+                          <h4 className="text-xs font-extrabold text-slate-900 uppercase tracking-tight flex items-center gap-2">
+                            <span>{rep.brand} {rep.model}</span>
+                            <span className={`px-2 py-0.5 rounded text-[8px] font-mono tracking-wider uppercase font-bold border ${rep.status === 'SNATCHED' ? 'bg-red-50 text-red-700 border-red-200' : 'bg-amber-50 text-amber-700 border-amber-200'}`}>
+                              {rep.status}
+                            </span>
+                          </h4>
+                          <p className="text-[10px] text-slate-500 font-mono mt-1 leading-none">
+                            IMEI One: <span className="font-bold text-slate-800">{rep.imei1}</span>
+                            {rep.imei2 && <span> | IMEI Two: <span className="font-bold text-slate-800">{rep.imei2}</span></span>}
+                          </p>
+                        </div>
+                        <span className="text-[9.5px] text-slate-400 font-mono font-bold">{new Date(rep.reportedAt).toLocaleDateString()}</span>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 text-xs text-slate-700 bg-white border border-slate-200/60 rounded-xl p-3 font-medium">
+                        <div>Owner: <strong className="text-slate-900">{rep.ownerName}</strong></div>
+                        <div>CNIC: <strong className="text-slate-900">{maskCNIC(rep.ownerCnic)}</strong></div>
+                        <div>Contact: <strong className="text-slate-900 font-mono">{rep.ownerContact}</strong></div>
+                        <div>Police Stn: <strong className="text-rose-700">{rep.policeStation || 'N/A'} PS</strong></div>
+                      </div>
+
+                      {rep.firNumber && (
+                        <div className="text-[10px] bg-rose-50/50 border border-rose-100 rounded-lg px-3 py-1.5 text-rose-800 font-mono flex flex-col sm:flex-row justify-between gap-1">
+                          <span>FIR REPORT SYSTEM CODE: <strong className="font-bold">{rep.firNumber}</strong></span>
+                          <span>INCIDENT DATE: <strong className="font-bold">{rep.incidentDate}</strong></span>
+                        </div>
+                      )}
+
+                      <div className="text-[9px] text-slate-400 font-mono font-bold text-right uppercase">
+                        Scribe Log: {rep.reportedByName} ({rep.id})
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (activeTab === 'merchant-history') {
     return (

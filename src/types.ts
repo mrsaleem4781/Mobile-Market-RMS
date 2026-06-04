@@ -120,3 +120,22 @@ export interface SystemState {
   deviceId: string;
   lastSyncedAt?: string;
 }
+
+export interface ReportedMobile {
+  id: string;
+  imei1: string;
+  imei2?: string;
+  brand: string;
+  model: string;
+  ownerName: string;
+  ownerContact: string;
+  ownerCnic: string;
+  firNumber?: string;
+  policeStation?: string;
+  incidentDate: string;
+  reportedAt: string;
+  reportedBy: string; // User ID
+  reportedByName: string; // User Name
+  status: 'STOLEN' | 'SNATCHED' | 'RECOVERED';
+}
+

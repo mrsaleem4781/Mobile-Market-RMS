@@ -9,6 +9,7 @@ import { bootstrapSeedData } from './offline/seedData';
 import { syncEngine } from './sync/syncEngine';
 import { AppUser, UserRole } from './types';
 import Layout from './components/Layout';
+import KmedaHub from './components/KmedaHub';
 import AuthModule from './modules/auth/AuthModule';
 import ShopkeeperDashboard from './modules/shopkeeper/ShopkeeperDashboard';
 import MarketAdminDashboard from './modules/marketAdmin/MarketAdminDashboard';
@@ -26,8 +27,10 @@ export default function App() {
         const hasOldSeed = await db.markets.get('mkt-kara-saddar');
         const superadmin = await db.users.get('usr-superadmin');
         const hasNoPassword = superadmin && !superadmin.password;
-        if (hasOldSeed || hasNoPassword) {
-          console.log("Old seed or passwordless users detected. Performing clean migration to Quaidabad Mobile Market with secure passwords...");
+        const hasStolenSeed = await db.reportedMobiles.get('st-001');
+        
+        if (hasOldSeed || hasNoPassword || !hasStolenSeed) {
+          console.log("Old databases, missing passwords, or uninitialized stolen registry detected. Restoring secure master seed directories...");
           await db.clearAllData();
           await bootstrapSeedData(true);
         } else {
@@ -121,14 +124,16 @@ export default function App() {
       activeTab={activeTab}
       setActiveTab={setActiveTab}
     >
+      {activeTab === 'kmeda-hub' && <KmedaHub />}
+
       {/* Contextual dashboard panels rendering based on User SaaS roles */}
-      {currentUser.role === 'SHOPKEEPER' && (
+      {activeTab !== 'kmeda-hub' && currentUser.role === 'SHOPKEEPER' && (
         <ShopkeeperDashboard currentUser={currentUser} activeTab={activeTab} />
       )}
-      {currentUser.role === 'MARKET_ADMIN' && (
+      {activeTab !== 'kmeda-hub' && currentUser.role === 'MARKET_ADMIN' && (
         <MarketAdminDashboard currentUser={currentUser} activeTab={activeTab} />
       )}
-      {currentUser.role === 'SUPER_ADMIN' && (
+      {activeTab !== 'kmeda-hub' && currentUser.role === 'SUPER_ADMIN' && (
         <SuperAdminDashboard currentUser={currentUser} activeTab={activeTab} />
       )}
     </Layout>

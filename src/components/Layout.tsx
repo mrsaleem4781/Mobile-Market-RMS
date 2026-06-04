@@ -145,17 +145,22 @@ export default function Layout({
     if (currentUser.role === 'SHOPKEEPER') {
       items.push(
         { id: 'merchant-ops', label: 'Buy/Sell Entries', icon: Smartphone },
+        { id: 'kmeda-hub', label: 'KMEDA Quaidabad Hub', icon: Sparkles },
+        { id: 'merchant-reported', label: 'Report Snatched Mobile', icon: ShieldAlert },
         { id: 'merchant-history', label: 'Transaction Logs', icon: ClipboardList }
       );
     } else if (currentUser.role === 'MARKET_ADMIN') {
       items.push(
         { id: 'market-shops', label: 'Market Shops Registry', icon: Store },
+        { id: 'kmeda-hub', label: 'KMEDA Quaidabad Hub', icon: Sparkles },
         { id: 'market-approvals', label: 'Merchant Approvals', icon: ClipboardCheck },
         { id: 'market-reports', label: 'Market Compliance', icon: Building }
       );
     } else if (currentUser.role === 'SUPER_ADMIN') {
       items.push(
         { id: 'super-overview', label: 'Global Dashboard', icon: Sliders },
+        { id: 'kmeda-hub', label: 'KMEDA Quaidabad Hub', icon: Sparkles },
+        { id: 'super-reported', label: 'Stolen/Snatched Registry', icon: ShieldAlert },
         { id: 'super-search', label: 'National IMEI Search', icon: Smartphone },
         { id: 'super-shops', label: 'All Registered Shops', icon: Store },
         { id: 'super-audits', label: 'Compliance Audit Logs', icon: ClipboardList }
@@ -170,14 +175,14 @@ export default function Layout({
       {/* 1. Header Row */}
       <header className="h-16 bg-white border-b border-slate-200 px-4 md:px-8 flex items-center justify-between sticky top-0 z-50 shadow-xs" id="app-header">
         <div className="flex items-center gap-3">
-          <div className="bg-blue-600 text-white p-2 rounded-lg shadow-sm">
+          <div className="bg-emerald-600 text-white p-2 rounded-lg shadow-sm">
             <Smartphone className="w-5 h-5" />
           </div>
           <div>
             <h1 className="text-base font-bold tracking-tight text-slate-900 flex items-center gap-1.5 leading-none">
-              PAKISTAN <span className="text-blue-700 font-extrabold text-[10px] bg-blue-50 px-2 py-0.5 rounded border border-blue-200/50">MOBILE REGISTRY</span>
+              KMEDA <span className="text-emerald-700 font-extrabold text-[10px] bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200/50">QUAIDABAD PORTAL</span>
             </h1>
-            <p className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold font-mono mt-0.5">SOP Compliance Authority (M-RMS)</p>
+            <p className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold font-mono mt-0.5">Karachi Mobile & Electronics Dealers Association</p>
           </div>
         </div>
 
@@ -366,15 +371,20 @@ export default function Layout({
       </div>
 
       {/* 4. Small Regulatory bottom disclaimer */}
-      <footer className="border-t border-slate-200 bg-white text-slate-400 py-3.5 px-4 md:px-8 text-center text-[10px] font-semibold flex flex-col md:flex-row items-center justify-between gap-2 uppercase tracking-wide" id="site-footer">
+      <footer className="border-t border-slate-200 bg-white text-slate-500 py-4 px-4 md:px-8 text-center text-[10px] font-semibold flex flex-col md:flex-row items-center justify-between gap-2 uppercase tracking-wide" id="site-footer">
         <p className="font-mono">Pakistan Ministry of Regulatory Compliance — Mobile Market SOP (V3.21-LTD)</p>
-        <div className="flex gap-4">
-          <span className="hover:text-slate-600 transition duration-150 cursor-pointer flex items-center gap-1 font-medium select-none">
-            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div> Security Protocol: Active
+        <div className="flex flex-col md:flex-row items-center gap-3">
+          <span className="text-slate-700 font-bold tracking-wide">
+            Powered by <span className="text-blue-600 font-extrabold font-mono tracking-normal">Aasan AI Software Solution</span>
           </span>
-          <span className="hover:text-slate-600 transition duration-150 cursor-pointer flex items-center gap-1 font-medium select-none">
-            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div> Local IndexedDB Synced
-          </span>
+          <div className="flex gap-4">
+            <span className="hover:text-slate-600 transition duration-150 cursor-pointer flex items-center gap-1 font-medium select-none">
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div> Security Protocol: Active
+            </span>
+            <span className="hover:text-slate-600 transition duration-150 cursor-pointer flex items-center gap-1 font-medium select-none">
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div> Local IndexedDB Synced
+            </span>
+          </div>
         </div>
       </footer>
     </div>

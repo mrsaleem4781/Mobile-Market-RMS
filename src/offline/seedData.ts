@@ -5,7 +5,7 @@
 
 import { db } from './db';
 import { encryptData } from '../utils/security';
-import { Market, Shop, Transaction, AppUser, AuditLog } from '../types';
+import { Market, Shop, Transaction, AppUser, AuditLog, ReportedMobile } from '../types';
 
 export const SEED_MARKETS: Market[] = [
   { id: 'mkt-kara-quaid', name: 'Quaidabad Mobile Market, Karachi', location: 'Quaidabad, Karachi, Sindh' }
@@ -103,7 +103,7 @@ export const SEED_USERS: AppUser[] = [
   },
   {
     id: 'usr-mktadmin-quaid',
-    name: 'Quaidabad Admin Karachi',
+    name: 'Zia Khan Mehsood',
     email: 'quaidabad@compliance.gov.pk',
     password: 'quaidabad123',
     securityQuestion: 'birth_city',
@@ -136,6 +136,76 @@ export const SEED_USERS: AppUser[] = [
   }
 ];
 
+export const SEED_REPORTED_MOBILES: ReportedMobile[] = [
+  {
+    id: 'st-001',
+    imei1: '860492040123456',
+    imei2: '860492040123457',
+    brand: 'Samsung',
+    model: 'Galaxy S23 Ultra',
+    ownerName: 'Ali Raza',
+    ownerContact: '03129876543',
+    ownerCnic: '42101-9876543-1',
+    firNumber: '102/2026',
+    policeStation: 'Gulshan-e-Iqbal',
+    incidentDate: '2026-05-10',
+    reportedAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
+    reportedBy: 'usr-superadmin',
+    reportedByName: 'Super Admin Bureau',
+    status: 'SNATCHED'
+  },
+  {
+    id: 'st-002',
+    imei1: '359344211100999',
+    imei2: '359344211100998',
+    brand: 'Apple',
+    model: 'iPhone 14 Pro',
+    ownerName: 'Kamran Khan',
+    ownerContact: '03451122334',
+    ownerCnic: '42101-1122334-9',
+    firNumber: '29/2026',
+    policeStation: 'Saddar',
+    incidentDate: '2026-05-28',
+    reportedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+    reportedBy: 'usr-shopkeeper-saleem',
+    reportedByName: 'Muhammad Saleem',
+    status: 'STOLEN'
+  },
+  {
+    id: 'st-003',
+    imei1: '351122334455667',
+    imei2: '351122334455668',
+    brand: 'Tecno',
+    model: 'Spark 20C',
+    ownerName: 'Minhaj Gulfam (Central President)',
+    ownerContact: '0300-9876543',
+    ownerCnic: '42101-8877665-1',
+    firNumber: '1029-A/CPLC',
+    policeStation: 'Quaidabad',
+    incidentDate: '2026-05-02',
+    reportedAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
+    reportedBy: 'usr-mktadmin-quaid',
+    reportedByName: 'Zia Khan Mehsood',
+    status: 'RECOVERED'
+  },
+  {
+    id: 'st-004',
+    imei1: '352233445566778',
+    brand: 'Tecno',
+    model: 'Spark Go 2',
+    ownerName: 'Local Citizen (Muhammad Asif)',
+    ownerContact: '0313-1122334',
+    ownerCnic: '42101-5544332-9',
+    firNumber: 'Diary #443/PS',
+    policeStation: 'Quaidabad Division',
+    incidentDate: '2026-05-12',
+    reportedAt: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(),
+    reportedBy: 'usr-mktadmin-quaid',
+    reportedByName: 'Zia Khan Mehsood',
+    status: 'RECOVERED'
+  }
+];
+
 export async function bootstrapSeedData(force = false) {
   try {
     const marketCount = await db.markets.count();
@@ -148,6 +218,9 @@ export async function bootstrapSeedData(force = false) {
       
       await db.users.clear();
       await db.users.bulkPut(SEED_USERS);
+
+      await db.reportedMobiles.clear();
+      await db.reportedMobiles.bulkPut(SEED_REPORTED_MOBILES);
       
       // Seed default transactions matching Saleem (the current developer account)
       const txnCount = await db.transactions.count();

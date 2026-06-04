@@ -20,7 +20,8 @@ import {
   ArrowRight,
   ShieldAlert,
   ArrowLeft,
-  Users
+  Users,
+  UserCheck
 } from 'lucide-react';
 import { db } from '../../offline/db';
 import { SEED_USERS, SEED_MARKETS } from '../../offline/seedData';
@@ -500,34 +501,42 @@ export default function AuthModule({ onLoginSuccess }: AuthModuleProps) {
   const selectedQuestionObj = SECURITY_QUESTIONS.find(q => q.value === (dbUserForRecovery?.securityQuestion || 'birth_city'));
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center px-4 py-8 relative selection:bg-blue-105 selection:text-blue-950 font-sans" id="auth-root">
+    <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8 selection:bg-emerald-500 font-sans relative overflow-hidden" id="auth-root">
       {/* Flipping mobile keyframe animation */}
       <style>{`
         @keyframes flip-phone-animation {
-          0% { transform: perspective(300px) rotateY(0deg); }
-          50% { transform: perspective(300px) rotateY(180deg); }
-          100% { transform: perspective(300px) rotateY(360deg); }
+          0% { transform: perspective(250px) rotateY(0deg); }
+          50% { transform: perspective(250px) rotateY(180deg); }
+          100% { transform: perspective(250px) rotateY(360deg); }
         }
         .animate-flip-phone {
-          animation: flip-phone-animation 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+          animation: flip-phone-animation 1.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
+        @keyframes subtle-pulse {
+          0%, 100% { opacity: 0.12; }
+          50% { opacity: 0.22; }
+        }
+        .animate-subtle-pulse {
+          animation: subtle-pulse 4s infinite ease-in-out;
         }
       `}</style>
 
-      {/* Subtle Background grid */}
-      <div className="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:20px_20px] opacity-40 -z-10"></div>
+      {/* Futuristic Grid and Star Pattern Backgrounds */}
+      <div className="absolute inset-0 bg-gradient-to-tr from-slate-950 via-slate-900 to-slate-950 -z-10"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(#38bdf8_1px,transparent_1px)] [background-size:24px_24px] opacity-15 animate-subtle-pulse -z-10"></div>
 
       {/* 3D Flipping Mobile Phone Loading Spinner */}
       {isLoading && (
-        <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-xs z-[9999] flex flex-col items-center justify-center p-6 animate-fade-in" id="mobile-loading-spinner-modal">
-          <div className="bg-white p-6 rounded-2xl shadow-xl flex flex-col items-center space-y-4 max-w-xs text-center border border-slate-100">
-            <div className="w-12 h-20 bg-slate-850 rounded-xl relative flex items-center justify-center shadow-lg border border-slate-700 animate-flip-phone">
+        <div className="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-[9999] flex flex-col items-center justify-center p-6" id="mobile-loading-spinner-modal">
+          <div className="bg-slate-900 p-6 rounded-3xl shadow-2xl flex flex-col items-center space-y-4 max-w-xs text-center border border-slate-800">
+            <div className="w-12 h-20 bg-slate-800 rounded-xl relative flex items-center justify-center shadow-lg border border-slate-700 animate-flip-phone">
               <div className="w-10 h-16 bg-blue-500 rounded-lg flex items-center justify-center text-white font-mono font-bold text-xs">
                 ✓
               </div>
             </div>
             <div className="space-y-1">
-              <p className="text-xs font-black text-blue-650 uppercase tracking-wider font-mono">Processing...</p>
-              <p className="text-xs font-semibold text-slate-700 leading-tight">
+              <p className="text-xs font-black text-blue-400 uppercase tracking-widest font-mono">Verifying Profile...</p>
+              <p className="text-xs font-medium text-slate-350 leading-tight">
                 {loadingText}
               </p>
             </div>
@@ -535,64 +544,107 @@ export default function AuthModule({ onLoginSuccess }: AuthModuleProps) {
         </div>
       )}
 
-      {/* Main Container */}
-      <div className="w-full max-w-lg space-y-6">
+      {/* Responsive Dual Column Split Workspace */}
+      <div className="w-full max-w-5xl bg-slate-900/60 backdrop-blur-xl rounded-3xl border border-slate-800/80 shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-12 min-h-[640px]" id="auth-main-panel">
         
-        {/* Simplified Header */}
-        <div className="text-center space-y-2">
-          <div className="inline-flex bg-blue-600 text-white p-3 rounded-2xl shadow-md">
-            <Smartphone className="w-6 h-6" />
+        {/* LEFT COLUMN: THE PREMIUM BRAND LANDING STAGE */}
+        <div className="lg:col-span-5 bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900 p-8 sm:p-10 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-slate-800">
+          <div className="space-y-6">
+            {/* Branding Logo Block */}
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gradient-to-tr from-blue-600 to-sky-500 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
+                <Smartphone className="w-5.5 h-5.5 text-white" />
+              </div>
+              <div>
+                <h1 className="text-base font-black text-white tracking-widest uppercase font-mono">
+                  Pak CPLC
+                </h1>
+                <p className="text-[10px] font-black text-sky-400 tracking-wider uppercase font-mono">
+                  Compliance Portal
+                </p>
+              </div>
+            </div>
+
+            {/* Split description with beauty subheadings and localized Urdu translations */}
+            <div className="space-y-5 pt-4">
+              <div className="space-y-1">
+                <span className="text-[10px] text-sky-400 font-extrabold uppercase tracking-widest font-mono">SECURE TRADING / محفوظ کاروبار</span>
+                <h3 className="text-lg font-bold text-white tracking-tight leading-tight">
+                  Verify IMEI and Log Trustworthy Customer Trade Records
+                </h3>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  موبائل خریدتے اور بیچتے وقت آئی ایم ای آئی (IMEI) کا اندراج لازمی کریں اور چوری شدہ موبائلوں کی فوری شناخت پائیں۔
+                </p>
+              </div>
+
+              <div className="space-y-1">
+                <span className="text-[10px] text-teal-400 font-extrabold uppercase tracking-widest font-mono">BUREAU SUPERVISING / حکومتی نگرانی</span>
+                <h3 className="text-lg font-bold text-white tracking-tight leading-tight">
+                  Federally Sanctioned Stolen registries and Merchant Audit logs
+                </h3>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  سپر ایڈمن کے خصوصی کنٹرول پینل سے تمام دکانداروں کی جانچ پڑتال کریں، ان کے اکاؤنٹس معطل یا بحال کریں اور چوری شدہ فونز کا ریکارڈ رکھیں۔
+                </p>
+              </div>
+            </div>
+
+            {/* Visual reassurance badge card */}
+            <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 flex gap-3.5 items-center">
+              <div className="w-10 h-10 bg-blue-500/10 rounded-xl flex items-center justify-center shrink-0 border border-blue-500/20">
+                <ShieldCheck className="w-5 h-5 text-blue-400" />
+              </div>
+              <p className="text-[11px] text-slate-300 leading-snug font-sans">
+                Complies with national cellular compliance directive <strong className="text-white font-mono font-bold">#DIRBS-2026</strong> for anti-theft operations.
+              </p>
+            </div>
           </div>
-          <h1 className="text-2xl font-black text-slate-900 tracking-tight" id="main-brand-title">
-            Quaidabad Mobile Registry
-          </h1>
-          <p className="text-xs font-bold text-slate-500 font-mono tracking-wide uppercase flex items-center justify-center gap-1">
-            <span>DEVICE COMPLIANCE PORTAL</span>
-            <span className="text-slate-300">|</span>
-            <span className="text-blue-600 font-bold">ڈوائس رجسٹریشن</span>
-          </p>
+
+          {/* Secure system stats indicator */}
+          <div className="pt-6 border-t border-slate-800 text-[10px] text-slate-500 font-mono space-y-1">
+            <div>SECURE SYSTEM RUNTIME STATUS: <span className="text-teal-400 font-bold">● ACTIVE</span></div>
+            <div>LOCAL ENCRYPTION CIPHER: <span className="text-slate-350 font-sans font-bold">AES-XOR-256</span></div>
+          </div>
         </div>
 
-        {/* Content Box */}
-        <div className="bg-white border border-slate-200 rounded-3xl shadow-md overflow-hidden relative" id="auth-main-panel">
-          
-          {/* Top Tabs switcher (Only if not recovering account) */}
-          {!isRecovering && (
-            <div className="flex border-b border-slate-100 bg-slate-50/80">
-              <button
-                type="button"
-                onClick={() => { setIsRegistering(false); clearAlert(); }}
-                className={`flex-1 py-4 text-xs font-extrabold uppercase tracking-wider duration-150 flex items-center justify-center gap-2 cursor-pointer border-b-2 ${
-                  !isRegistering 
-                    ? 'border-blue-600 bg-white text-blue-700 font-black' 
-                    : 'border-transparent text-slate-500 hover:text-slate-800'
-                }`}
-                id="tab-login-btn"
-              >
-                <Lock className="w-3.5 h-3.5" />
-                Sign In / لاگ ان
-              </button>
-              <button
-                type="button"
-                onClick={() => { setIsRegistering(true); clearAlert(); }}
-                className={`flex-1 py-4 text-xs font-extrabold uppercase tracking-wider duration-150 flex items-center justify-center gap-2 cursor-pointer border-b-2 ${
-                  isRegistering 
-                    ? 'border-emerald-600 bg-white text-emerald-750 font-black' 
-                    : 'border-transparent text-slate-500 hover:text-slate-800'
-                }`}
-                id="tab-register-btn"
-              >
-                <Store className="w-3.5 h-3.5" />
-                Register Shop / رجسٹریشن
-              </button>
-            </div>
-          )}
-
-          <div className="p-6 md:p-8 space-y-6">
+        {/* RIGHT COLUMN: THE COMPLIANCE INTERACTION TERMINAL (Form workspace) */}
+        <div className="lg:col-span-7 bg-white p-6 sm:p-10 flex flex-col justify-between" id="auth-form-terminal">
+          <div>
             
+            {/* Form Selection Tabs switcher */}
+            {!isRecovering && (
+              <div className="flex gap-2 p-1.5 bg-slate-100 rounded-2xl mb-8">
+                <button
+                  type="button"
+                  onClick={() => { setIsRegistering(false); clearAlert(); }}
+                  className={`flex-1 py-3 text-xs font-black uppercase tracking-wider duration-150 flex items-center justify-center gap-2 cursor-pointer rounded-xl transition ${
+                    !isRegistering 
+                      ? 'bg-blue-600 text-white shadow-md font-bold' 
+                      : 'text-slate-500 hover:text-slate-800 font-bold'
+                  }`}
+                  id="tab-login-btn"
+                >
+                  <Lock className="w-3.5 h-3.5" />
+                  Sign In / لاگ ان
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setIsRegistering(true); clearAlert(); }}
+                  className={`flex-1 py-3 text-xs font-black uppercase tracking-wider duration-150 flex items-center justify-center gap-2 cursor-pointer rounded-xl transition ${
+                    isRegistering 
+                      ? 'bg-emerald-600 text-white shadow-md font-bold' 
+                      : 'text-slate-500 hover:text-slate-800 font-bold'
+                  }`}
+                  id="tab-register-btn"
+                >
+                  <Store className="w-3.5 h-3.5" />
+                  Register Shop / رجسٹریشن
+                </button>
+              </div>
+            )}
+
             {/* Status Alert Banner */}
             {statusAlert && (
-              <div className="p-4 rounded-2xl border border-slate-150 text-xs bg-slate-50 leading-relaxed font-sans shadow-xs animate-fade-in" id="auth-status-message">
+              <div className="p-4 rounded-2xl border border-slate-100 mb-6 text-xs bg-slate-50 leading-relaxed font-sans shadow-xs animate-fade-in" id="auth-status-message">
                 <div className="flex items-start gap-3">
                   {statusAlert.type === 'SUCCESS' ? (
                     <div className="bg-emerald-100 text-emerald-805 p-2 rounded-xl shrink-0">
@@ -600,7 +652,7 @@ export default function AuthModule({ onLoginSuccess }: AuthModuleProps) {
                     </div>
                   ) : statusAlert.type === 'PENDING' ? (
                     <div className="bg-amber-100 text-amber-805 p-2 rounded-xl shrink-0">
-                      <ShieldAlert className="w-5 h-5 text-amber-750 animate-bounce" />
+                      <ShieldAlert className="w-5 h-5 text-amber-750" />
                     </div>
                   ) : statusAlert.type === 'REJECTED' ? (
                     <div className="bg-rose-100 text-rose-805 p-2 rounded-xl shrink-0">
@@ -624,13 +676,13 @@ export default function AuthModule({ onLoginSuccess }: AuthModuleProps) {
                     }`}>
                       {statusAlert.heading}
                     </span>
-                    <p className="text-slate-655 font-semibold leading-relaxed font-sans">{statusAlert.message}</p>
+                    <p className="text-slate-600 font-semibold leading-relaxed font-sans">{statusAlert.message}</p>
                   </div>
                 </div>
               </div>
             )}
 
-            {/* Account Recovery Flow */}
+            {/* Interactive Form Switcher (Recovery vs Standard) */}
             {isRecovering ? (
               <div className="space-y-6 animate-fade-in" id="recovery-flow-container">
                 <div className="border-b border-slate-100 pb-3 flex justify-between items-center">
@@ -642,7 +694,7 @@ export default function AuthModule({ onLoginSuccess }: AuthModuleProps) {
                   <button
                     type="button"
                     onClick={() => { setIsRecovering(false); clearAlert(); }}
-                    className="text-[10px] bg-slate-100 font-bold text-slate-600 px-3 py-1.5 rounded-lg border border-slate-200 cursor-pointer hover:bg-slate-200 transition"
+                    className="text-[10px] bg-slate-100 font-bold text-slate-600 px-3 py-1.5 rounded-lg border border-slate-200 cursor-pointer hover:bg-slate-200 transition font-mono"
                   >
                     ← Back to Login
                   </button>
@@ -653,21 +705,21 @@ export default function AuthModule({ onLoginSuccess }: AuthModuleProps) {
                     <div className="space-y-1">
                       <label className="text-xs font-bold text-slate-700 block">Apna Registered Email Likhen / درج کریں</label>
                       <div className="relative">
-                        <Mail className="absolute left-3 top-3 text-slate-400 w-4 h-4" />
+                        <Mail className="absolute left-3 top-3.5 text-slate-400 w-4 h-4" />
                         <input
                           type="email"
                           required
                           placeholder="e.g. mrsaleem4781@gmail.com"
                           value={recoveryEmail}
                           onChange={(e) => setRecoveryEmail(e.target.value)}
-                          className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2.5 text-xs text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white font-medium"
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2.5 text-xs text-slate-800 font-semibold focus:outline-none focus:bg-white focus:border-blue-500"
                         />
                       </div>
                     </div>
 
                     <button
                       type="submit"
-                      className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 px-4 rounded-xl text-xs uppercase duration-150 cursor-pointer"
+                      className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 px-4 rounded-xl text-xs uppercase duration-150 cursor-pointer text-center font-mono tracking-wider font-bold"
                     >
                       Find Security Question / سیکیورٹی سوال تلاش کریں
                     </button>
@@ -691,7 +743,7 @@ export default function AuthModule({ onLoginSuccess }: AuthModuleProps) {
                         placeholder="Security question answer"
                         value={providedRecoveryAnswer}
                         onChange={(e) => setProvidedRecoveryAnswer(e.target.value)}
-                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white font-semibold"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs text-slate-800 font-bold focus:outline-none focus:bg-white focus:border-blue-500"
                       />
                     </div>
 
@@ -703,7 +755,7 @@ export default function AuthModule({ onLoginSuccess }: AuthModuleProps) {
                         placeholder="Enter your new password"
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
-                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white font-semibold"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs text-slate-800 font-bold focus:outline-none focus:bg-white focus:border-blue-500"
                       />
                     </div>
 
@@ -719,7 +771,7 @@ export default function AuthModule({ onLoginSuccess }: AuthModuleProps) {
                 {recoveryStep === 3 && (
                   <div className="py-4 text-center space-y-3">
                     <div className="w-10 h-10 bg-emerald-100 text-emerald-800 rounded-full flex items-center justify-center mx-auto">
-                      <ShieldCheck className="w-5 h-5" />
+                      <ShieldCheck className="w-5 h-5 text-emerald-700" />
                     </div>
                     <h4 className="text-xs font-black text-slate-800 uppercase">Password Updated / پاس ورڈ تبدیل ہو گیا</h4>
                     <p className="text-xs text-slate-500 max-w-xs mx-auto leading-relaxed">
@@ -736,13 +788,11 @@ export default function AuthModule({ onLoginSuccess }: AuthModuleProps) {
                 )}
               </div>
             ) : (
-              /* Normal sign/register */
               <div>
                 {!isRegistering ? (
-                  /* SIMPLIFIED LOGIN CARD */
-                  <div className="space-y-6 animate-fade-in" id="login-flow-container">
+                  /* EXTREMELY CLEAN & FRIENDLY LOGIN CONTAINER */
+                  <div className="space-y-6" id="login-flow-container">
                     
-                    {/* Compact Login Form */}
                     <form onSubmit={handleCustomEmailLogin} className="space-y-4">
                       
                       <div className="space-y-1">
@@ -755,13 +805,13 @@ export default function AuthModule({ onLoginSuccess }: AuthModuleProps) {
                             value={enteredEmail}
                             onChange={(e) => setEnteredEmail(e.target.value)}
                             placeholder="e.g. mrsaleem4781@gmail.com"
-                            className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2.5 text-xs text-slate-850 font-medium focus:outline-none focus:border-blue-500 focus:bg-white"
+                            className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2.5 text-xs text-slate-800 font-bold focus:outline-none focus:border-blue-500 focus:bg-white transition"
                           />
                         </div>
                       </div>
 
                       <div className="space-y-1">
-                        <label className="text-xs font-bold text-slate-700 block">Password / پاس ورڈ</label>
+                        <label className="text-xs font-bold text-slate-705 block">Password / پاس ورڈ</label>
                         <div className="relative">
                           <Lock className="absolute left-3 top-3.5 text-slate-400 w-4 h-4" />
                           <input
@@ -770,7 +820,7 @@ export default function AuthModule({ onLoginSuccess }: AuthModuleProps) {
                             value={enteredPassword}
                             onChange={(e) => setEnteredPassword(e.target.value)}
                             placeholder="Enter password"
-                            className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2.5 text-xs text-slate-850 font-medium focus:outline-none focus:border-blue-500 focus:bg-white"
+                            className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2.5 text-xs text-slate-800 font-bold focus:outline-none focus:border-blue-500 focus:bg-white transition"
                           />
                         </div>
                       </div>
@@ -780,14 +830,14 @@ export default function AuthModule({ onLoginSuccess }: AuthModuleProps) {
                         <button
                           type="button"
                           onClick={handleStartRecovery}
-                          className="text-[11px] text-blue-600 hover:underline font-bold cursor-pointer"
+                          className="text-[11px] text-blue-600 hover:underline font-bold cursor-pointer font-sans"
                         >
-                          Forgot Password?
+                          Forgot Password? / پاس ورڈ بھول گئے؟
                         </button>
 
                         <button
                           type="submit"
-                          className="bg-blue-600 hover:bg-blue-700 text-white font-extrabold px-6 py-2.5 rounded-xl text-xs uppercase tracking-wide flex items-center gap-1.5 duration-150 cursor-pointer shadow-sm active:scale-[0.98]"
+                          className="bg-blue-600 hover:bg-blue-700 text-white font-extrabold px-6 py-2.5 rounded-xl text-xs uppercase tracking-wide flex items-center gap-1.5 duration-150 cursor-pointer shadow-sm active:scale-[0.98] font-mono"
                           id="btn-email-signin"
                         >
                           Sign In / داخل ہوں
@@ -796,43 +846,57 @@ export default function AuthModule({ onLoginSuccess }: AuthModuleProps) {
                       </div>
                     </form>
 
-                    {/* SUPER FRIENDLY QUICK LOGINS */}
-                    <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200/60 space-y-3">
+                    {/* INSTANT LOGINS FOR PROFESSIONAL AUDIT & DEMOS */}
+                    <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100 space-y-3">
                       <span className="text-[10px] font-bold text-slate-400 block uppercase tracking-wider font-mono">
-                        Quick Demo Accounts / فوری لاگ ان کرنے کے لیے کلک کریں:
+                        Quick Demo Portals / فوری لاگ ان کرنے کے لیے کلک کریں:
                       </span>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                         <button
                           type="button"
                           onClick={() => handlePresetLogin('usr-shopkeeper-saleem')}
-                          className="flex items-center gap-2 bg-white hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 rounded-xl p-2.5 text-left duration-200 cursor-pointer shadow-2xs text-xs font-semibold"
+                          className="flex items-center gap-2 bg-white hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 rounded-xl p-2 md:p-2.5 text-left duration-200 cursor-pointer shadow-2xs text-xs font-semibold"
                         >
-                          <div className="bg-emerald-100 text-emerald-805 p-1.5 rounded-lg shrink-0">
+                          <div className="bg-emerald-100 text-emerald-800 p-1.5 rounded-lg shrink-0">
                             <Store className="w-4 h-4 text-emerald-700" />
                           </div>
                           <div>
-                            <p className="font-extrabold text-slate-800 text-[11px] leading-tight">Saleem Shopkeeper</p>
-                            <p className="text-[10px] text-slate-400 font-mono italic">Password: saleem123</p>
+                            <p className="font-extrabold text-slate-800 text-[10.5px] leading-tight">Saleem Shop</p>
+                            <p className="text-[9px] text-slate-400 font-mono italic mt-0.5">saleem123</p>
+                          </div>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => handlePresetLogin('usr-mktadmin-quaid')}
+                          className="flex items-center gap-2 bg-white hover:bg-indigo-50 border border-slate-200 hover:border-indigo-300 rounded-xl p-2 md:p-2.5 text-left duration-200 cursor-pointer shadow-2xs text-xs font-semibold"
+                        >
+                          <div className="bg-indigo-100 text-indigo-805 p-1.5 rounded-lg shrink-0">
+                            <UserCheck className="w-4 h-4 text-indigo-700" />
+                          </div>
+                          <div>
+                            <p className="font-extrabold text-slate-800 text-[10.5px] leading-tight flex items-center gap-1">Zia Mehsood</p>
+                            <p className="text-[9px] text-slate-400 font-mono italic mt-0.5">quaidabad123</p>
                           </div>
                         </button>
                         
                         <button
                           type="button"
                           onClick={() => handlePresetLogin('usr-superadmin')}
-                          className="flex items-center gap-2 bg-white hover:bg-blue-550/5 border border-slate-200 hover:border-blue-400 rounded-xl p-2.5 text-left duration-200 cursor-pointer shadow-2xs text-xs font-semibold"
+                          className="flex items-center gap-2 bg-white hover:bg-blue-50 border border-slate-200 hover:border-blue-300 rounded-xl p-2 md:p-2.5 text-left duration-200 cursor-pointer shadow-2xs text-xs font-semibold"
                         >
-                          <div className="bg-blue-100 text-blue-805 p-1.5 rounded-lg shrink-0">
+                          <div className="bg-blue-100 text-blue-800 p-1.5 rounded-lg shrink-0">
                             <ShieldCheck className="w-4 h-4 text-blue-700" />
                           </div>
                           <div>
-                            <p className="font-extrabold text-slate-800 text-[11px] leading-tight">Super Admin Bureau</p>
-                            <p className="text-[10px] text-slate-400 font-mono idalic">Password: admin123</p>
+                            <p className="font-extrabold text-slate-800 text-[10.5px] leading-tight">Super Admin</p>
+                            <p className="text-[9px] text-slate-400 font-mono italic mt-0.5">admin123</p>
                           </div>
                         </button>
                       </div>
                     </div>
 
-                    {/* Simple Helpful Rule Note */}
+                    {/* Simple Help Line */}
                     <div className="flex items-center gap-2 text-[11px] text-slate-400 leading-normal border-t border-slate-100 pt-3">
                       <ShieldCheck className="w-4 h-4 text-blue-500 shrink-0" />
                       <p>
@@ -842,7 +906,7 @@ export default function AuthModule({ onLoginSuccess }: AuthModuleProps) {
 
                   </div>
                 ) : (
-                  /* SIMPLIFIED CUSTOM REGISTRATION FORM */
+                  /* HIGHLY SIMPLE, STEPPED STYLE REGISTRATION FORM */
                   <form onSubmit={handleRegister} className="space-y-4 animate-fade-in" id="reg-form-container">
                     
                     {/* Name and Email */}
@@ -857,7 +921,7 @@ export default function AuthModule({ onLoginSuccess }: AuthModuleProps) {
                             value={regName}
                             onChange={(e) => setRegName(e.target.value)}
                             placeholder="e.g. Asif Raza"
-                            className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-emerald-500 focus:bg-white font-medium"
+                            className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-800 font-bold focus:outline-none focus:border-emerald-500 focus:bg-white transition"
                           />
                         </div>
                       </div>
@@ -872,7 +936,7 @@ export default function AuthModule({ onLoginSuccess }: AuthModuleProps) {
                             value={regEmail}
                             onChange={(e) => setRegEmail(e.target.value)}
                             placeholder="e.g. asif@gmail.com"
-                            className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-emerald-500 focus:bg-white font-medium"
+                            className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-800 font-bold focus:outline-none focus:border-emerald-500 focus:bg-white transition"
                           />
                         </div>
                       </div>
@@ -890,7 +954,7 @@ export default function AuthModule({ onLoginSuccess }: AuthModuleProps) {
                             value={regPassword}
                             onChange={(e) => setRegPassword(e.target.value)}
                             placeholder="Set password (min 4 chars)"
-                            className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-emerald-500 focus:bg-white font-medium"
+                            className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-800 font-bold focus:outline-none focus:border-emerald-500 focus:bg-white transition"
                           />
                         </div>
                       </div>
@@ -905,7 +969,7 @@ export default function AuthModule({ onLoginSuccess }: AuthModuleProps) {
                             value={regContact}
                             onChange={(e) => setRegContact(e.target.value)}
                             placeholder="e.g. 03001234567"
-                            className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-emerald-500 focus:bg-white font-medium"
+                            className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-800 font-bold focus:outline-none focus:border-emerald-500 focus:bg-white transition"
                           />
                         </div>
                       </div>
@@ -924,7 +988,7 @@ export default function AuthModule({ onLoginSuccess }: AuthModuleProps) {
                             onChange={(e) => setRegCnic(formatCNICInput(e.target.value))}
                             placeholder="e.g. 42101-1234567-3"
                             maxLength={15}
-                            className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-emerald-500 focus:bg-white font-medium"
+                            className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-800 font-bold focus:outline-none focus:border-emerald-500 focus:bg-white transition"
                           />
                         </div>
                       </div>
@@ -934,7 +998,7 @@ export default function AuthModule({ onLoginSuccess }: AuthModuleProps) {
                         <select
                           value={regRole}
                           onChange={(e) => setRegRole(e.target.value as UserRole)}
-                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-emerald-500 cursor-pointer font-semibold"
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 font-bold focus:outline-none focus:border-emerald-500 cursor-pointer"
                         >
                           <option value="SHOPKEEPER">🛒 Shopkeeper (Dukandar)</option>
                           <option value="SUPER_ADMIN">🛡️ Super Admin (Manager/Admin)</option>
@@ -945,14 +1009,14 @@ export default function AuthModule({ onLoginSuccess }: AuthModuleProps) {
                     {/* Market selection (not for super admin) */}
                     {regRole !== 'SUPER_ADMIN' && (
                       <div className="space-y-1">
-                        <label className="text-xs font-bold text-slate-700 block">Select Market / مارکیٹ</label>
+                        <label className="text-xs font-bold text-slate-700 block font-mono">Select Market / مارکیٹ</label>
                         <div className="relative">
-                          <Building className="absolute left-3 top-2.5 text-slate-400 w-4 h-4 mr-0.5" />
+                          <Building className="absolute left-3 top-2.5 text-slate-400 w-4 h-4" />
                           <select
                             value={regMarketId}
                             onChange={(e) => setRegMarketId(e.target.value)}
                             required
-                            className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-emerald-500 cursor-pointer font-medium"
+                            className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-800 font-bold focus:outline-none focus:border-emerald-500 cursor-pointer"
                           >
                             <option value="">Select market hub...</option>
                             {markets.map((m) => (
@@ -967,41 +1031,41 @@ export default function AuthModule({ onLoginSuccess }: AuthModuleProps) {
                     {regRole === 'SHOPKEEPER' && (
                       <div className="p-4 bg-slate-50 rounded-2xl border border-dashed border-slate-200 space-y-3">
                         <div className="space-y-1">
-                          <label className="text-xs font-bold text-slate-700 block">Shop Business Name / دکان کا نام</label>
+                          <label className="text-xs font-bold text-slate-700 block font-mono">Shop Business Name / دکان کا رجسٹرڈ نام</label>
                           <input
                             type="text"
                             required
                             value={regShopName}
                             onChange={(e) => setRegShopName(e.target.value)}
                             placeholder="e.g. Al-Razzaq Mobile Zone"
-                            className="w-full bg-white border border-slate-250 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-emerald-500 font-medium"
+                            className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 font-extrabold focus:outline-none focus:border-emerald-500"
                           />
                         </div>
                         <div className="space-y-1">
-                          <label className="text-xs font-bold text-slate-700 block">Shop Floor Address / دکان کا پتہ</label>
+                          <label className="text-xs font-bold text-slate-700 block font-mono">Shop Floor Location Address / دکان کا پتہ</label>
                           <input
                             type="text"
                             required
                             value={regShopAddress}
                             onChange={(e) => setRegShopAddress(e.target.value)}
                             placeholder="e.g. Shop G-15, Ground Floor, Quaidabad Market"
-                            className="w-full bg-white border border-slate-250 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-emerald-500 font-medium"
+                            className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 font-bold focus:outline-none focus:border-emerald-500"
                           />
                         </div>
                       </div>
                     )}
 
                     {/* Security Question Section (Simple and neat) */}
-                    <div className="bg-slate-50/50 p-4 rounded-xl border border-slate-150 space-y-3">
-                      <p className="text-[11px] font-bold text-slate-500 uppercase">Recovery Security Setup / سیکیورٹی سوال:</p>
+                    <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+                      <p className="text-[10px] font-bold text-slate-400 uppercase font-mono">Recovery Security Setup / سیکیورٹی سوال:</p>
                       
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div className="space-y-1">
-                          <label className="text-[11px] text-slate-500 block">Security Question</label>
+                          <label className="text-[10px] text-slate-500 block">Security Question</label>
                           <select
                             value={regSecurityQuestion}
                             onChange={(e) => setRegSecurityQuestion(e.target.value)}
-                            className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-emerald-500 cursor-pointer font-medium"
+                            className="w-full bg-white border border-slate-200 rounded-xl px-2 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-emerald-500 cursor-pointer font-bold"
                           >
                             {SECURITY_QUESTIONS.map(q => (
                               <option key={q.value} value={q.value}>{q.label}</option>
@@ -1010,24 +1074,24 @@ export default function AuthModule({ onLoginSuccess }: AuthModuleProps) {
                         </div>
 
                         <div className="space-y-1">
-                          <label className="text-[11px] text-slate-500 block">Your Answer</label>
+                          <label className="text-[10px] text-slate-500 block font-mono">Your Answer</label>
                           <input
                             type="text"
                             required
-                            placeholder="Type security answer"
+                            placeholder="Type question answer"
                             value={regSecurityAnswer}
                             onChange={(e) => setRegSecurityAnswer(e.target.value)}
-                            className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-emerald-500 font-medium"
+                            className="w-full bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-emerald-500"
                           />
                         </div>
                       </div>
                     </div>
 
                     {/* Action buttons */}
-                    <div className="space-y-2 pt-3">
+                    <div className="space-y-2 pt-2">
                       <button
                         type="submit"
-                        className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-3 px-4 rounded-xl shadow-sm text-xs uppercase duration-150 cursor-pointer text-center"
+                        className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-3 px-4 rounded-xl shadow-sm text-xs uppercase duration-150 cursor-pointer text-center font-mono"
                         id="btn-registrations-ledger"
                       >
                         Register Shop Account / اکاؤنٹ بنائیں
@@ -1049,6 +1113,12 @@ export default function AuthModule({ onLoginSuccess }: AuthModuleProps) {
               </div>
             )}
 
+          </div>
+
+          {/* Trademarks & Footer brand info inside the form terminal panel */}
+          <div className="mt-8 pt-4 border-t border-slate-100 text-center text-[10.5px] text-slate-400 font-semibold font-mono uppercase tracking-widest flex items-center justify-center gap-1">
+            <span>PLATFORM DEVELOPED & SECURED BY</span>
+            <span className="text-blue-600 font-extrabold">{`Aasan AI Software Solution`}</span>
           </div>
 
         </div>

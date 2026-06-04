@@ -4,7 +4,7 @@
  */
 
 import Dexie, { type Table } from 'dexie';
-import { Transaction, SyncQueueItem, AuditLog, Shop, Market, AppUser } from '../types';
+import { Transaction, SyncQueueItem, AuditLog, Shop, Market, AppUser, ReportedMobile } from '../types';
 
 export class MobileMarketDB extends Dexie {
   transactions!: Table<Transaction, string>;
@@ -13,6 +13,7 @@ export class MobileMarketDB extends Dexie {
   shops!: Table<Shop, string>;
   markets!: Table<Market, string>;
   users!: Table<AppUser, string>;
+  reportedMobiles!: Table<ReportedMobile, string>;
   config!: Table<{ key: string; value: any }, string>;
 
   constructor() {
@@ -24,6 +25,7 @@ export class MobileMarketDB extends Dexie {
       shops: 'id, marketId, name, status',
       markets: 'id, name',
       users: 'id, email, role, status, marketId',
+      reportedMobiles: 'id, imei1, imei2, status, reportedAt, reportedBy',
       config: 'key'
     });
   }
@@ -48,6 +50,7 @@ export class MobileMarketDB extends Dexie {
       this.shops.clear(),
       this.markets.clear(),
       this.users.clear(),
+      this.reportedMobiles.clear(),
       this.config.clear()
     ]);
   }
