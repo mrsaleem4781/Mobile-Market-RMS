@@ -11,6 +11,9 @@ export interface AppUser {
   id: string; // auth uid
   name: string;
   email: string;
+  password?: string;
+  securityQuestion?: string;
+  securityAnswer?: string;
   role: UserRole;
   status: AccountStatus;
   cnic?: string;

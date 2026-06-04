@@ -116,6 +116,40 @@ export default function SuperAdminDashboard({ currentUser, activeTab }: SuperAdm
     setDuplicateImeis(dupImeisList);
   };
 
+  const handleUpdateShopStatus = async (shopId: string, status: 'APPROVED' | 'REJECTED') => {
+    setDashboardMessage(null);
+    try {
+      const shop = await db.shops.get(shopId);
+      if (shop) {
+        shop.status = status;
+        await db.shops.put(shop);
+        
+        // Push state update request into sync Queue
+        await db.syncQueue.put({
+          id: `${shopId}_update_${Date.now()}`,
+          transactionId: shopId,
+          action: 'UPDATE',
+          payload: { status },
+          timestamp: new Date().toISOString(),
+          retryCount: 0
+        });
+
+        // Also approve user if they have a matching shop profile
+        const allUsers = await db.users.toArray();
+        const associatedUser = allUsers.find(u => u.shopId === shopId);
+        if (associatedUser) {
+          associatedUser.status = status;
+          await db.users.put(associatedUser);
+        }
+
+        setDashboardMessage(`Shop [${shop.name}] compliance status officially configured as ${status}.`);
+        await fetchGlobalDatabase();
+      }
+    } catch (e) {
+      setDashboardMessage("Failed configuring shop authorization code state.");
+    }
+  };
+
   const handleOpenEditModal = (tx: Transaction) => {
     setEditingTransaction(tx);
     setEditedModel(tx.mobileModel);
@@ -256,10 +290,16 @@ export default function SuperAdminDashboard({ currentUser, activeTab }: SuperAdm
           </button>
         </div>
 
+        {dashboardMessage && (
+          <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-xs font-sans font-semibold">
+            {dashboardMessage}
+          </div>
+        )}
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="all-shops-cards">
           {allShops.map((shp) => (
             <div key={shp.id} className="bg-white border border-slate-200 p-5 rounded-xl flex flex-col justify-between hover:border-blue-300 transition duration-155 shadow-xs">
-              <div className="space-y-1.5">
+              <div>
                 <div className="flex justify-between items-start gap-3">
                   <h4 className="text-sm font-bold text-slate-800 tracking-tight leading-tight uppercase font-mono">{shp.name}</h4>
                   <span className={`px-2 py-0.5 rounded-full text-[9px] font-mono font-bold border ${
@@ -281,6 +321,26 @@ export default function SuperAdminDashboard({ currentUser, activeTab }: SuperAdm
                   <div>ID Card Coordinates: <span className="text-slate-600">{shp.cnic}</span></div>
                   <div>Telephone: <span className="text-slate-600">{shp.contactNumber}</span></div>
                 </div>
+              </div>
+
+              {/* Action operations directly managed by Super Admin */}
+              <div className="mt-4 pt-3 border-t border-slate-100 flex justify-end gap-2">
+                {shp.status !== 'APPROVED' && (
+                  <button
+                    onClick={() => handleUpdateShopStatus(shp.id, 'APPROVED')}
+                    className="px-2.5 py-1 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded text-[10px] font-mono flex items-center gap-1 cursor-pointer transition shadow-xs"
+                  >
+                    <Check className="w-3 h-3" /> Approve Shop
+                  </button>
+                )}
+                {shp.status !== 'REJECTED' && (
+                  <button
+                    onClick={() => handleUpdateShopStatus(shp.id, 'REJECTED')}
+                    className="px-2.5 py-1 bg-rose-50 text-rose-700 hover:bg-rose-100 rounded border border-rose-200 text-[10px] font-mono flex items-center gap-1 cursor-pointer transition"
+                  >
+                    <X className="w-3 h-3" /> Reject Shop
+                  </button>
+                )}
               </div>
             </div>
           ))}

@@ -24,8 +24,10 @@ export default function App() {
       try {
         // 1. Check if old seed data exists and needs upgrade to Quaidabad-only
         const hasOldSeed = await db.markets.get('mkt-kara-saddar');
-        if (hasOldSeed) {
-          console.log("Old seed markets detected. Performing clean migration to Quaidabad Mobile Market...");
+        const superadmin = await db.users.get('usr-superadmin');
+        const hasNoPassword = superadmin && !superadmin.password;
+        if (hasOldSeed || hasNoPassword) {
+          console.log("Old seed or passwordless users detected. Performing clean migration to Quaidabad Mobile Market with secure passwords...");
           await db.clearAllData();
           await bootstrapSeedData(true);
         } else {
