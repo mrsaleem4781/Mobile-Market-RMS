@@ -1,0 +1,186 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // 1. Global Safety Net: Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- REUSABLE SECURITY PRIMITIVES ---
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isEmailVerified() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    // Fetch user node securely
+    function getUserData(uid) {
+      return get(/databases/$(database)/documents/users/$(uid)).data;
+    }
+
+    function getUserRole(uid) {
+      return getUserData(uid).role;
+    }
+
+    function getUserStatus(uid) {
+      return getUserData(uid).status;
+    }
+
+    function isSuperAdmin() {
+      return isSignedIn() && exists(/databases/$(database)/documents/users/$(request.auth.uid)) && getUserRole(request.auth.uid) == 'SUPER_ADMIN';
+    }
+
+    function isMarketAdmin() {
+      return isSignedIn() && exists(/databases/$(database)/documents/users/$(request.auth.uid)) && getUserRole(request.auth.uid) == 'MARKET_ADMIN';
+    }
+
+    function isApprovedShopkeeper() {
+      return isSignedIn() && exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+             getUserRole(request.auth.uid) == 'SHOPKEEPER' && getUserStatus(request.auth.uid) == 'APPROVED';
+    }
+
+    // --- COLLECTION RULES ---
+
+    // 1. Users Collection
+    match /users/{userId} {
+      allow get: if isSignedIn() && (request.auth.uid == userId || isSuperAdmin() || isMarketAdmin());
+      allow list: if isSignedIn() && (isSuperAdmin() || isMarketAdmin());
+      
+      // Let any signed up user create their initial profile as PENDING, but prevent self-assigning APPROVED status or custom high roles.
+      allow create: if isSignedIn() && request.auth.uid == userId && 
+                    incoming().role in ['SHOPKEEPER', 'MARKET_ADMIN'] && 
+                    incoming().status == 'PENDING' &&
+                    incoming().id == userId &&
+                    incoming().email == request.auth.token.email;
+                    
+      // Only Super Admins or assigned Market Admins can approve users, or a user updating their non-restricted fields.
+      allow update: if isSignedIn() && (
+        // Super Admin update:
+        isSuperAdmin() ||
+        // Market Admin approving shopkeepers in their own market
+        (isMarketAdmin() && 
+         getUserData(request.auth.uid).marketId == existing().marketId && 
+         incoming().diff(existing()).affectedKeys().hasOnly(['status'])) ||
+        // User themselves updating contact or minor keys (not role, status, or email)
+        (request.auth.uid == userId && 
+         !incoming().diff(existing()).affectedKeys().hasAny(['role', 'status', 'email']))
+      );
+      
+      allow delete: if isSuperAdmin();
+    }
+
+    // 2. Markets Collection
+    match /markets/{marketId} {
+      allow read: if isSignedIn();
+      allow write: if isSuperAdmin();
+    }
+
+    // 3. Shops Collection
+    match /shops/{shopId} {
+      allow read: if isSignedIn();
+      
+      // Shopkeepers can register / apply
+      allow create: if isSignedIn() && 
+                    incoming().id == shopId &&
+                    incoming().status == 'PENDING' &&
+                    (isSuperAdmin() || isMarketAdmin() || (getUserRole(request.auth.uid) == 'SHOPKEEPER' && incoming().ownerName == getUserData(request.auth.uid).name));
+                    
+      // Approval allowed by Super admin or assigned Market admin
+      allow update: if isSignedIn() && (
+        isSuperAdmin() ||
+        (isMarketAdmin() && 
+         getUserData(request.auth.uid).marketId == existing().marketId && 
+         incoming().diff(existing()).affectedKeys().hasOnly(['status']))
+      );
+      
+      allow delete: if isSuperAdmin();
+    }
+
+    // 4. Transactions Collection
+    match /transactions/{transactionId} {
+      // Fetch user's assigned market
+      function getUserMarketId() {
+        return getUserData(request.auth.uid).marketId;
+      }
+
+      // Read rules:
+      // - Super Admin can see all
+      // - Market Admin can see records of their market
+      // - Shopkeeper can see records they created
+      allow get: if isSignedIn() && (
+        isSuperAdmin() ||
+        (isMarketAdmin() && resource.data.marketId == getUserMarketId()) ||
+        (resource.data.createdBy == request.auth.uid)
+      );
+      
+      allow list: if isSignedIn() && (
+        isSuperAdmin() ||
+        (isMarketAdmin() && resource.data.marketId == getUserMarketId()) ||
+        (resource.data.createdBy == request.auth.uid)
+      );
+
+      // Validation logic for creating a transaction
+      function isValidTransaction(data) {
+        return data.id is string &&
+               data.id.size() <= 128 &&
+               data.type in ['BUY', 'SELL'] &&
+               data.mobileModel is string && data.mobileModel.size() <= 100 &&
+               data.imei1 is string && data.imei1.size() >= 14 && data.imei1.size() <= 16 &&
+               data.imei2 is string && data.imei2.size() <= 16 &&
+               data.buyerName is string && data.buyerName.size() <= 100 &&
+               data.buyerCnic is string && data.buyerCnic.size() <= 20 &&
+               data.sellerName is string && data.sellerName.size() <= 100 &&
+               data.sellerCnic is string && data.sellerCnic.size() <= 20 &&
+               data.shopId is string && data.shopId.size() <= 128 &&
+               data.marketId is string && data.marketId.size() <= 128 &&
+               data.dateTime is string &&
+               data.syncStatus in ['pending', 'synced', 'failed'] &&
+               data.createdBy == request.auth.uid;
+      }
+
+      // Create rules: Approved shopkeeper, Market Admin, or Super Admin
+      allow create: if isSignedIn() && 
+                    isValidTransaction(incoming()) && (
+                      isSuperAdmin() || 
+                      isMarketAdmin() || 
+                      isApprovedShopkeeper()
+                    );
+
+      // Update rules:
+      // Super Admin or Market Admin and only updates affecting specific flags or compliance corrections.
+      // Modifying must accompany creating a matching auditLog in the same transaction batch (existsAfter / atomicity)
+      allow update: if isSignedIn() && 
+                    isValidTransaction(incoming()) && (
+                      isSuperAdmin() ||
+                      (isMarketAdmin() && existing().marketId == getUserMarketId())
+                    ) &&
+                    // Enforce that an Audit Log entry is created along with this administrative update under '/auditLogs'
+                    existsAfter(/databases/$(database)/documents/auditLogs/$(request.id));
+
+      allow delete: if isSuperAdmin() &&
+                    existsAfter(/databases/$(database)/documents/auditLogs/$(request.id));
+    }
+
+    // 5. AuditLogs Collection
+    match /auditLogs/{logId} {
+      allow read: if isSignedIn() && (isSuperAdmin() || isMarketAdmin());
+      // Audit log creation is allowed if the user is authenticated and is documenting their admin actions
+      allow create: if isSignedIn() && 
+                    incoming().id == logId && 
+                    incoming().userId == request.auth.uid &&
+                    (isSuperAdmin() || isMarketAdmin());
+      allow update, delete: if false; // Audit logs are immutable
+    }
+  }
+}
