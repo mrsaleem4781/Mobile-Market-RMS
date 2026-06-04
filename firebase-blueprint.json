@@ -1,0 +1,136 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile with roles (Super Admin, Market Admin, Shopkeeper)",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "role": { "type": "string", "enum": ["SUPER_ADMIN", "MARKET_ADMIN", "SHOPKEEPER"] },
+        "status": { "type": "string", "enum": ["PENDING", "APPROVED", "REJECTED"] },
+        "cnic": { "type": "string" },
+        "contactNumber": { "type": "string" },
+        "shopId": { "type": "string" },
+        "shopName": { "type": "string" },
+        "marketId": { "type": "string" },
+        "marketName": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "name", "email", "role", "status", "createdAt"]
+    },
+    "Market": {
+      "title": "Market",
+      "description": "Mobile Market zone",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "location": { "type": "string" }
+      },
+      "required": ["id", "name", "location"]
+    },
+    "Shop": {
+      "title": "Shop",
+      "description": "Shop registry details inside a market",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "marketId": { "type": "string" },
+        "marketName": { "type": "string" },
+        "ownerName": { "type": "string" },
+        "contactNumber": { "type": "string" },
+        "cnic": { "type": "string" },
+        "status": { "type": "string", "enum": ["PENDING", "APPROVED", "REJECTED"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "name", "marketId", "marketName", "ownerName", "status", "createdAt"]
+    },
+    "Transaction": {
+      "title": "Transaction",
+      "description": "Buy/Sell record of a mobile device including IMEI registration",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "type": "string", "enum": ["BUY", "SELL"] },
+        "mobileModel": { "type": "string" },
+        "imei1": { "type": "string" },
+        "imei2": { "type": "string" },
+        "buyerName": { "type": "string" },
+        "buyerCnic": { "type": "string" },
+        "buyerContact": { "type": "string" },
+        "sellerName": { "type": "string" },
+        "sellerCnic": { "type": "string" },
+        "sellerContact": { "type": "string" },
+        "shopId": { "type": "string" },
+        "shopName": { "type": "string" },
+        "marketId": { "type": "string" },
+        "marketName": { "type": "string" },
+        "dateTime": { "type": "string" },
+        "photoUrl": { "type": "string" },
+        "syncStatus": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" },
+        "createdBy": { "type": "string" },
+        "createdByName": { "type": "string" },
+        "isDuplicateImeiFlagged": { "type": "boolean" },
+        "isSuspiciousFlagged": { "type": "boolean" }
+      },
+      "required": [
+        "id",
+        "type",
+        "mobileModel",
+        "imei1",
+        "buyerName",
+        "buyerCnic",
+        "sellerName",
+        "sellerCnic",
+        "shopId",
+        "marketId",
+        "dateTime",
+        "syncStatus",
+        "createdBy"
+      ]
+    },
+    "AuditLog": {
+      "title": "AuditLog",
+      "description": "Trail of changes, edits and deletes of database records",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "transactionId": { "type": "string" },
+        "action": { "type": "string" },
+        "details": { "type": "string" },
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "userRole": { "type": "string" },
+        "timestamp": { "type": "string" }
+      },
+      "required": ["id", "transactionId", "action", "details", "userId", "userName", "userRole", "timestamp"]
+    }
+  },
+  "firestore": {
+    "users": {
+      "schema": "User",
+      "description": "Registered SaaS user nodes"
+    },
+    "markets": {
+      "schema": "Market",
+      "description": "Markets registered globally"
+    },
+    "shops": {
+      "schema": "Shop",
+      "description": "Shops registered in specific markets"
+    },
+    "transactions": {
+      "schema": "Transaction",
+      "description": "Complete Buy/Sell compliance records list"
+    },
+    "auditLogs": {
+      "schema": "AuditLog",
+      "description": "Admin and editor audit log trail"
+    }
+  }
+}
