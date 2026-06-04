@@ -58,6 +58,31 @@ export default function AuthModule({ onLoginSuccess }: AuthModuleProps) {
   const [regShopAddress, setRegShopAddress] = useState('');
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
+  // Loading indicator states
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadingText, setLoadingText] = useState('Verifying credentials...');
+
+  // Rich Status Notification structure
+  const [statusAlert, setStatusAlert] = useState<{
+    type: 'SUCCESS' | 'ERROR' | 'PENDING' | 'REJECTED' | 'INFO';
+    heading: string;
+    message: string;
+  } | null>(null);
+
+  const triggerAlert = (
+    type: 'SUCCESS' | 'ERROR' | 'PENDING' | 'REJECTED' | 'INFO',
+    heading: string,
+    message: string
+  ) => {
+    setStatusAlert({ type, heading, message });
+    setStatusMessage(message);
+  };
+
+  const clearAlert = () => {
+    setStatusAlert(null);
+    setStatusMessage(null);
+  };
+
   // Account Recovery States
   const [isRecovering, setIsRecovering] = useState(false);
   const [recoveryEmail, setRecoveryEmail] = useState('');
@@ -73,7 +98,7 @@ export default function AuthModule({ onLoginSuccess }: AuthModuleProps) {
     setProvidedRecoveryAnswer('');
     setNewPassword('');
     setRecoveryStep(1);
-    setStatusMessage(null);
+    clearAlert();
   };
 
   // Load markets and custom registered merchants
@@ -106,229 +131,359 @@ export default function AuthModule({ onLoginSuccess }: AuthModuleProps) {
       setEnteredEmail(profile.email);
       setEnteredPassword('');
       const pHelp = profile.password || (profile.role === 'SUPER_ADMIN' ? 'admin123' : profile.role === 'MARKET_ADMIN' ? 'quaidabad123' : 'saleem123');
-      setStatusMessage(`Identity chosen: "${profile.name}". Under compliance security rules, please enter password "${pHelp}" to sign in.`);
+      
+      triggerAlert(
+        'INFO',
+        `Accessing Preset Portal: ${profile.name}`,
+        `Credential email selected! Please enter password "${pHelp}" below and click the sign-in button.`
+      );
     } else {
-      setStatusMessage("Error restoring user profile. Please reset or register.");
+      triggerAlert(
+        'ERROR',
+        "Credential Load Error",
+        "Could not load selected user compliance profile. Please register a new account."
+      );
     }
   };
 
   // Secure customized login verify
   const handleCustomEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setStatusMessage(null);
+    clearAlert();
 
     const cleanEmail = enteredEmail.trim().toLowerCase();
     if (!cleanEmail) {
-      setStatusMessage("Please input your registered email address.");
+      triggerAlert(
+        'ERROR',
+        "Email Verification Failed",
+        "Please input your registered email address before logging in."
+      );
       return;
     }
     if (!enteredPassword) {
-      setStatusMessage("Please enter your account password to verify identity.");
+      triggerAlert(
+        'ERROR',
+        "Password Verification Failed",
+        "Please enter your account password to verify your identity."
+      );
       return;
     }
 
-    // Search local database profiles
-    let profile = await db.users.where('email').equalsIgnoreCase(cleanEmail).first();
-    
-    // Check presets if not found
-    if (!profile) {
-      profile = SEED_USERS.find(u => u.email.toLowerCase() === cleanEmail);
-      if (profile) {
-        await db.users.put(profile);
-      }
-    }
+    setIsLoading(true);
+    setLoadingText("Verifying credentials against the compliance ledger. Please wait...");
 
-    if (profile) {
-      // Compare password
-      const correctPass = profile.password || (profile.role === 'SUPER_ADMIN' ? 'admin123' : profile.role === 'MARKET_ADMIN' ? 'quaidabad123' : 'saleem123');
-      if (correctPass !== enteredPassword) {
-        setStatusMessage("Invalid password. Secure Access Rejected. Please try again.");
-        return;
-      }
-
-      // Check account approval status
-      if (profile.role === 'SHOPKEEPER' || profile.role === 'MARKET_ADMIN') {
-        if (profile.status === 'PENDING') {
-          setStatusMessage(`Access Restricted. Your application status is currently PENDING. A system inspector must approve your profile.`);
-          return;
-        } else if (profile.status === 'REJECTED') {
-          setStatusMessage(`Access Denied! Your profile application was REJECTED by administrative enforcement.`);
-          return;
+    setTimeout(async () => {
+      try {
+        // Search local database profiles
+        let profile = await db.users.where('email').equalsIgnoreCase(cleanEmail).first();
+        
+        // Check presets if not found
+        if (!profile) {
+          profile = SEED_USERS.find(u => u.email.toLowerCase() === cleanEmail);
+          if (profile) {
+            await db.users.put(profile);
+          }
         }
-      }
 
-      onLoginSuccess(profile);
-    } else {
-      setStatusMessage(`No profile found matching "${enteredEmail}". Please register a new account below.`);
-    }
+        if (profile) {
+          // Compare password
+          const correctPass = profile.password || (profile.role === 'SUPER_ADMIN' ? 'admin123' : profile.role === 'MARKET_ADMIN' ? 'quaidabad123' : 'saleem123');
+          if (correctPass !== enteredPassword) {
+            setIsLoading(false);
+            triggerAlert(
+              'REJECTED',
+              "Access Rejected: Invalid Credentials",
+              "The security password you entered is incorrect. Access to compliance records is denied. Please try again."
+            );
+            return;
+          }
+
+          // Check account approval status
+          if (profile.role === 'SHOPKEEPER' || profile.role === 'MARKET_ADMIN') {
+            if (profile.status === 'PENDING') {
+              setIsLoading(false);
+              triggerAlert(
+                'PENDING',
+                "Access Suspended: Approval Pending",
+                `The trade profile for "${profile.name}" has been recorded but is currently PENDING. A system inspector must approve your profile under regulatory compliance before system access is granted.`
+              );
+              return;
+            } else if (profile.status === 'REJECTED') {
+              setIsLoading(false);
+              triggerAlert(
+                'REJECTED',
+                "Access Blocked: Account Rejected",
+                `Your account application for "${profile.name}" was REJECTED by administrative enforcement. Device trade authorization has been revoked.`
+              );
+              return;
+            }
+          }
+
+          setLoadingText(`Identity Authorized! Preparing secure workspace dashboard...`);
+          setTimeout(() => {
+            setIsLoading(false);
+            onLoginSuccess(profile!);
+          }, 800);
+        } else {
+          setIsLoading(false);
+          triggerAlert(
+            'ERROR',
+            "Profile Not Registered",
+            `No compliance profile matching "${enteredEmail}" exists in our registers. Please register a new account.`
+          );
+        }
+      } catch (err) {
+        setIsLoading(false);
+        triggerAlert(
+          'ERROR',
+          "Portal Connection Interrupt",
+          "An index lookup error occurred on the secure database registers. Please restart the portal and retry."
+        );
+      }
+    }, 1500);
   };
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    setStatusMessage(null);
+    clearAlert();
 
     if (!regName || !regEmail || !regCnic || !regContact || !regPassword || !regSecurityAnswer) {
-      setStatusMessage("Please fill in all mandatory compliance and security fields.");
+      triggerAlert(
+        'ERROR',
+        "Registration Denied: Missing Fields",
+        "Please fill in all mandatory legal, compliance, and security fields."
+      );
       return;
     }
 
     const cleanEmail = regEmail.trim().toLowerCase();
     const cleanedCnic = regCnic.replace(/[^0-9]/g, "");
     if (cleanedCnic.length !== 13) {
-      setStatusMessage("CNIC must consist of exactly 13 digits (Format: XXXXX-XXXXXXX-X).");
+      triggerAlert(
+        'ERROR',
+        "Identity Check Failed: Invalid CNIC",
+        "Your CNIC must consist of exactly 13 digits (Format: XXXXX-XXXXXXX-X)."
+      );
       return;
     }
     const formattedCnic = cleanedCnic.slice(0, 5) + "-" + cleanedCnic.slice(5, 12) + "-" + cleanedCnic.slice(12, 13);
 
-    // Enforce uniqueness constraints (no duplicate email or CNIC allow)
-    const allRegisteredUsers = await db.users.toArray();
-    
-    const emailExists = allRegisteredUsers.some(u => u.email.toLowerCase() === cleanEmail);
-    if (emailExists) {
-      setStatusMessage(`The email address "${regEmail}" is already registered. Please login or reset password.`);
-      return;
-    }
+    setIsLoading(true);
+    setLoadingText("Registering user profile with Quaidabad Compliance Portal. Please wait...");
 
-    const cnicExists = allRegisteredUsers.some(u => u.cnic && u.cnic.replace(/[^0-9]/g, "") === cleanedCnic);
-    if (cnicExists) {
-      setStatusMessage(`The CNIC/NIC "${formattedCnic}" is already associated with another active account.`);
-      return;
-    }
+    setTimeout(async () => {
+      try {
+        // Enforce uniqueness constraints (no duplicate email or CNIC allowed)
+        const allRegisteredUsers = await db.users.toArray();
+        
+        const emailExists = allRegisteredUsers.some(u => u.email.toLowerCase() === cleanEmail);
+        if (emailExists) {
+          setIsLoading(false);
+          triggerAlert(
+            'REJECTED',
+            "Registration Blocked: Duplicate Email",
+            `The email address "${regEmail}" is already registered. Please sign in or initiate recovery.`
+          );
+          return;
+        }
 
-    const matchedMarket = regRole !== 'SUPER_ADMIN' ? markets.find(m => m.id === regMarketId) : undefined;
+        const cnicExists = allRegisteredUsers.some(u => u.cnic && u.cnic.replace(/[^0-9]/g, "") === cleanedCnic);
+        if (cnicExists) {
+          setIsLoading(false);
+          triggerAlert(
+            'REJECTED',
+            "Registration Blocked: Duplicate CNIC",
+            `The CNIC/Identity Card "${formattedCnic}" is already registered. Only one account per citizen is permitted.`
+          );
+          return;
+        }
 
-    const newUserId = `usr-${Math.random().toString(36).substr(2, 9)}`;
-    const newShopId = regRole === 'SHOPKEEPER' ? `shp-${Math.random().toString(36).substr(2, 9)}` : undefined;
+        const matchedMarket = regRole !== 'SUPER_ADMIN' ? markets.find(m => m.id === regMarketId) : undefined;
 
-    // Super Admin registered are APPROVED directly; other roles start as PENDING
-    const initialStatus = regRole === 'SUPER_ADMIN' ? 'APPROVED' : 'PENDING';
+        const newUserId = `usr-${Math.random().toString(36).substr(2, 9)}`;
+        const newShopId = regRole === 'SHOPKEEPER' ? `shp-${Math.random().toString(36).substr(2, 9)}` : undefined;
 
-    const newUser: AppUser = {
-      id: newUserId,
-      name: regName,
-      email: regEmail.trim(),
-      password: regPassword,
-      securityQuestion: regSecurityQuestion,
-      securityAnswer: regSecurityAnswer,
-      role: regRole,
-      status: initialStatus,
-      cnic: formattedCnic,
-      contactNumber: regContact,
-      marketId: regMarketId || undefined,
-      marketName: matchedMarket ? matchedMarket.name : undefined,
-      shopId: newShopId,
-      shopName: regRole === 'SHOPKEEPER' ? regShopName : undefined,
-      shopAddress: regRole === 'SHOPKEEPER' ? regShopAddress : undefined,
-      createdAt: new Date().toISOString()
-    };
+        // Super Admin registered are APPROVED directly; other roles start as PENDING
+        const initialStatus = regRole === 'SUPER_ADMIN' ? 'APPROVED' : 'PENDING';
 
-    try {
-      // 1. Write user to local IndexedDB profiles cache
-      await db.users.put(newUser);
-
-      // 2. If Shopkeeper, register corresponding Shop node as PENDING
-      if (regRole === 'SHOPKEEPER' && newShopId) {
-        const newShop = {
-          id: newShopId,
-          name: regShopName || `${regName}'s Mobile Shop`,
-          marketId: regMarketId,
-          marketName: matchedMarket ? matchedMarket.name : 'Unknown Market',
-          ownerName: regName,
-          contactNumber: regContact,
+        const newUser: AppUser = {
+          id: newUserId,
+          name: regName,
+          email: regEmail.trim(),
+          password: regPassword,
+          securityQuestion: regSecurityQuestion,
+          securityAnswer: regSecurityAnswer,
+          role: regRole,
+          status: initialStatus,
           cnic: formattedCnic,
-          shopAddress: regShopAddress,
-          status: 'PENDING' as const,
+          contactNumber: regContact,
+          marketId: regMarketId || undefined,
+          marketName: matchedMarket ? matchedMarket.name : undefined,
+          shopId: newShopId,
+          shopName: regRole === 'SHOPKEEPER' ? regShopName : undefined,
+          shopAddress: regRole === 'SHOPKEEPER' ? regShopAddress : undefined,
           createdAt: new Date().toISOString()
         };
-        await db.shops.put(newShop);
+
+        // 1. Write user to local IndexedDB profiles cache
+        await db.users.put(newUser);
+
+        // 2. If Shopkeeper, register corresponding Shop node as PENDING
+        if (regRole === 'SHOPKEEPER' && newShopId) {
+          const newShop = {
+            id: newShopId,
+            name: regShopName || `${regName}'s Mobile Shop`,
+            marketId: regMarketId,
+            marketName: matchedMarket ? matchedMarket.name : 'Unknown Market',
+            ownerName: regName,
+            contactNumber: regContact,
+            cnic: formattedCnic,
+            shopAddress: regShopAddress,
+            status: 'PENDING' as const,
+            createdAt: new Date().toISOString()
+          };
+          await db.shops.put(newShop);
+          
+          await db.syncQueue.put({
+            id: `${newShopId}_create_${Date.now()}`,
+            transactionId: newShopId,
+            action: 'CREATE',
+            payload: newShop,
+            timestamp: new Date().toISOString(),
+            retryCount: 0
+          });
+        }
+
+        setIsLoading(false);
+
+        if (initialStatus === 'APPROVED') {
+          triggerAlert(
+            'SUCCESS',
+            "Administrator Enrolled Successfully",
+            `National Administration Portal registered user "${regName}" and APPROVED instantly. You can now login with your credentials.`
+          );
+        } else {
+          triggerAlert(
+            'PENDING',
+            "Account Registration Recorded",
+            `Welcome ${regName}! Your trade compliance profile was created successfully. Your account status is currently PENDING. Note: To log in, you must be approved by a Market Inspector or Super Admin.`
+          );
+        }
         
-        // Push shop registration to syncQueue too so it synchronizes once online!
-        await db.syncQueue.put({
-          id: `${newShopId}_create_${Date.now()}`,
-          transactionId: newShopId,
-          action: 'CREATE',
-          payload: newShop,
-          timestamp: new Date().toISOString(),
-          retryCount: 0
-        });
-      }
+        // Auto switch back to login and focus the newly created user
+        setTimeout(() => {
+          setIsRegistering(false);
+          setEnteredEmail(regEmail);
+          setEnteredPassword('');
+          clearAlert();
+        }, 5000);
 
-      if (initialStatus === 'APPROVED') {
-        setStatusMessage(`Super Admin Account registered and APPROVED! You can log in instantly.`);
-      } else {
-        setStatusMessage(`Registration successfully recorded! Your profile status is currently PENDING. Note: To log in, you must be approved by a Market Inspector or Super Admin.`);
+      } catch (err) {
+        setIsLoading(false);
+        triggerAlert(
+          'ERROR',
+          "Infrastructure Write Error",
+          "Failed to write trade profile parameters. Please reboot database registry cache and try again."
+        );
       }
-      
-      // Auto switch back to login and focus the newly created user
-      setTimeout(() => {
-        setIsRegistering(false);
-        setEnteredEmail(regEmail);
-        setEnteredPassword('');
-        setStatusMessage(null);
-      }, 5000);
-
-    } catch (err) {
-      setStatusMessage("Failed to register profile locally. Please try again.");
-    }
+    }, 1500);
   };
 
   // Secure self-service account recovery triggers
   const handleVerifyEmailAndQuestion = async (e: React.FormEvent) => {
     e.preventDefault();
-    setStatusMessage(null);
+    clearAlert();
     const emailToFind = recoveryEmail.trim().toLowerCase();
     if (!emailToFind) {
-      setStatusMessage("Please enter your registered email address.");
-      return;
-    }
-    
-    let userProfile = await db.users.where('email').equalsIgnoreCase(emailToFind).first();
-    if (!userProfile) {
-      userProfile = SEED_USERS.find(u => u.email.toLowerCase() === emailToFind);
-    }
-
-    if (!userProfile) {
-      setStatusMessage("No profile matches this email address in local CPLC registers.");
+      triggerAlert(
+        'ERROR',
+        "Lookup Failed",
+        "Please enter your registered email address before continuing."
+      );
       return;
     }
 
-    if (!userProfile.securityQuestion) {
-      // Standard default question settings for preloaded seed accounts
-      userProfile.securityQuestion = 'birth_city';
-      userProfile.securityAnswer = userProfile.role === 'SUPER_ADMIN' ? 'islamabad' : 'karachi';
-    }
+    setIsLoading(true);
+    setLoadingText("Querying secure CPLC registries for identity parameters...");
 
-    setDbUserForRecovery(userProfile);
-    setRecoveryStep(2);
+    setTimeout(async () => {
+      let userProfile = await db.users.where('email').equalsIgnoreCase(emailToFind).first();
+      if (!userProfile) {
+        userProfile = SEED_USERS.find(u => u.email.toLowerCase() === emailToFind);
+      }
+
+      setIsLoading(false);
+
+      if (!userProfile) {
+        triggerAlert(
+          'ERROR',
+          "No Registration Found",
+          "No profile matches this email address in local CPLC registers."
+        );
+        return;
+      }
+
+      if (!userProfile.securityQuestion) {
+        // Standard default question settings for preloaded seed accounts
+        userProfile.securityQuestion = 'birth_city';
+        userProfile.securityAnswer = userProfile.role === 'SUPER_ADMIN' ? 'islamabad' : 'karachi';
+      }
+
+      setDbUserForRecovery(userProfile);
+      setRecoveryStep(2);
+    }, 1500);
   };
 
   const handleVerifyAnswerAndResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    setStatusMessage(null);
+    clearAlert();
     if (!dbUserForRecovery) return;
 
     const provided = providedRecoveryAnswer.trim().toLowerCase();
     const correct = (dbUserForRecovery.securityAnswer || '').trim().toLowerCase();
 
     if (provided !== correct) {
-      setStatusMessage("Verification failed. Incorrect security answer.");
+      triggerAlert(
+        'REJECTED',
+        "Security Check Failed",
+        "Verification failed. Incorrect security question answer provided."
+      );
       return;
     }
 
     if (!newPassword || newPassword.length < 4) {
-      setStatusMessage("Please specify a secure password (minimum 4 characters).");
+      triggerAlert(
+        'ERROR',
+        "Weak Identity Credentials",
+        "Please specify a secure password (minimum of 4 characters required)."
+      );
       return;
     }
 
-    try {
-      dbUserForRecovery.password = newPassword;
-      await db.users.put(dbUserForRecovery);
-      
-      setRecoveryStep(3);
-      setStatusMessage("Account credential password successfully reset! Go back to login.");
-    } catch (e) {
-      setStatusMessage("Failed saving new password security parameter.");
-    }
+    setIsLoading(true);
+    setLoadingText("Updating biometric entry passcodes on registry...");
+
+    setTimeout(async () => {
+      try {
+        dbUserForRecovery.password = newPassword;
+        await db.users.put(dbUserForRecovery);
+        
+        setIsLoading(false);
+        setRecoveryStep(3);
+        triggerAlert(
+          'SUCCESS',
+          "Credentials Synchronized Successfully",
+          "Account credential security password successfully reset! You can now sign in with your new password."
+        );
+      } catch (e) {
+        setIsLoading(false);
+        triggerAlert(
+          'ERROR',
+          "Database Cache Error",
+          "Failed to save your new password security parameter to database."
+        );
+      }
+    }, 1500);
   };
 
   const getRoleBadge = (role: UserRole) => {
@@ -346,15 +501,76 @@ export default function AuthModule({ onLoginSuccess }: AuthModuleProps) {
 
   return (
     <div className="min-h-screen bg-slate-100 flex flex-col justify-center items-center px-4 py-8 relative selection:bg-emerald-100 selection:text-emerald-950 font-sans" id="auth-root">
+      {/* 3D Flipping Smartphone Keyframes */}
+      <style>{`
+        @keyframes flip-smartphone {
+          0% {
+            transform: perspective(400px) rotateY(0deg) rotateX(0deg);
+          }
+          50% {
+            transform: perspective(400px) rotateY(180deg) rotateX(8deg);
+          }
+          100% {
+            transform: perspective(400px) rotateY(360deg) rotateX(0deg);
+          }
+        }
+      `}</style>
+
       {/* Decorative Grid and Ambient Lights */}
       <div className="absolute inset-0 bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] [background-size:16px_16px] opacity-70 -z-20"></div>
       <div className="absolute top-1/3 left-1/4 w-80 h-80 bg-emerald-200/20 rounded-full blur-3xl -z-10"></div>
       <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-blue-200/20 rounded-full blur-3xl -z-10"></div>
 
+      {/* 3D Flipping Mobile phone Loading Spinner Overlay */}
+      {isLoading && (
+        <div className="fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-[9999] flex flex-col items-center justify-center p-6 select-none animate-fade-in" id="mobile-loading-spinner-modal">
+          <div className="flex flex-col items-center space-y-6 max-w-sm text-center">
+            
+            {/* The Flipping Phone Spinner */}
+            <div className="relative w-14 h-24 transform-gpu select-none" style={{ perspective: 400 }}>
+              <div 
+                className="w-full h-full bg-slate-900 border-2 border-slate-700 rounded-[20px] relative flex flex-col items-center justify-between p-2 shadow-2xl"
+                style={{
+                  animation: 'flip-smartphone 1.4s cubic-bezier(0.4, 0, 0.2, 1) infinite',
+                  transformStyle: 'preserve-3d'
+                }}
+              >
+                {/* Speaker/Camera Notch */}
+                <div className="w-6 h-2 bg-slate-950 rounded-full absolute -top-[2px] left-1/2 -translate-x-1/2 z-10"></div>
+                
+                {/* Glowing Screen Container */}
+                <div className="w-full h-full bg-emerald-500 rounded-[14px] opacity-95 flex flex-col items-center justify-center relative overflow-hidden">
+                  {/* Grid pattern glow on screen */}
+                  <div className="absolute inset-0 bg-[radial-gradient(#059669_1px,transparent_1px)] [background-size:6px_6px] opacity-55"></div>
+                  
+                  {/* Rotating Lock badge interior */}
+                  <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center text-white font-mono text-[11px] font-black shadow-inner animate-pulse">
+                    ✓
+                  </div>
+                </div>
+                
+                {/* Home bar line */}
+                <div className="w-5 h-0.5 bg-slate-500 rounded-full absolute bottom-[3px] left-1/2 -translate-x-1/2"></div>
+              </div>
+            </div>
+
+            {/* Loading text with nice subtitles */}
+            <div className="space-y-2">
+              <h3 className="text-xs font-black font-mono text-emerald-400 uppercase tracking-widest animate-pulse">
+                REGISTRY SECURING
+              </h3>
+              <p className="text-xs font-medium text-slate-300 font-sans px-4">
+                {loadingText}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Brand Header */}
       <div className="text-center mb-8 space-y-2 max-w-xl">
         <div className="inline-flex bg-slate-900 text-emerald-400 p-2.5 rounded-2xl shadow-sm border border-slate-800">
-          <Smartphone className="w-7 h-7" />
+          <Smartphone className="w-7 h-7 animate-pulse" />
         </div>
         <h1 className="text-2xl font-black text-slate-900 tracking-tight" id="main-brand-title">
           QUAIDABAD MOBILE REGISTRY PORTAL
@@ -372,7 +588,7 @@ export default function AuthModule({ onLoginSuccess }: AuthModuleProps) {
           <div className="grid grid-cols-2 bg-slate-100 p-1 rounded-2xl border border-slate-200/50">
             <button
               type="button"
-              onClick={() => { setIsRegistering(false); setStatusMessage(null); }}
+              onClick={() => { setIsRegistering(false); clearAlert(); }}
               className={`py-2.5 px-4 rounded-xl text-xs font-bold font-mono uppercase tracking-wide duration-150 flex items-center justify-center gap-2 cursor-pointer ${
                 !isRegistering 
                   ? 'bg-white text-slate-900 shadow-sm font-black' 
@@ -385,7 +601,7 @@ export default function AuthModule({ onLoginSuccess }: AuthModuleProps) {
             </button>
             <button
               type="button"
-              onClick={() => { setIsRegistering(true); setStatusMessage(null); }}
+              onClick={() => { setIsRegistering(true); clearAlert(); }}
               className={`py-2.5 px-4 rounded-xl text-xs font-bold font-mono uppercase tracking-wide duration-150 flex items-center justify-center gap-2 cursor-pointer ${
                 isRegistering 
                   ? 'bg-white text-emerald-800 shadow-sm font-black' 
@@ -400,8 +616,48 @@ export default function AuthModule({ onLoginSuccess }: AuthModuleProps) {
         )}
 
         {/* Global Notification Banner */}
-        {statusMessage && (
-          <div className="p-4 rounded-xl text-xs bg-slate-50 text-slate-800 border-l-4 border-blue-500 leading-relaxed font-sans shadow-sm" id="auth-status-message">
+        {statusAlert && (
+          <div className="p-4 rounded-2xl border border-slate-200/80 text-xs bg-slate-50/75 leading-relaxed font-sans shadow-xs transition-all duration-300 animate-fade-in" id="auth-status-message">
+            <div className="flex items-start gap-3">
+              {statusAlert.type === 'SUCCESS' ? (
+                <div className="bg-emerald-100 text-emerald-800 p-2 rounded-xl shrink-0">
+                  <ShieldCheck className="w-5 h-5 text-emerald-700" />
+                </div>
+              ) : statusAlert.type === 'PENDING' ? (
+                <div className="bg-amber-100 text-amber-805 p-2 rounded-xl shrink-0">
+                  <ShieldAlert className="w-5 h-5 text-amber-700 animate-bounce" />
+                </div>
+              ) : statusAlert.type === 'REJECTED' ? (
+                <div className="bg-rose-100 text-rose-805 p-2 rounded-xl shrink-0">
+                  <Lock className="w-5 h-5 text-rose-700" />
+                </div>
+              ) : statusAlert.type === 'INFO' ? (
+                <div className="bg-blue-100 text-blue-805 p-2 rounded-xl shrink-0">
+                  <Sparkles className="w-5 h-5 text-blue-700" />
+                </div>
+              ) : (
+                <div className="bg-red-100 text-red-805 p-2 rounded-xl shrink-0">
+                  <ShieldAlert className="w-5 h-5 text-red-700" />
+                </div>
+              )}
+              <div className="space-y-1">
+                <span className={`font-black uppercase tracking-wider text-[10.5px] block ${
+                  statusAlert.type === 'SUCCESS' ? 'text-emerald-800' :
+                  statusAlert.type === 'PENDING' ? 'text-amber-800' :
+                  statusAlert.type === 'REJECTED' ? 'text-rose-800' :
+                  statusAlert.type === 'INFO' ? 'text-blue-800' : 'text-red-800'
+                }`}>
+                  {statusAlert.heading}
+                </span>
+                <p className="text-slate-700 font-medium leading-relaxed font-sans">{statusAlert.message}</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Legacy fallback if alert state unmapped */}
+        {!statusAlert && statusMessage && (
+          <div className="p-4 rounded-xl text-xs bg-slate-50 text-slate-800 border-l-4 border-blue-500 leading-relaxed font-sans shadow-sm" id="auth-status-message-legacy">
             <div className="flex items-start gap-2">
               <ShieldCheck className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
               <div>
