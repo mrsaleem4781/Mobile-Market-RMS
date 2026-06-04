@@ -247,7 +247,7 @@ export default function Layout({
                 <Sparkles className="w-4 h-4 text-purple-600" /> COMPLIANCE SANDBOX ROLE SWITCHER
               </h3>
               <p className="text-[11px] text-slate-500 mt-1 max-w-xl leading-relaxed">
-                This system executes full-stack compliance flows. To review the complex cross-role mechanics (Shopkeeper entry, Market Inspector approval, and National Super-Admin audits), toggle the quick switcher roles below:
+                Toggle between the system roles to review shop compliance records, transactions, or manage administrative approvals:
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
@@ -258,16 +258,10 @@ export default function Layout({
                 [1] Shopkeeper Mode
               </button>
               <button
-                onClick={() => { onRoleSwitch('MARKET_ADMIN'); setActiveTab('market-shops'); }}
-                className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold duration-150 cursor-pointer ${(currentUser?.role as string) === 'MARKET_ADMIN' ? 'bg-amber-600 text-white shadow-xs' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'}`}
-              >
-                [2] Market Inspector
-              </button>
-              <button
                 onClick={() => { onRoleSwitch('SUPER_ADMIN'); setActiveTab('super-overview'); }}
                 className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold duration-150 cursor-pointer ${(currentUser?.role as string) === 'SUPER_ADMIN' ? 'bg-blue-600 text-white shadow-xs' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'}`}
               >
-                [3] Super Admin
+                [2] Super Admin
               </button>
             </div>
           </div>

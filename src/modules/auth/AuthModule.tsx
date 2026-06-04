@@ -500,66 +500,34 @@ export default function AuthModule({ onLoginSuccess }: AuthModuleProps) {
   const selectedQuestionObj = SECURITY_QUESTIONS.find(q => q.value === (dbUserForRecovery?.securityQuestion || 'birth_city'));
 
   return (
-    <div className="min-h-screen bg-slate-100 flex flex-col justify-center items-center px-4 py-8 relative selection:bg-emerald-100 selection:text-emerald-950 font-sans" id="auth-root">
-      {/* 3D Flipping Smartphone Keyframes */}
+    <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center px-4 py-8 relative selection:bg-blue-105 selection:text-blue-950 font-sans" id="auth-root">
+      {/* Flipping mobile keyframe animation */}
       <style>{`
-        @keyframes flip-smartphone {
-          0% {
-            transform: perspective(400px) rotateY(0deg) rotateX(0deg);
-          }
-          50% {
-            transform: perspective(400px) rotateY(180deg) rotateX(8deg);
-          }
-          100% {
-            transform: perspective(400px) rotateY(360deg) rotateX(0deg);
-          }
+        @keyframes flip-phone-animation {
+          0% { transform: perspective(300px) rotateY(0deg); }
+          50% { transform: perspective(300px) rotateY(180deg); }
+          100% { transform: perspective(300px) rotateY(360deg); }
+        }
+        .animate-flip-phone {
+          animation: flip-phone-animation 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
         }
       `}</style>
 
-      {/* Decorative Grid and Ambient Lights */}
-      <div className="absolute inset-0 bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] [background-size:16px_16px] opacity-70 -z-20"></div>
-      <div className="absolute top-1/3 left-1/4 w-80 h-80 bg-emerald-200/20 rounded-full blur-3xl -z-10"></div>
-      <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-blue-200/20 rounded-full blur-3xl -z-10"></div>
+      {/* Subtle Background grid */}
+      <div className="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:20px_20px] opacity-40 -z-10"></div>
 
-      {/* 3D Flipping Mobile phone Loading Spinner Overlay */}
+      {/* 3D Flipping Mobile Phone Loading Spinner */}
       {isLoading && (
-        <div className="fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-[9999] flex flex-col items-center justify-center p-6 select-none animate-fade-in" id="mobile-loading-spinner-modal">
-          <div className="flex flex-col items-center space-y-6 max-w-sm text-center">
-            
-            {/* The Flipping Phone Spinner */}
-            <div className="relative w-14 h-24 transform-gpu select-none" style={{ perspective: 400 }}>
-              <div 
-                className="w-full h-full bg-slate-900 border-2 border-slate-700 rounded-[20px] relative flex flex-col items-center justify-between p-2 shadow-2xl"
-                style={{
-                  animation: 'flip-smartphone 1.4s cubic-bezier(0.4, 0, 0.2, 1) infinite',
-                  transformStyle: 'preserve-3d'
-                }}
-              >
-                {/* Speaker/Camera Notch */}
-                <div className="w-6 h-2 bg-slate-950 rounded-full absolute -top-[2px] left-1/2 -translate-x-1/2 z-10"></div>
-                
-                {/* Glowing Screen Container */}
-                <div className="w-full h-full bg-emerald-500 rounded-[14px] opacity-95 flex flex-col items-center justify-center relative overflow-hidden">
-                  {/* Grid pattern glow on screen */}
-                  <div className="absolute inset-0 bg-[radial-gradient(#059669_1px,transparent_1px)] [background-size:6px_6px] opacity-55"></div>
-                  
-                  {/* Rotating Lock badge interior */}
-                  <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center text-white font-mono text-[11px] font-black shadow-inner animate-pulse">
-                    ✓
-                  </div>
-                </div>
-                
-                {/* Home bar line */}
-                <div className="w-5 h-0.5 bg-slate-500 rounded-full absolute bottom-[3px] left-1/2 -translate-x-1/2"></div>
+        <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-xs z-[9999] flex flex-col items-center justify-center p-6 animate-fade-in" id="mobile-loading-spinner-modal">
+          <div className="bg-white p-6 rounded-2xl shadow-xl flex flex-col items-center space-y-4 max-w-xs text-center border border-slate-100">
+            <div className="w-12 h-20 bg-slate-850 rounded-xl relative flex items-center justify-center shadow-lg border border-slate-700 animate-flip-phone">
+              <div className="w-10 h-16 bg-blue-500 rounded-lg flex items-center justify-center text-white font-mono font-bold text-xs">
+                ✓
               </div>
             </div>
-
-            {/* Loading text with nice subtitles */}
-            <div className="space-y-2">
-              <h3 className="text-xs font-black font-mono text-emerald-400 uppercase tracking-widest animate-pulse">
-                REGISTRY SECURING
-              </h3>
-              <p className="text-xs font-medium text-slate-300 font-sans px-4">
+            <div className="space-y-1">
+              <p className="text-xs font-black text-blue-650 uppercase tracking-wider font-mono">Processing...</p>
+              <p className="text-xs font-semibold text-slate-700 leading-tight">
                 {loadingText}
               </p>
             </div>
@@ -567,615 +535,524 @@ export default function AuthModule({ onLoginSuccess }: AuthModuleProps) {
         </div>
       )}
 
-      {/* Brand Header */}
-      <div className="text-center mb-8 space-y-2 max-w-xl">
-        <div className="inline-flex bg-slate-900 text-emerald-400 p-2.5 rounded-2xl shadow-sm border border-slate-800">
-          <Smartphone className="w-7 h-7 animate-pulse" />
-        </div>
-        <h1 className="text-2xl font-black text-slate-900 tracking-tight" id="main-brand-title">
-          QUAIDABAD MOBILE REGISTRY PORTAL
-        </h1>
-        <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider font-mono">
-          SECURED DEVICE COMPLIANCE & AUTHORIZED ACCOUNT MANAGEMENT
-        </p>
-      </div>
-
-      {/* Main Panel Box */}
-      <div className="w-full max-w-2xl bg-white border border-slate-200 rounded-3xl shadow-lg p-6 md:p-8 space-y-6 relative transition-all duration-300" id="auth-main-panel">
+      {/* Main Container */}
+      <div className="w-full max-w-lg space-y-6">
         
-        {/* Toggle Switch Tabs (Only show if not in recovery mode) */}
-        {!isRecovering && (
-          <div className="grid grid-cols-2 bg-slate-100 p-1 rounded-2xl border border-slate-200/50">
-            <button
-              type="button"
-              onClick={() => { setIsRegistering(false); clearAlert(); }}
-              className={`py-2.5 px-4 rounded-xl text-xs font-bold font-mono uppercase tracking-wide duration-150 flex items-center justify-center gap-2 cursor-pointer ${
-                !isRegistering 
-                  ? 'bg-white text-slate-900 shadow-sm font-black' 
-                  : 'text-slate-500 hover:text-slate-900 font-bold'
-              }`}
-              id="tab-login-btn"
-            >
-              <Lock className="w-3.5 h-3.5" />
-              Sign In / Preset Profiles
-            </button>
-            <button
-              type="button"
-              onClick={() => { setIsRegistering(true); clearAlert(); }}
-              className={`py-2.5 px-4 rounded-xl text-xs font-bold font-mono uppercase tracking-wide duration-150 flex items-center justify-center gap-2 cursor-pointer ${
-                isRegistering 
-                  ? 'bg-white text-emerald-800 shadow-sm font-black' 
-                  : 'text-slate-500 hover:text-slate-900'
-              }`}
-              id="tab-register-btn"
-            >
-              <Store className="w-3.5 h-3.5" />
-              Register Account
-            </button>
+        {/* Simplified Header */}
+        <div className="text-center space-y-2">
+          <div className="inline-flex bg-blue-600 text-white p-3 rounded-2xl shadow-md">
+            <Smartphone className="w-6 h-6" />
           </div>
-        )}
+          <h1 className="text-2xl font-black text-slate-900 tracking-tight" id="main-brand-title">
+            Quaidabad Mobile Registry
+          </h1>
+          <p className="text-xs font-bold text-slate-500 font-mono tracking-wide uppercase flex items-center justify-center gap-1">
+            <span>DEVICE COMPLIANCE PORTAL</span>
+            <span className="text-slate-300">|</span>
+            <span className="text-blue-600 font-bold">ڈوائس رجسٹریشن</span>
+          </p>
+        </div>
 
-        {/* Global Notification Banner */}
-        {statusAlert && (
-          <div className="p-4 rounded-2xl border border-slate-200/80 text-xs bg-slate-50/75 leading-relaxed font-sans shadow-xs transition-all duration-300 animate-fade-in" id="auth-status-message">
-            <div className="flex items-start gap-3">
-              {statusAlert.type === 'SUCCESS' ? (
-                <div className="bg-emerald-100 text-emerald-800 p-2 rounded-xl shrink-0">
-                  <ShieldCheck className="w-5 h-5 text-emerald-700" />
-                </div>
-              ) : statusAlert.type === 'PENDING' ? (
-                <div className="bg-amber-100 text-amber-805 p-2 rounded-xl shrink-0">
-                  <ShieldAlert className="w-5 h-5 text-amber-700 animate-bounce" />
-                </div>
-              ) : statusAlert.type === 'REJECTED' ? (
-                <div className="bg-rose-100 text-rose-805 p-2 rounded-xl shrink-0">
-                  <Lock className="w-5 h-5 text-rose-700" />
-                </div>
-              ) : statusAlert.type === 'INFO' ? (
-                <div className="bg-blue-100 text-blue-805 p-2 rounded-xl shrink-0">
-                  <Sparkles className="w-5 h-5 text-blue-700" />
-                </div>
-              ) : (
-                <div className="bg-red-100 text-red-805 p-2 rounded-xl shrink-0">
-                  <ShieldAlert className="w-5 h-5 text-red-700" />
-                </div>
-              )}
-              <div className="space-y-1">
-                <span className={`font-black uppercase tracking-wider text-[10.5px] block ${
-                  statusAlert.type === 'SUCCESS' ? 'text-emerald-800' :
-                  statusAlert.type === 'PENDING' ? 'text-amber-800' :
-                  statusAlert.type === 'REJECTED' ? 'text-rose-800' :
-                  statusAlert.type === 'INFO' ? 'text-blue-800' : 'text-red-800'
-                }`}>
-                  {statusAlert.heading}
-                </span>
-                <p className="text-slate-700 font-medium leading-relaxed font-sans">{statusAlert.message}</p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Legacy fallback if alert state unmapped */}
-        {!statusAlert && statusMessage && (
-          <div className="p-4 rounded-xl text-xs bg-slate-50 text-slate-800 border-l-4 border-blue-500 leading-relaxed font-sans shadow-sm" id="auth-status-message-legacy">
-            <div className="flex items-start gap-2">
-              <ShieldCheck className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
-              <div>
-                <span className="font-bold text-slate-900 uppercase block mb-0.5">SECURITY BULLETIN & STATUS:</span>
-                {statusMessage}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ACCOUNT RECOVERY WORKFLOW VIEW */}
-        {isRecovering ? (
-          <div className="space-y-6 animate-fade-in" id="recovery-flow-container">
-            <div className="border-b border-slate-100 pb-2 flex justify-between items-center">
-              <div>
-                <h3 className="text-sm font-black text-slate-800 flex items-center gap-1.5 uppercase font-mono">
-                  <HelpCircle className="w-4.5 h-4.5 text-blue-600" /> Secure Account Recovery
-                </h3>
-                <p className="text-[10px] text-slate-400 mt-1 font-mono uppercase font-bold">
-                  Identify and restore trade account access safely
-                </p>
-              </div>
+        {/* Content Box */}
+        <div className="bg-white border border-slate-200 rounded-3xl shadow-md overflow-hidden relative" id="auth-main-panel">
+          
+          {/* Top Tabs switcher (Only if not recovering account) */}
+          {!isRecovering && (
+            <div className="flex border-b border-slate-100 bg-slate-50/80">
               <button
                 type="button"
-                onClick={() => { setIsRecovering(false); setStatusMessage(null); }}
-                className="text-[10px] bg-slate-100 font-mono font-bold text-slate-600 px-3 py-1 rounded-lg border border-slate-200 cursor-pointer hover:bg-slate-200 transition"
+                onClick={() => { setIsRegistering(false); clearAlert(); }}
+                className={`flex-1 py-4 text-xs font-extrabold uppercase tracking-wider duration-150 flex items-center justify-center gap-2 cursor-pointer border-b-2 ${
+                  !isRegistering 
+                    ? 'border-blue-600 bg-white text-blue-700 font-black' 
+                    : 'border-transparent text-slate-500 hover:text-slate-800'
+                }`}
+                id="tab-login-btn"
               >
-                ← Back to Login
+                <Lock className="w-3.5 h-3.5" />
+                Sign In / لاگ ان
+              </button>
+              <button
+                type="button"
+                onClick={() => { setIsRegistering(true); clearAlert(); }}
+                className={`flex-1 py-4 text-xs font-extrabold uppercase tracking-wider duration-150 flex items-center justify-center gap-2 cursor-pointer border-b-2 ${
+                  isRegistering 
+                    ? 'border-emerald-600 bg-white text-emerald-750 font-black' 
+                    : 'border-transparent text-slate-500 hover:text-slate-800'
+                }`}
+                id="tab-register-btn"
+              >
+                <Store className="w-3.5 h-3.5" />
+                Register Shop / رجسٹریشن
               </button>
             </div>
+          )}
 
-            {recoveryStep === 1 && (
-              <form onSubmit={handleVerifyEmailAndQuestion} className="space-y-4 font-mono text-xs">
-                <div className="space-y-1.5">
-                  <label className="text-slate-500 font-bold block uppercase">ENTER REGISTERED EMAIL ID</label>
-                  <div className="relative">
-                    <Mail className="absolute left-3.5 top-3 text-slate-400 w-4.5 h-4.5" />
-                    <input
-                      type="email"
-                      required
-                      placeholder="e.g. mrsaleem4781@gmail.com"
-                      value={recoveryEmail}
-                      onChange={(e) => setRecoveryEmail(e.target.value)}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-11 pr-3 py-3 text-xs text-slate-805 font-medium focus:outline-none focus:border-blue-500 focus:bg-white"
-                    />
+          <div className="p-6 md:p-8 space-y-6">
+            
+            {/* Status Alert Banner */}
+            {statusAlert && (
+              <div className="p-4 rounded-2xl border border-slate-150 text-xs bg-slate-50 leading-relaxed font-sans shadow-xs animate-fade-in" id="auth-status-message">
+                <div className="flex items-start gap-3">
+                  {statusAlert.type === 'SUCCESS' ? (
+                    <div className="bg-emerald-100 text-emerald-805 p-2 rounded-xl shrink-0">
+                      <ShieldCheck className="w-5 h-5 text-emerald-700" />
+                    </div>
+                  ) : statusAlert.type === 'PENDING' ? (
+                    <div className="bg-amber-100 text-amber-805 p-2 rounded-xl shrink-0">
+                      <ShieldAlert className="w-5 h-5 text-amber-750 animate-bounce" />
+                    </div>
+                  ) : statusAlert.type === 'REJECTED' ? (
+                    <div className="bg-rose-100 text-rose-805 p-2 rounded-xl shrink-0">
+                      <Lock className="w-5 h-5 text-rose-700" />
+                    </div>
+                  ) : statusAlert.type === 'INFO' ? (
+                    <div className="bg-blue-100 text-blue-805 p-2 rounded-xl shrink-0">
+                      <Sparkles className="w-5 h-5 text-blue-700" />
+                    </div>
+                  ) : (
+                    <div className="bg-red-100 text-red-805 p-2 rounded-xl shrink-0">
+                      <ShieldAlert className="w-5 h-5 text-red-700" />
+                    </div>
+                  )}
+                  <div className="space-y-0.5">
+                    <span className={`font-black uppercase tracking-wider text-[10.5px] block ${
+                      statusAlert.type === 'SUCCESS' ? 'text-emerald-800' :
+                      statusAlert.type === 'PENDING' ? 'text-amber-800' :
+                      statusAlert.type === 'REJECTED' ? 'text-rose-800' :
+                      statusAlert.type === 'INFO' ? 'text-blue-800' : 'text-red-800'
+                    }`}>
+                      {statusAlert.heading}
+                    </span>
+                    <p className="text-slate-655 font-semibold leading-relaxed font-sans">{statusAlert.message}</p>
                   </div>
-                </div>
-
-                <button
-                  type="submit"
-                  className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 px-4 rounded-xl text-xs uppercase tracking-wider duration-150 cursor-pointer shadow-xs font-mono"
-                >
-                  Locate Security Key Question
-                </button>
-              </form>
-            )}
-
-            {recoveryStep === 2 && dbUserForRecovery && (
-              <form onSubmit={handleVerifyAnswerAndResetPassword} className="space-y-4 font-mono text-xs">
-                <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-1.5">
-                  <span className="text-[10.5px] font-bold text-slate-400 uppercase">Assigned Security Question:</span>
-                  <p className="text-xs font-extrabold text-slate-850">
-                    "{selectedQuestionObj ? selectedQuestionObj.label : 'What city were you born in?'}"
-                  </p>
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-slate-500 font-bold block uppercase">YOUR ANSWER</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="Enter answer (answers are case-insensitive)"
-                    value={providedRecoveryAnswer}
-                    onChange={(e) => setProvidedRecoveryAnswer(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-3 text-xs text-slate-800 font-sans focus:outline-none focus:border-blue-500 focus:bg-white font-semibold"
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-slate-500 font-bold block uppercase">NEW PASSWORD (MIN 4 CHARS)</label>
-                  <input
-                    type="password"
-                    required
-                    placeholder="Set your new security password code"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-3 text-xs text-slate-800 font-sans focus:outline-none focus:border-blue-500 focus:bg-white font-semibold"
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl text-xs uppercase tracking-wider duration-155 cursor-pointer shadow-xs font-mono"
-                >
-                  Verify Answer & Update Password
-                </button>
-              </form>
-            )}
-
-            {recoveryStep === 3 && (
-              <div className="py-6 text-center space-y-4 font-mono">
-                <div className="w-12 h-12 bg-emerald-100 text-emerald-800 rounded-full flex items-center justify-center mx-auto">
-                  <ShieldCheck className="w-6 h-6" />
-                </div>
-                <h4 className="text-sm font-extrabold text-slate-800 uppercase">Credential Lock Recovered Successfully</h4>
-                <p className="text-xs text-slate-500 font-sans max-w-md mx-auto">
-                  Your compliance profile database password has been synchronized. Please return to the standard login.
-                </p>
-                <div className="pt-2">
-                  <button
-                    type="button"
-                    onClick={() => { setIsRecovering(false); setStatusMessage(null); }}
-                    className="bg-slate-900 hover:bg-slate-800 text-white font-extrabold py-2.5 px-6 rounded-xl text-xs uppercase tracking-wider duration-150 cursor-pointer font-mono"
-                  >
-                    Go to Sign In
-                  </button>
                 </div>
               </div>
             )}
-          </div>
-        ) : (
-          /* SECTION CONTENTS REGISTER OR LOGIN */
-          <div>
-            {!isRegistering ? (
-              /* LOGIN FLOW */
-              <div className="space-y-6 animate-fade-in" id="login-flow-container">
-                
-                {/* STAKEHOLDER PRESETS: Copies Email for secure verification */}
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-bold font-mono text-slate-400 block uppercase tracking-wider">
-                      Preset System Portals (Copies Email to verify with Password)
-                    </span>
-                    <span className="text-[9px] bg-slate-100 px-2 py-0.5 rounded font-black text-slate-500 font-mono">CREDENTIAL REQ</span>
+
+            {/* Account Recovery Flow */}
+            {isRecovering ? (
+              <div className="space-y-6 animate-fade-in" id="recovery-flow-container">
+                <div className="border-b border-slate-100 pb-3 flex justify-between items-center">
+                  <div>
+                    <h3 className="text-sm font-bold text-slate-800 flex items-center gap-1.5 uppercase">
+                      <HelpCircle className="w-4 h-4 text-blue-600" /> Recover Password / ریسٹ
+                    </h3>
                   </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                    
-                    {/* Seed: Shopkeeper Card */}
-                    <button
-                      type="button"
-                      onClick={() => handlePresetLogin('usr-shopkeeper-saleem')}
-                      className="group bg-slate-50 hover:bg-emerald-50/40 border border-slate-200/80 hover:border-emerald-300 rounded-2xl p-4 text-left duration-200 shadow-2xs hover:shadow-xs flex flex-col justify-between h-34 cursor-pointer relative overflow-hidden"
-                    >
-                      <div className="absolute right-0 top-0 translate-x-2 -translate-y-2 w-12 h-12 bg-emerald-500/5 rounded-full group-hover:scale-125 duration-300"></div>
-                      <div className="flex items-center justify-between w-full">
-                        <div className="bg-emerald-100 text-emerald-800 p-2 rounded-xl group-hover:bg-emerald-600 group-hover:text-white duration-150">
-                          <Store className="w-4.5 h-4.5" />
-                        </div>
-                        {getRoleBadge('SHOPKEEPER')}
-                      </div>
-                      <div className="mt-4">
-                        <h4 className="text-xs font-black text-slate-800 group-hover:text-slate-900 leading-tight">Muhammad Saleem</h4>
-                        <p className="text-[10px] text-slate-500 mt-1">Authorized Shopkeeper Saleem Communications</p>
-                      </div>
-                    </button>
-
-                    {/* Seed: Market Inspector Card */}
-                    <button
-                      type="button"
-                      onClick={() => handlePresetLogin('usr-mktadmin-quaid')}
-                      className="group bg-slate-50 hover:bg-amber-50/40 border border-slate-200/80 hover:border-amber-300 rounded-2xl p-4 text-left duration-200 shadow-2xs hover:shadow-xs flex flex-col justify-between h-34 cursor-pointer relative overflow-hidden"
-                    >
-                      <div className="absolute right-0 top-0 translate-x-2 -translate-y-2 w-12 h-12 bg-amber-500/5 rounded-full group-hover:scale-125 duration-300"></div>
-                      <div className="flex items-center justify-between w-full">
-                        <div className="bg-amber-100 text-amber-800 p-2 rounded-xl group-hover:bg-amber-600 group-hover:text-white duration-150">
-                          <User className="w-4.5 h-4.5" />
-                        </div>
-                        {getRoleBadge('MARKET_ADMIN')}
-                      </div>
-                      <div className="mt-4">
-                        <h4 className="text-xs font-black text-slate-800 group-hover:text-slate-900 leading-tight">Quaidabad Admin</h4>
-                        <p className="text-[10px] text-slate-500 mt-1">Regional Market Inspector Headquarters</p>
-                      </div>
-                    </button>
-
-                    {/* Seed: Super Admin Card */}
-                    <button
-                      type="button"
-                      onClick={() => handlePresetLogin('usr-superadmin')}
-                      className="group bg-slate-50 hover:bg-red-50/30 border border-slate-200/80 hover:border-red-300 rounded-2xl p-4 text-left duration-200 shadow-2xs hover:shadow-xs flex flex-col justify-between h-34 cursor-pointer relative overflow-hidden"
-                    >
-                      <div className="absolute right-0 top-0 translate-x-2 -translate-y-2 w-12 h-12 bg-red-400/5 rounded-full group-hover:scale-125 duration-300"></div>
-                      <div className="flex items-center justify-between w-full">
-                        <div className="bg-red-100 text-red-800 p-2 rounded-xl group-hover:bg-red-600 group-hover:text-white duration-150">
-                          <ShieldCheck className="w-4.5 h-4.5" />
-                        </div>
-                        {getRoleBadge('SUPER_ADMIN')}
-                      </div>
-                      <div className="mt-4">
-                        <h4 className="text-xs font-black text-slate-800 group-hover:text-slate-900 leading-tight">National Bureau Admin</h4>
-                        <p className="text-[10px] text-slate-500 mt-1">Federal Command Oversight Dashboard</p>
-                      </div>
-                    </button>
-
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => { setIsRecovering(false); clearAlert(); }}
+                    className="text-[10px] bg-slate-100 font-bold text-slate-600 px-3 py-1.5 rounded-lg border border-slate-200 cursor-pointer hover:bg-slate-200 transition"
+                  >
+                    ← Back to Login
+                  </button>
                 </div>
 
-                {/* CUSTOM REGISTERED USERS QUICK LIST */}
-                {customUsers.length > 0 && (
-                  <div className="space-y-2 pt-2 border-t border-slate-100">
-                    <span className="text-[10px] font-bold font-mono text-slate-400 block uppercase tracking-wider">
-                      Registered Local Accounts (Select Email and Enter Password)
-                    </span>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                      {customUsers.map((user) => (
-                        <button
-                          key={user.id}
-                          type="button"
-                          onClick={() => handlePresetLogin(user.id)}
-                          className="bg-slate-50/60 hover:bg-emerald-50/30 border border-slate-200/70 hover:border-emerald-300 rounded-xl p-3 flex items-center justify-between duration-150 cursor-pointer"
-                        >
-                          <div className="flex items-center gap-2">
-                            <div className="bg-emerald-100/80 text-emerald-700 p-1.5 rounded-lg">
-                              <Users className="w-3.5 h-3.5" />
-                            </div>
-                            <div className="text-left">
-                              <h5 className="text-[11px] font-bold text-slate-800 leading-tight">{user.name}</h5>
-                              <span className="text-[9px] text-slate-400 font-mono">{user.email}</span>
-                            </div>
-                          </div>
-                          <div className="flex flex-col items-end gap-1">
-                            <span className="text-[8px] bg-slate-200/70 text-slate-600 font-extrabold px-1.5 py-0.5 rounded font-mono uppercase tracking-wider">
-                              {user.role}
-                            </span>
-                            <span className={`text-[8.5px] font-bold ${user.status === 'APPROVED' ? 'text-emerald-600' : 'text-slate-400'}`}>
-                              ● {user.status}
-                            </span>
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* SECURED SIGN IN FOR ALL USERS */}
-                <div className="pt-4 border-t border-slate-100">
-                  <form onSubmit={handleCustomEmailLogin} className="space-y-4 font-sans">
+                {recoveryStep === 1 && (
+                  <form onSubmit={handleVerifyEmailAndQuestion} className="space-y-4">
                     <div className="space-y-1">
-                      <h4 className="text-xs font-black text-slate-700 flex items-center gap-1.5 font-mono uppercase">
-                        Secure Authentication Console
-                      </h4>
-                      <p className="text-[10px] text-slate-500">
-                        Type your registered credentials. Bypassing verification fields is strictly blocked on compliance protocols.
-                      </p>
-                    </div>
-                    
-                    <div className="space-y-3">
+                      <label className="text-xs font-bold text-slate-700 block">Apna Registered Email Likhen / درج کریں</label>
                       <div className="relative">
-                        <Mail className="absolute left-3.5 top-3 text-slate-400 w-4 h-4" />
+                        <Mail className="absolute left-3 top-3 text-slate-400 w-4 h-4" />
                         <input
                           type="email"
                           required
-                          value={enteredEmail}
-                          onChange={(e) => setEnteredEmail(e.target.value)}
-                          placeholder="Your email (e.g. mrsaleem4781@gmail.com)"
-                          className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-3 py-2.5 text-xs text-slate-800 focus:outline-none focus:border-slate-450 focus:bg-white font-medium font-sans"
+                          placeholder="e.g. mrsaleem4781@gmail.com"
+                          value={recoveryEmail}
+                          onChange={(e) => setRecoveryEmail(e.target.value)}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2.5 text-xs text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white font-medium"
                         />
                       </div>
+                    </div>
 
-                      <div className="relative">
-                        <Lock className="absolute left-3.5 top-3 text-slate-400 w-4 h-4" />
-                        <input
-                          type="password"
-                          required
-                          value={enteredPassword}
-                          onChange={(e) => setEnteredPassword(e.target.value)}
-                          placeholder="Enter account security password (e.g. saleem123)"
-                          className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-3 py-2.5 text-xs text-slate-800 focus:outline-none focus:border-slate-450 focus:bg-white font-medium"
-                        />
+                    <button
+                      type="submit"
+                      className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 px-4 rounded-xl text-xs uppercase duration-150 cursor-pointer"
+                    >
+                      Find Security Question / سیکیورٹی سوال تلاش کریں
+                    </button>
+                  </form>
+                )}
+
+                {recoveryStep === 2 && dbUserForRecovery && (
+                  <form onSubmit={handleVerifyAnswerAndResetPassword} className="space-y-4">
+                    <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-1">
+                      <span className="text-[10px] font-bold text-slate-400 uppercase">Sawaal / Security Question:</span>
+                      <p className="text-xs font-extrabold text-slate-800">
+                        {selectedQuestionObj ? selectedQuestionObj.label : 'What city were you born in?'}
+                      </p>
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-xs font-bold text-slate-700 block">Jawaab Likhen / Answer</label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="Security question answer"
+                        value={providedRecoveryAnswer}
+                        onChange={(e) => setProvidedRecoveryAnswer(e.target.value)}
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white font-semibold"
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-xs font-bold text-slate-700 block">Naya Password / New Password (min 4 chars)</label>
+                      <input
+                        type="password"
+                        required
+                        placeholder="Enter your new password"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white font-semibold"
+                      />
+                    </div>
+
+                    <button
+                      type="submit"
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-4 rounded-xl text-xs uppercase duration-150 cursor-pointer"
+                    >
+                      Reset Password / محفوظ کریں
+                    </button>
+                  </form>
+                )}
+
+                {recoveryStep === 3 && (
+                  <div className="py-4 text-center space-y-3">
+                    <div className="w-10 h-10 bg-emerald-100 text-emerald-800 rounded-full flex items-center justify-center mx-auto">
+                      <ShieldCheck className="w-5 h-5" />
+                    </div>
+                    <h4 className="text-xs font-black text-slate-800 uppercase">Password Updated / پاس ورڈ تبدیل ہو گیا</h4>
+                    <p className="text-xs text-slate-500 max-w-xs mx-auto leading-relaxed">
+                      Now you can easily return and sign in with your brand new password.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => { setIsRecovering(false); clearAlert(); }}
+                      className="bg-slate-900 hover:bg-slate-800 text-white font-bold py-2 px-4 rounded-lg text-xs uppercase cursor-pointer"
+                    >
+                      Sign In Now
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              /* Normal sign/register */
+              <div>
+                {!isRegistering ? (
+                  /* SIMPLIFIED LOGIN CARD */
+                  <div className="space-y-6 animate-fade-in" id="login-flow-container">
+                    
+                    {/* Compact Login Form */}
+                    <form onSubmit={handleCustomEmailLogin} className="space-y-4">
+                      
+                      <div className="space-y-1">
+                        <label className="text-xs font-bold text-slate-700 block">Email Address / ای میل</label>
+                        <div className="relative">
+                          <Mail className="absolute left-3 top-3.5 text-slate-400 w-4 h-4" />
+                          <input
+                            type="email"
+                            required
+                            value={enteredEmail}
+                            onChange={(e) => setEnteredEmail(e.target.value)}
+                            placeholder="e.g. mrsaleem4781@gmail.com"
+                            className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2.5 text-xs text-slate-850 font-medium focus:outline-none focus:border-blue-500 focus:bg-white"
+                          />
+                        </div>
                       </div>
 
-                      <div className="flex justify-between items-center pt-1">
+                      <div className="space-y-1">
+                        <label className="text-xs font-bold text-slate-700 block">Password / پاس ورڈ</label>
+                        <div className="relative">
+                          <Lock className="absolute left-3 top-3.5 text-slate-400 w-4 h-4" />
+                          <input
+                            type="password"
+                            required
+                            value={enteredPassword}
+                            onChange={(e) => setEnteredPassword(e.target.value)}
+                            placeholder="Enter password"
+                            className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2.5 text-xs text-slate-850 font-medium focus:outline-none focus:border-blue-500 focus:bg-white"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Controls Row */}
+                      <div className="flex items-center justify-between pt-1">
                         <button
                           type="button"
                           onClick={handleStartRecovery}
-                          className="text-[10.5px] hover:underline text-blue-600 font-mono font-bold cursor-pointer"
+                          className="text-[11px] text-blue-600 hover:underline font-bold cursor-pointer"
                         >
-                          🔑 Forgot Password / Recover Account?
+                          Forgot Password?
                         </button>
 
                         <button
                           type="submit"
-                          className="bg-slate-900 hover:bg-slate-800 text-white font-extrabold px-6 py-2.5 rounded-xl text-xs font-mono uppercase tracking-wide flex items-center gap-1.5 duration-150 cursor-pointer shadow-xs active:scale-[0.98]"
+                          className="bg-blue-600 hover:bg-blue-700 text-white font-extrabold px-6 py-2.5 rounded-xl text-xs uppercase tracking-wide flex items-center gap-1.5 duration-150 cursor-pointer shadow-sm active:scale-[0.98]"
                           id="btn-email-signin"
                         >
-                          Sign In Safely
-                          <ArrowRight className="w-3.5 h-3.5 text-emerald-400" />
+                          Sign In / داخل ہوں
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </form>
+
+                    {/* SUPER FRIENDLY QUICK LOGINS */}
+                    <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200/60 space-y-3">
+                      <span className="text-[10px] font-bold text-slate-400 block uppercase tracking-wider font-mono">
+                        Quick Demo Accounts / فوری لاگ ان کرنے کے لیے کلک کریں:
+                      </span>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <button
+                          type="button"
+                          onClick={() => handlePresetLogin('usr-shopkeeper-saleem')}
+                          className="flex items-center gap-2 bg-white hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 rounded-xl p-2.5 text-left duration-200 cursor-pointer shadow-2xs text-xs font-semibold"
+                        >
+                          <div className="bg-emerald-100 text-emerald-805 p-1.5 rounded-lg shrink-0">
+                            <Store className="w-4 h-4 text-emerald-700" />
+                          </div>
+                          <div>
+                            <p className="font-extrabold text-slate-800 text-[11px] leading-tight">Saleem Shopkeeper</p>
+                            <p className="text-[10px] text-slate-400 font-mono italic">Password: saleem123</p>
+                          </div>
+                        </button>
+                        
+                        <button
+                          type="button"
+                          onClick={() => handlePresetLogin('usr-superadmin')}
+                          className="flex items-center gap-2 bg-white hover:bg-blue-550/5 border border-slate-200 hover:border-blue-400 rounded-xl p-2.5 text-left duration-200 cursor-pointer shadow-2xs text-xs font-semibold"
+                        >
+                          <div className="bg-blue-100 text-blue-805 p-1.5 rounded-lg shrink-0">
+                            <ShieldCheck className="w-4 h-4 text-blue-700" />
+                          </div>
+                          <div>
+                            <p className="font-extrabold text-slate-800 text-[11px] leading-tight">Super Admin Bureau</p>
+                            <p className="text-[10px] text-slate-400 font-mono idalic">Password: admin123</p>
+                          </div>
                         </button>
                       </div>
                     </div>
-                  </form>
-                </div>
 
-                {/* SECURED REGULATORY ENVIRONMENT INFO */}
-                <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200/50 space-y-2.5">
-                  <h5 className="text-[11px] font-bold text-slate-700 flex items-center gap-1.5 font-mono uppercase tracking-wide">
-                    <ShieldCheck className="w-4 h-4 text-blue-600" /> STRICT SECURED AUTHENTICATION RULES
-                  </h5>
-                  <p className="text-[10px] text-slate-500 leading-normal">
-                    As explicitly configured, zero entry permissions are validated without correct email and matching encryption passwords. New Shopkeeper registrations start as **PENDING** until vetted by a regional Inspector.
-                  </p>
-                </div>
-
-              </div>
-            ) : (
-              /* REGISTRATION FORM */
-              <form onSubmit={handleRegister} className="space-y-4 animate-fade-in" id="reg-form-container">
-                <div className="border-b border-slate-100 pb-2">
-                  <h3 className="text-sm font-black text-slate-800 flex items-center gap-1.5 uppercase font-mono">
-                    <Store className="w-4.5 h-4.5 text-emerald-700" /> Create Trade Compliance Account
-                  </h3>
-                  <p className="text-[10px] text-slate-400 mt-1 font-medium font-mono uppercase">
-                    Submit merchant data to register unique device compliance profile
-                  </p>
-                </div>
-
-                {/* Name and Email */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <label className="text-[10px] text-slate-400 font-bold uppercase font-mono tracking-wider block">Full Name (Matching ID Card)</label>
-                    <div className="relative">
-                      <User className="absolute left-3 top-2.5 text-slate-400 w-4 h-4" />
-                      <input
-                        type="text"
-                        required
-                        value={regName}
-                        onChange={(e) => setRegName(e.target.value)}
-                        placeholder="e.g. Asif Raza"
-                        className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-slate-500 focus:bg-white transition-all font-sans"
-                      />
+                    {/* Simple Helpful Rule Note */}
+                    <div className="flex items-center gap-2 text-[11px] text-slate-400 leading-normal border-t border-slate-100 pt-3">
+                      <ShieldCheck className="w-4 h-4 text-blue-500 shrink-0" />
+                      <p>
+                        New registrations must be approved by the Bureau Admin before gaining access.
+                      </p>
                     </div>
-                  </div>
 
-                  <div className="space-y-1">
-                    <label className="text-[10px] text-slate-400 font-bold uppercase font-mono tracking-wider block">Email Address (Login ID)</label>
-                    <div className="relative">
-                      <Mail className="absolute left-3 top-2.5 text-slate-400 w-4 h-4" />
-                      <input
-                        type="email"
-                        required
-                        value={regEmail}
-                        onChange={(e) => setRegEmail(e.target.value)}
-                        placeholder="e.g. asif@gmail.com"
-                        className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-slate-500 focus:bg-white transition-all font-sans"
-                      />
+                  </div>
+                ) : (
+                  /* SIMPLIFIED CUSTOM REGISTRATION FORM */
+                  <form onSubmit={handleRegister} className="space-y-4 animate-fade-in" id="reg-form-container">
+                    
+                    {/* Name and Email */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div className="space-y-1">
+                        <label className="text-xs font-bold text-slate-700 block">Full Name / پورا نام</label>
+                        <div className="relative">
+                          <User className="absolute left-3 top-3 text-slate-400 w-4 h-4" />
+                          <input
+                            type="text"
+                            required
+                            value={regName}
+                            onChange={(e) => setRegName(e.target.value)}
+                            placeholder="e.g. Asif Raza"
+                            className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-emerald-500 focus:bg-white font-medium"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="text-xs font-bold text-slate-700 block">Email / ای میل</label>
+                        <div className="relative">
+                          <Mail className="absolute left-3 top-3 text-slate-400 w-4 h-4" />
+                          <input
+                            type="email"
+                            required
+                            value={regEmail}
+                            onChange={(e) => setRegEmail(e.target.value)}
+                            placeholder="e.g. asif@gmail.com"
+                            className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-emerald-500 focus:bg-white font-medium"
+                          />
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
 
-                {/* Password and Security Question */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 font-mono select-none">
-                  <div className="space-y-1">
-                    <label className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Account Secure Password</label>
-                    <div className="relative">
-                      <Lock className="absolute left-3 top-2.5 text-slate-400 w-4 h-4" />
-                      <input
-                        type="password"
-                        required
-                        value={regPassword}
-                        onChange={(e) => setRegPassword(e.target.value)}
-                        placeholder="Set password (min 4 chars)"
-                        className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-slate-500 focus:bg-white font-sans font-medium"
-                      />
+                    {/* Password and Contact */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div className="space-y-1">
+                        <label className="text-xs font-bold text-slate-700 block">Password / پاس ورڈ</label>
+                        <div className="relative">
+                          <Lock className="absolute left-3 top-3 text-slate-400 w-4 h-4" />
+                          <input
+                            type="password"
+                            required
+                            value={regPassword}
+                            onChange={(e) => setRegPassword(e.target.value)}
+                            placeholder="Set password (min 4 chars)"
+                            className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-emerald-500 focus:bg-white font-medium"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="text-xs font-bold text-slate-700 block">Mobile No / فون نمبر</label>
+                        <div className="relative">
+                          <Phone className="absolute left-3 top-3 text-slate-400 w-4 h-4" />
+                          <input
+                            type="text"
+                            required
+                            value={regContact}
+                            onChange={(e) => setRegContact(e.target.value)}
+                            placeholder="e.g. 03001234567"
+                            className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-emerald-500 focus:bg-white font-medium"
+                          />
+                        </div>
+                      </div>
                     </div>
-                  </div>
 
-                  <div className="space-y-1">
-                    <div className="flex justify-between">
-                      <label className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Security Question (Recovery)</label>
+                    {/* CNIC and Account Type */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div className="space-y-1">
+                        <label className="text-xs font-bold text-slate-700 block">CNIC Card No / شناختی کارڈ</label>
+                        <div className="relative">
+                          <IdCard className="absolute left-3 top-3 text-slate-400 w-4 h-4" />
+                          <input
+                            type="text"
+                            required
+                            value={regCnic}
+                            onChange={(e) => setRegCnic(formatCNICInput(e.target.value))}
+                            placeholder="e.g. 42101-1234567-3"
+                            maxLength={15}
+                            className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-emerald-500 focus:bg-white font-medium"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="text-xs font-bold text-slate-700 block">Who are you? / اکاؤنٹ کی قسم</label>
+                        <select
+                          value={regRole}
+                          onChange={(e) => setRegRole(e.target.value as UserRole)}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-emerald-500 cursor-pointer font-semibold"
+                        >
+                          <option value="SHOPKEEPER">🛒 Shopkeeper (Dukandar)</option>
+                          <option value="SUPER_ADMIN">🛡️ Super Admin (Manager/Admin)</option>
+                        </select>
+                      </div>
                     </div>
-                    <select
-                      value={regSecurityQuestion}
-                      onChange={(e) => setRegSecurityQuestion(e.target.value)}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-slate-500 cursor-pointer font-sans"
-                    >
-                      {SECURITY_QUESTIONS.map(q => (
-                        <option key={q.value} value={q.value}>{q.label}</option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
 
-                {/* Security Question Answer and Contact */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-1 font-mono">
-                    <label className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Security Answer (Case-Insensitive)</label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="Answer to chosen question"
-                      value={regSecurityAnswer}
-                      onChange={(e) => setRegSecurityAnswer(e.target.value)}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-slate-500 focus:bg-white font-sans"
-                    />
-                  </div>
+                    {/* Market selection (not for super admin) */}
+                    {regRole !== 'SUPER_ADMIN' && (
+                      <div className="space-y-1">
+                        <label className="text-xs font-bold text-slate-700 block">Select Market / مارکیٹ</label>
+                        <div className="relative">
+                          <Building className="absolute left-3 top-2.5 text-slate-400 w-4 h-4 mr-0.5" />
+                          <select
+                            value={regMarketId}
+                            onChange={(e) => setRegMarketId(e.target.value)}
+                            required
+                            className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-emerald-500 cursor-pointer font-medium"
+                          >
+                            <option value="">Select market hub...</option>
+                            {markets.map((m) => (
+                              <option key={m.id} value={m.id}>{m.name}</option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+                    )}
 
-                  <div className="space-y-1 font-mono">
-                    <label className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Contact Number</label>
-                    <div className="relative">
-                      <Phone className="absolute left-3 top-2.5 text-slate-400 w-4 h-4" />
-                      <input
-                        type="text"
-                        required
-                        value={regContact}
-                        onChange={(e) => setRegContact(e.target.value)}
-                        placeholder="e.g. 03001234567"
-                        className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-slate-500 focus:bg-white transition-all"
-                      />
+                    {/* Shop Details Context for Shopkeeper */}
+                    {regRole === 'SHOPKEEPER' && (
+                      <div className="p-4 bg-slate-50 rounded-2xl border border-dashed border-slate-200 space-y-3">
+                        <div className="space-y-1">
+                          <label className="text-xs font-bold text-slate-700 block">Shop Business Name / دکان کا نام</label>
+                          <input
+                            type="text"
+                            required
+                            value={regShopName}
+                            onChange={(e) => setRegShopName(e.target.value)}
+                            placeholder="e.g. Al-Razzaq Mobile Zone"
+                            className="w-full bg-white border border-slate-250 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-emerald-500 font-medium"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-xs font-bold text-slate-700 block">Shop Floor Address / دکان کا پتہ</label>
+                          <input
+                            type="text"
+                            required
+                            value={regShopAddress}
+                            onChange={(e) => setRegShopAddress(e.target.value)}
+                            placeholder="e.g. Shop G-15, Ground Floor, Quaidabad Market"
+                            className="w-full bg-white border border-slate-250 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-emerald-500 font-medium"
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Security Question Section (Simple and neat) */}
+                    <div className="bg-slate-50/50 p-4 rounded-xl border border-slate-150 space-y-3">
+                      <p className="text-[11px] font-bold text-slate-500 uppercase">Recovery Security Setup / سیکیورٹی سوال:</p>
+                      
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div className="space-y-1">
+                          <label className="text-[11px] text-slate-500 block">Security Question</label>
+                          <select
+                            value={regSecurityQuestion}
+                            onChange={(e) => setRegSecurityQuestion(e.target.value)}
+                            className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-emerald-500 cursor-pointer font-medium"
+                          >
+                            {SECURITY_QUESTIONS.map(q => (
+                              <option key={q.value} value={q.value}>{q.label}</option>
+                            ))}
+                          </select>
+                        </div>
+
+                        <div className="space-y-1">
+                          <label className="text-[11px] text-slate-500 block">Your Answer</label>
+                          <input
+                            type="text"
+                            required
+                            placeholder="Type security answer"
+                            value={regSecurityAnswer}
+                            onChange={(e) => setRegSecurityAnswer(e.target.value)}
+                            className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-emerald-500 font-medium"
+                          />
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
 
-                {/* CNIC and System Role */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 font-mono">
-                  <div className="space-y-1">
-                    <label className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">CNIC / Citizen Card No. (Unique)</label>
-                    <div className="relative">
-                      <IdCard className="absolute left-3 top-2.5 text-slate-400 w-4 h-4" />
-                      <input
-                        type="text"
-                        required
-                        value={regCnic}
-                        onChange={(e) => setRegCnic(formatCNICInput(e.target.value))}
-                        placeholder="e.g. 42101-1234567-3"
-                        maxLength={15}
-                        className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-slate-500 focus:bg-white transition-all"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-1">
-                    <label className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">System Role Type</label>
-                    <select
-                      value={regRole}
-                      onChange={(e) => setRegRole(e.target.value as UserRole)}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-808 focus:outline-none focus:border-slate-500 cursor-pointer font-sans"
-                    >
-                      <option value="SHOPKEEPER">🛒 Market Shopkeeper (Merchant)</option>
-                      <option value="MARKET_ADMIN">👮 Market Regional Inspector (Inspector)</option>
-                      <option value="SUPER_ADMIN">🛡️ CPLC National Super Admin</option>
-                    </select>
-                  </div>
-                </div>
-
-                {/* Market Hub selection (Only for non-Super Admins) */}
-                {regRole !== 'SUPER_ADMIN' && (
-                  <div className="space-y-1 font-mono">
-                    <label className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Select Assigned Market Hub</label>
-                    <div className="relative">
-                      <Building className="absolute left-3 top-2 text-slate-400 w-4 h-4" />
-                      <select
-                        value={regMarketId}
-                        onChange={(e) => setRegMarketId(e.target.value)}
-                        required
-                        className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-slate-500 cursor-pointer font-sans"
+                    {/* Action buttons */}
+                    <div className="space-y-2 pt-3">
+                      <button
+                        type="submit"
+                        className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-3 px-4 rounded-xl shadow-sm text-xs uppercase duration-150 cursor-pointer text-center"
+                        id="btn-registrations-ledger"
                       >
-                        <option value="">Choose Local Hub...</option>
-                        {markets.map((m) => (
-                          <option key={m.id} value={m.id}>{m.name}</option>
-                        ))}
-                      </select>
+                        Register Shop Account / اکاؤنٹ بنائیں
+                      </button>
+                      
+                      <button
+                        type="button"
+                        onClick={() => { setIsRegistering(false); clearAlert(); }}
+                        className="w-full bg-transparent hover:bg-slate-50 text-slate-500 font-bold py-2 px-4 rounded-xl text-xs uppercase duration-150 cursor-pointer flex items-center justify-center gap-1.5"
+                        id="btn-return-login"
+                      >
+                        <ArrowLeft className="w-3.5 h-3.5" />
+                        Cancel and return to login
+                      </button>
                     </div>
-                  </div>
-                )}
 
-                {/* Shop Details Context for Shopkeeper */}
-                {regRole === 'SHOPKEEPER' && (
-                  <div className="space-y-3 pt-3 border-t border-dashed border-slate-200">
-                    <div className="space-y-1">
-                      <label className="text-[10px] text-slate-400 font-bold uppercase font-mono tracking-wider block">Proposed Shop Trade Name</label>
-                      <input
-                        type="text"
-                        required
-                        value={regShopName}
-                        onChange={(e) => setRegShopName(e.target.value)}
-                        placeholder="e.g. Al-Razzaq Mobile Zone"
-                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-slate-550 focus:bg-white transition-all font-sans"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-[10px] text-slate-400 font-bold uppercase font-mono tracking-wider block">Shop Floor Address & Booth number</label>
-                      <input
-                        type="text"
-                        required
-                        value={regShopAddress}
-                        onChange={(e) => setRegShopAddress(e.target.value)}
-                        placeholder="e.g. Shop G-15, Ground Floor, Quaidabad Mobile Market, Karachi"
-                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-slate-550 focus:bg-white transition-all font-sans"
-                      />
-                    </div>
-                  </div>
+                  </form>
                 )}
-
-                {/* Buttons */}
-                <div className="space-y-2.5 pt-3 border-t border-slate-100">
-                  <button
-                    type="submit"
-                    className="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold py-3 px-4 rounded-xl shadow-xs text-xs font-mono uppercase tracking-wider duration-150 cursor-pointer text-center"
-                    id="btn-registrations-ledger"
-                  >
-                    Submit Trade Registration Ledger
-                  </button>
-                  
-                  <button
-                    type="button"
-                    onClick={() => { setIsRegistering(false); setStatusMessage(null); }}
-                    className="w-full bg-transparent hover:bg-slate-50 text-slate-650 font-bold py-2 px-4 rounded-xl text-xs font-mono uppercase tracking-wide duration-150 cursor-pointer flex items-center justify-center gap-1.5"
-                    id="btn-return-login"
-                  >
-                    <ArrowLeft className="w-3.5 h-3.5" />
-                    Return to Login Options
-                  </button>
-                </div>
-              </form>
+              </div>
             )}
+
           </div>
-        )}
+
+        </div>
+
       </div>
     </div>
   );
