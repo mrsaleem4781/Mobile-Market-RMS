@@ -18,7 +18,9 @@ import {
   Sliders,
   Sparkles,
   ClipboardCheck,
-  Building
+  Building,
+  ShieldCheck,
+  Calendar
 } from 'lucide-react';
 import { db } from '../offline/db';
 import { syncEngine, SyncState } from '../sync/syncEngine';
@@ -219,24 +221,37 @@ export default function Layout({
     return items;
   };
 
+  const formattedDate = new Date().toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col font-sans" id="layout-root">
       {/* 1. Header Row */}
       <header className="h-16 bg-white border-b border-slate-200 px-4 md:px-8 flex items-center justify-between sticky top-0 z-50 shadow-xs" id="app-header">
         <div className="flex items-center gap-3">
-          <div className="bg-emerald-600 text-white p-2 rounded-lg shadow-sm">
-            <Smartphone className="w-5 h-5" />
+          <div className="bg-blue-600 text-white p-2 rounded-xl shadow-md shadow-blue-500/10 shrink-0">
+            <ShieldCheck className="w-5 h-5" />
           </div>
           <div>
-            <h1 className="text-base font-bold tracking-tight text-slate-900 flex items-center gap-1.5 leading-none">
-              KMEDA <span className="text-emerald-700 font-extrabold text-[10px] bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200/50">QUAIDABAD PORTAL</span>
+            <h1 className="text-sm font-black tracking-tight text-slate-900 flex items-center gap-1.5 leading-none">
+              KMEDA <span className="text-blue-700 font-extrabold text-[10px] bg-blue-50/70 px-2 py-0.5 rounded border border-blue-200">PORTAL</span>
             </h1>
-            <p className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold font-mono mt-0.5">Karachi Mobile & Electronics Dealers Association</p>
+            <p className="text-[9.5px] uppercase tracking-wider text-slate-400 font-bold font-sans mt-0.5">Mobile Compliance Audit System</p>
           </div>
         </div>
 
         {/* Sync Controls and State Badges */}
         <div className="flex items-center gap-2 md:gap-4">
+          {/* Dynamic Figma Calendar Date Badge */}
+          <div className="hidden lg:flex items-center gap-2 bg-slate-100/50 border border-slate-205 px-3 py-1.5 rounded-xl text-xs text-slate-500 font-semibold font-sans">
+            <Calendar className="w-3.5 h-3.5 text-blue-500" />
+            <span>{formattedDate}</span>
+          </div>
+
           {/* Online/Offline Status Indicator */}
           <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border ${online ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200'}`} id="network-badge">
             <span className="relative flex h-2 w-2">
@@ -270,7 +285,7 @@ export default function Layout({
           {deferredPrompt && (
             <button
               onClick={handleInstallApp}
-              className="flex items-center gap-1.5 text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-bold border border-emerald-500 px-3 py-1.5 rounded-lg cursor-pointer duration-150 shadow-xs uppercase font-mono select-none"
+              className="flex items-center gap-1.5 text-xs bg-blue-600 hover:bg-blue-700 text-white font-bold border border-blue-500 px-3 py-1.5 rounded-lg cursor-pointer duration-150 shadow-xs uppercase font-mono select-none"
               id="btn-pwa-install-header"
             >
               <Smartphone className="w-3.5 h-3.5" />
@@ -325,10 +340,21 @@ export default function Layout({
       {/* 3. Main Workspace Container */}
       <div className="flex-1 flex flex-col md:flex-row" id="workspace-layout">
         {/* Sidebar Navigation */}
-        <aside className="w-full md:w-64 border-r border-slate-200 bg-white flex flex-col justify-between py-6 px-4 shrink-0" id="sidebar-nav">
+        <aside className="w-full md:w-64 border-r border-slate-255 bg-white flex flex-col justify-between py-6 px-4 shrink-0" id="sidebar-nav">
           <div className="space-y-6">
+            {/* Medicare EMR signature brand avatar header block */}
+            <div className="flex items-center gap-3 px-1 border-b border-slate-100 pb-5">
+              <div className="bg-blue-600 text-white h-10 w-10 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/10 shrink-0">
+                <ShieldCheck className="w-5 h-5" />
+              </div>
+              <div className="min-w-0">
+                <h2 className="text-xs font-black text-slate-900 uppercase tracking-tight leading-tight truncate">Compliance EMR</h2>
+                <span className="text-[10px] text-blue-500 font-bold block leading-none mt-0.5">KMEDA Karachi</span>
+              </div>
+            </div>
+
             {/* User card profile */}
-            <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 shadow-xs flex flex-col gap-1.5">
+            <div className="bg-slate-100/50 p-4 rounded-xl border border-slate-205 shadow-xs flex flex-col gap-1.5">
               <span className="text-[9px] text-slate-400 font-bold tracking-widest uppercase block font-mono">Identity Profile</span>
               <span className="text-xs font-bold text-slate-800 block truncate">{currentUser?.name}</span>
               <span className={`text-[10px] font-bold px-2 py-0.5 rounded self-start ${
@@ -344,8 +370,8 @@ export default function Layout({
             </div>
 
             {/* Menu Items */}
-            <nav className="space-y-1" id="navigation-list">
-              <span className="text-[10px] text-slate-400 font-bold tracking-widest uppercase px-3 block mb-2 font-mono">Workstation Scope</span>
+            <nav className="space-y-1.5" id="navigation-list">
+              <span className="text-[9.5px] text-slate-400 font-bold tracking-widest uppercase px-3 block mb-2 font-mono">Workstation Scope</span>
               {getNavItems().map((item) => {
                 const IconComponent = item.icon;
                 const isActive = activeTab === item.id;
@@ -353,13 +379,13 @@ export default function Layout({
                   <button
                     key={item.id}
                     onClick={() => setActiveTab(item.id)}
-                    className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-semibold duration-150 text-left cursor-pointer ${
+                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all duration-150 text-left cursor-pointer ${
                       isActive 
-                        ? 'bg-blue-50 text-blue-700 font-bold border-l-4 border-blue-600' 
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                        ? 'bg-blue-600 text-white shadow-md shadow-blue-500/15 border border-blue-500' 
+                        : 'text-slate-600 border border-transparent hover:text-slate-900 hover:bg-slate-50'
                     }`}
                   >
-                    <IconComponent className={`w-4 h-4 ${isActive ? 'text-blue-600' : 'text-slate-400'}`} />
+                    <IconComponent className={`w-4 h-4 shrink-0 ${isActive ? 'text-white' : 'text-slate-500'}`} />
                     <span>{item.label}</span>
                   </button>
                 );

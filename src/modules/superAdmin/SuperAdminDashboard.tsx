@@ -912,38 +912,83 @@ export default function SuperAdminDashboard({ currentUser, activeTab }: SuperAdm
         </button>
       </div>
 
-      {/* 2. Analytical widgets */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4" id="national-stats-strip">
-        <div className="bg-white border border-slate-200 p-5 rounded-2xl shadow-xs">
-          <span className="text-[10px] text-slate-400 font-bold font-mono uppercase block tracking-wider">Secondary Markets</span>
-          <h3 className="text-xl font-extrabold text-slate-800 mt-1.5 leading-none">{allMarkets.length} locations</h3>
-          <p className="text-[10px] text-slate-405 mt-2 font-medium font-mono uppercase">Master register areas</p>
+      {/* 2. Analytical widgets - Figma Medical style */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5" id="national-stats-strip">
+        <div className="bg-white border border-slate-200/80 p-5 rounded-2xl flex flex-col justify-between shadow-xs hover:shadow-md transition">
+          <div className="flex justify-between items-start">
+            <div className="space-y-1">
+              <span className="text-xs text-slate-450 font-bold font-sans block tracking-tight">Secondary Markets</span>
+              <h3 className="text-xl font-black text-slate-900 mt-1">{allMarkets.length} Labs</h3>
+            </div>
+            <div className="bg-blue-500/10 text-blue-600 p-2.5 rounded-xl border border-blue-50/50 shrink-0">
+              <Building className="w-5 h-5" />
+            </div>
+          </div>
+          <div className="mt-4 pt-2.5 border-t border-slate-100/60 flex items-center justify-between">
+            <span className="text-[10px] text-slate-400 font-mono uppercase font-bold">Registered Hubs</span>
+          </div>
         </div>
         
-        <div className="bg-white border border-slate-200 p-5 rounded-2xl shadow-xs">
-          <span className="text-[10px] text-slate-400 font-bold font-mono uppercase block tracking-wider">Active Merchants</span>
-          <h3 className="text-xl font-extrabold text-slate-800 mt-1.5 leading-none">{allShops.filter(s => s.status === 'APPROVED').length} active shops</h3>
-          <p className="text-[10px] text-slate-405 mt-2 font-medium font-mono uppercase">Licensed sellers</p>
+        <div className="bg-white border border-slate-200/80 p-5 rounded-2xl flex flex-col justify-between shadow-xs hover:shadow-md transition">
+          <div className="flex justify-between items-start">
+            <div className="space-y-1">
+              <span className="text-xs text-slate-450 font-bold font-sans block tracking-tight">Active Merchants</span>
+              <h3 className="text-xl font-black text-slate-900 mt-1">{allShops.filter(s => s.status === 'APPROVED').length} Approved</h3>
+            </div>
+            <div className="bg-emerald-500/10 text-emerald-600 p-2.5 rounded-xl border border-emerald-50/50 shrink-0">
+              <Store className="w-5 h-5" />
+            </div>
+          </div>
+          <div className="mt-4 pt-2.5 border-t border-slate-100/60 flex items-center justify-between">
+            <span className="text-[10px] text-slate-400 font-mono uppercase font-bold">Compliant Retailers</span>
+          </div>
         </div>
 
-        <div className="bg-white border border-slate-200 p-5 rounded-2xl shadow-xs">
-          <span className="text-[10px] text-slate-400 font-bold font-mono uppercase block tracking-wider">Device Transactions</span>
-          <h3 className="text-xl font-extrabold text-slate-800 mt-1.5 leading-none">{allTransactions.length} units traded</h3>
-          <p className="text-[10px] text-slate-405 mt-2 font-medium font-mono uppercase">Buy/Sell logs synced</p>
+        <div className="bg-white border border-slate-200/80 p-5 rounded-2xl flex flex-col justify-between shadow-xs hover:shadow-md transition">
+          <div className="flex justify-between items-start">
+            <div className="space-y-1">
+              <span className="text-xs text-slate-450 font-bold font-sans block tracking-tight">Device Transactions</span>
+              <h3 className="text-xl font-black text-slate-900 mt-1">{allTransactions.length} Trades</h3>
+            </div>
+            <div className="bg-purple-500/10 text-purple-600 p-2.5 rounded-xl border border-purple-50/50 shrink-0">
+              <TrendingUp className="w-5 h-5" />
+            </div>
+          </div>
+          <div className="mt-4 pt-2.5 border-t border-slate-100/60 flex items-center justify-between">
+            <span className="text-[10px] text-slate-400 font-mono uppercase font-bold">Secure Logs Sync</span>
+          </div>
         </div>
 
-        <div className="bg-white border border-slate-200 p-5 rounded-2xl shadow-xs">
-          <span className="text-[10px] text-slate-400 font-bold font-mono block uppercase tracking-wider">Stolen Devices Database</span>
-          <h3 className="text-xl font-extrabold text-rose-600 mt-1.5 leading-none">{reportedMobilesList.length} blocked</h3>
-          <p className="text-[10px] text-rose-500 mt-2 font-bold font-mono uppercase">CPLC Sindh flagged</p>
+        <div className="bg-white border border-slate-200/80 p-5 rounded-2xl flex flex-col justify-between shadow-xs hover:shadow-md transition">
+          <div className="flex justify-between items-start">
+            <div className="space-y-1">
+              <span className="text-xs text-slate-450 font-bold font-sans block tracking-tight">Blacklisted Index</span>
+              <h3 className="text-xl font-black text-rose-600 mt-1">{reportedMobilesList.length} Units</h3>
+            </div>
+            <div className="bg-rose-500/10 text-rose-600 p-2.5 rounded-xl border border-rose-50/50 shrink-0">
+              <ShieldAlert className="w-5 h-5" />
+            </div>
+          </div>
+          <div className="mt-4 pt-2.5 border-t border-slate-100/60 flex items-center justify-between">
+            <span className="text-[10px] text-rose-500 font-bold font-sans uppercase">CPLC Flagged Alerts</span>
+          </div>
         </div>
 
-        <div className="bg-white border border-slate-200 p-5 rounded-2xl shadow-xs">
-          <span className="text-[10px] text-slate-400 font-bold font-mono uppercase block tracking-wider">Active Duplicate IMEIs</span>
-          <h3 className={`text-xl font-extrabold mt-1.5 font-mono leading-none ${duplicateImeis.length > 0 ? 'text-rose-600 animate-pulse' : 'text-emerald-650'}`}>
-            {duplicateImeis.length} units
-          </h3>
-          <p className="text-[10px] text-slate-455 mt-2 font-medium font-mono uppercase">Forensic flags</p>
+        <div className="bg-white border border-slate-200/80 p-5 rounded-2xl flex flex-col justify-between shadow-xs hover:shadow-md transition">
+          <div className="flex justify-between items-start">
+            <div className="space-y-1">
+              <span className="text-xs text-slate-450 font-bold font-sans block tracking-tight">Forensic Flags</span>
+              <h3 className={`text-xl font-black mt-1 ${duplicateImeis.length > 0 ? 'text-rose-600 animate-pulse' : 'text-emerald-600'}`}>
+                {duplicateImeis.length} Alerts
+              </h3>
+            </div>
+            <div className="bg-amber-500/10 text-amber-600 p-2.5 rounded-xl border border-amber-50/50 shrink-0">
+              <AlertTriangle className="w-5 h-5" />
+            </div>
+          </div>
+          <div className="mt-4 pt-2.5 border-t border-slate-100/60 flex items-center justify-between">
+            <span className="text-[10px] text-slate-400 font-mono uppercase font-bold">Double-Shop Check</span>
+          </div>
         </div>
       </div>
 

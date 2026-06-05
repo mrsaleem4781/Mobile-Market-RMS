@@ -1,6 +1,0 @@
-{
-  "name": "Mobile Market Record Management System",
-  "description": "An offline-first compliance and IMEI-resale tracking registry across mobile markets, aligning with regulatory standard protocols with CNIC data protection.",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}

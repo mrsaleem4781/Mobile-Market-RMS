@@ -21,11 +21,48 @@ import {
   ShieldAlert,
   ArrowLeft,
   Users,
-  UserCheck
+  UserCheck,
+  Newspaper,
+  Megaphone,
+  Calendar,
+  Award
 } from 'lucide-react';
 import { db } from '../../offline/db';
 import { SEED_USERS, SEED_MARKETS } from '../../offline/seedData';
 import { AppUser, UserRole, Market } from '../../types';
+
+export const defaultPortalStories = [
+  {
+    id: 'story-spark-20c',
+    title: "Tecno Spark 20C Snatched Mobile Swift Recovery",
+    titleUrdu: "ٹیکنو اسپارک 20C چھینے گئے موبائل کی کامیاب واپسی",
+    date: "May 2026",
+    badge: "RECOVERED",
+    badgeStyle: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+    summary: "Suspicious buyer approached Shopkeeper Hassan with a Spark 20C. Hassan immediately stalled and verified the device.",
+    summaryUrdu: "دکاندار حسن نے ایک مشکوک گاہک سے اسپارک 20C فون آنے پر فوری کارروائی کی اور صڈر ضیاء خان محسود کو مطلع کیا۔"
+  },
+  {
+    id: 'story-spark-go2',
+    title: "Tecno Spark Go 2 Recovered via CPLC & Technical Cell",
+    titleUrdu: "ٹیکنو اسپارک گو 2 کی کامیاب بازیابی",
+    date: "May 2026",
+    badge: "RETURNED",
+    badgeStyle: "bg-sky-500/10 text-sky-400 border-sky-500/30",
+    summary: "Snatched device retrieved through systematic tracking and returned to its verified owner at KMEDA Headquarters.",
+    summaryUrdu: "چھینا گیا اسپارک گو 2 موبائل فون سی پی ایل سی اور پولیس کے ٹیکنیکل ڈیپارٹمنٹ کی مدد سے ٹریس کر کے بازیاب کرایا گیا۔"
+  },
+  {
+    id: 'story-rafiq-center',
+    title: "Rafiq Shopping Center Robbery Solved, Thieves Arrested",
+    titleUrdu: "رفیق شاپنگ سینٹر تالے توڑ چوری کا معمہ حل، چور گرفتار",
+    date: "April 2026",
+    badge: "ARRESTED",
+    badgeStyle: "bg-rose-500/10 text-rose-400 border-rose-500/30",
+    summary: "Burglars broke lock of Zulfiqar's shop. Technical institutions tracked they are now behind bars and all products returned.",
+    summaryUrdu: "رفیق شاپنگ سینٹر میں دکاندار ذوالفقار کی دکان کے تالے توڑ کر چوری کی گئی تھی، چور مال سمیت قانون کی گرفت میں۔"
+  }
+];
 
 interface AuthModuleProps {
   onLoginSuccess: (user: AppUser) => void;
@@ -44,6 +81,7 @@ export default function AuthModule({ onLoginSuccess }: AuthModuleProps) {
   const [enteredEmail, setEnteredEmail] = useState('');
   const [enteredPassword, setEnteredPassword] = useState('');
   const [customUsers, setCustomUsers] = useState<AppUser[]>([]);
+  const [newsFeed, setNewsFeed] = useState<any[]>([]);
   
   // Registration Form States
   const [regName, setRegName] = useState('');
@@ -112,6 +150,46 @@ export default function AuthModule({ onLoginSuccess }: AuthModuleProps) {
       const seedIds = SEED_USERS.map(u => u.id);
       const custom = allUsers.filter(u => !seedIds.includes(u.id));
       setCustomUsers(custom);
+
+      try {
+        // Fetch newly reported mobiles registered by the president
+        const liveReports = await db.reportedMobiles.toArray();
+        const newsItems: any[] = [];
+        
+        liveReports.forEach(rep => {
+          const isRecovered = rep.status === 'RECOVERED';
+          const dateStr = rep.reportedAt ? new Date(rep.reportedAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'May 2026';
+          
+          newsItems.push({
+            id: rep.id,
+            title: `${rep.brand || 'Device'} ${rep.model || 'Mobile'} Tracking Added`,
+            titleUrdu: `${rep.brand || 'ڈیوائس'} ${rep.model || 'موبائل'} کا کامیاب اندراج`,
+            date: dateStr,
+            badge: rep.status,
+            badgeStyle: isRecovered 
+              ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" 
+              : "bg-rose-500/10 text-rose-400 border border-rose-500/20",
+            summary: `CPLC blacklisted check active. FIR number: ${rep.firNumber || 'Direct Report'}. Marked status: ${rep.status}.`,
+            summaryUrdu: `صدر صاحب نے اس ڈیوائس کا شناختی اندراج مکمل کر لیا ہے۔ آئی ایم ای آئی: ${rep.imei1 || 'محفوظ'}۔ کاغذی کارروائی: ${rep.firNumber || 'براہ راست اطلاعات'}۔`
+          });
+        });
+
+        // Load configured stories from localStorage (if any)
+        const saved = localStorage.getItem('kmeda_success_stories');
+        let fallbackStories = defaultPortalStories;
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            fallbackStories = parsed;
+          }
+        }
+
+        // Merge latest live cases first, then defaults, maximum of 10 items
+        setNewsFeed([...newsItems, ...fallbackStories].slice(0, 10));
+      } catch (err) {
+        console.error("Error rendering dynamic news feed indices:", err);
+        setNewsFeed(defaultPortalStories);
+      }
     };
     loadData();
   }, [isRegistering, isRecovering]);
@@ -536,7 +614,7 @@ export default function AuthModule({ onLoginSuccess }: AuthModuleProps) {
             </div>
             <div className="space-y-1">
               <p className="text-xs font-black text-blue-400 uppercase tracking-widest font-mono">Verifying Profile...</p>
-              <p className="text-xs font-medium text-slate-350 leading-tight">
+              <p className="text-xs font-semibold text-slate-300 leading-tight">
                 {loadingText}
               </p>
             </div>
@@ -577,13 +655,58 @@ export default function AuthModule({ onLoginSuccess }: AuthModuleProps) {
                 </p>
               </div>
 
-              <div className="space-y-1">
-                <span className="text-[10px] text-teal-400 font-extrabold uppercase tracking-widest font-mono">BUREAU SUPERVISING / حکومتی نگرانی</span>
-                <h3 className="text-lg font-bold text-white tracking-tight leading-tight">
-                  Federally Sanctioned Stolen registries and Merchant Audit logs
-                </h3>
-                <p className="text-xs text-slate-400 leading-relaxed">
-                  سپر ایڈمن کے خصوصی کنٹرول پینل سے تمام دکانداروں کی جانچ پڑتال کریں، ان کے اکاؤنٹس معطل یا بحال کریں اور چوری شدہ فونز کا ریکارڈ رکھیں۔
+              <div className="space-y-3 pt-2">
+                <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                  <span className="text-[11px] text-teal-400 font-extrabold uppercase tracking-wider font-mono flex items-center gap-1.5">
+                    <Megaphone className="w-3.5 h-3.5 text-teal-400 shrink-0 animate-pulse" /> SHUBA ITLAAT / شعبہ اطلاعات و بازیابی
+                  </span>
+                  <span className="text-[9px] bg-sky-500/10 text-sky-400 px-2 py-0.5 rounded-full font-bold font-mono">LIVE FEED</span>
+                </div>
+                
+                {/* News Container with scrollbar */}
+                <div className="max-h-56 overflow-y-auto space-y-3 pr-1">
+                  {newsFeed && newsFeed.length > 0 ? (
+                    newsFeed.map((story: any) => (
+                      <div key={story.id} className="bg-slate-900/60 border border-slate-850 p-3 rounded-xl space-y-2 hover:border-slate-800 transition duration-150">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className={`text-[8.5px] px-2 py-0.5 rounded-full font-black tracking-wider uppercase font-mono ${
+                            story.badge === 'RECOVERED' ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/20' :
+                            story.badge === 'RETURNED' ? 'bg-sky-500/15 text-sky-400 border border-sky-500/20' :
+                            'bg-rose-500/15 text-rose-400 border border-rose-500/20'
+                          }`}>
+                            {story.badge}
+                          </span>
+                          <span className="text-[9px] text-slate-500 font-mono font-bold flex items-center gap-1">
+                            <Calendar className="w-2.5 h-2.5 text-slate-600" /> {story.date}
+                          </span>
+                        </div>
+                        <div className="space-y-1">
+                          <h4 className="text-xs font-black text-white/95 leading-tight tracking-tight font-sans">
+                            {story.title}
+                          </h4>
+                          {story.titleUrdu && (
+                            <h4 className="text-[11px] font-black text-sky-300 text-right leading-tight font-sans" dir="rtl">
+                              {story.titleUrdu}
+                            </h4>
+                          )}
+                          <p className="text-[10px] text-slate-400 leading-relaxed font-sans mt-0.5">
+                            {story.summary}
+                          </p>
+                          {story.summaryUrdu && (
+                            <p className="text-[10.5px] text-slate-400 leading-relaxed text-right font-sans font-medium" dir="rtl">
+                              {story.summaryUrdu}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-[10px] text-slate-500 italic text-center py-4">No announcement bulletins posted yet.</p>
+                  )}
+                </div>
+
+                <p className="text-[9px] italic text-slate-505 text-center leading-tight">
+                  President Zia Khan Mehsood or zone administrators publish verified recovery stories on the live registry.
                 </p>
               </div>
             </div>
@@ -602,7 +725,7 @@ export default function AuthModule({ onLoginSuccess }: AuthModuleProps) {
           {/* Secure system stats indicator */}
           <div className="pt-6 border-t border-slate-800 text-[10px] text-slate-500 font-mono space-y-1">
             <div>SECURE SYSTEM RUNTIME STATUS: <span className="text-teal-400 font-bold">● ACTIVE</span></div>
-            <div>LOCAL ENCRYPTION CIPHER: <span className="text-slate-350 font-sans font-bold">AES-XOR-256</span></div>
+            <div>LOCAL ENCRYPTION CIPHER: <span className="text-slate-400 font-sans font-bold">AES-XOR-256</span></div>
           </div>
         </div>
 

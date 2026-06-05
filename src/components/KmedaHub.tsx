@@ -583,7 +583,7 @@ export default function KmedaHub() {
                     </div>
                     <div className="text-left sm:text-right shrink-0">
                       <span className="text-[9.5px] text-slate-400 font-bold font-mono tracking-widest flex items-center gap-1">
-                        <Calendar className="w-3 h-3 text-slate-350" /> {story.date}
+                        <Calendar className="w-3 h-3 text-slate-400" /> {story.date}
                       </span>
                     </div>
                   </div>

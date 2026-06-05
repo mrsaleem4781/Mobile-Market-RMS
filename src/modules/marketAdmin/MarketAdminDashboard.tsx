@@ -272,22 +272,45 @@ export default function MarketAdminDashboard({ currentUser, activeTab }: MarketA
       </div>
 
       {/* 2. Stat badges */}
-      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4" id="admin-stats-strip">
-        <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-xs">
-          <span className="text-[10px] text-slate-400 font-bold font-mono uppercase tracking-wider">Registered Trade Shops</span>
-          <h3 className="text-xl font-extrabold text-slate-800 mt-1">{totalShops}</h3>
+      <div className="grid grid-cols-1 sm:grid-cols-4 gap-5" id="admin-stats-strip">
+        <div className="bg-white border border-slate-200/80 p-5 rounded-2xl flex items-center justify-between shadow-xs hover:shadow-md transition">
+          <div className="space-y-1">
+            <span className="text-xs text-slate-450 font-bold block tracking-tight">Registered Shops</span>
+            <h3 className="text-2xl font-black text-slate-900">{totalShops}</h3>
+          </div>
+          <div className="bg-blue-500/10 text-blue-600 p-2.5 rounded-xl border border-blue-50/50 shrink-0">
+            <Store className="w-5 h-5 animate-pulse" />
+          </div>
         </div>
-        <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-xs">
-          <span className="text-[10px] text-slate-400 font-bold font-mono uppercase tracking-wider">Approved Operations</span>
-          <h3 className="text-xl font-bold text-emerald-600 mt-1">{approvedShopsCount}</h3>
+
+        <div className="bg-white border border-slate-200/80 p-5 rounded-2xl flex items-center justify-between shadow-xs hover:shadow-md transition">
+          <div className="space-y-1">
+            <span className="text-xs text-slate-450 font-bold block tracking-tight">Approved Operations</span>
+            <h3 className="text-2xl font-black text-emerald-600">{approvedShopsCount}</h3>
+          </div>
+          <div className="bg-emerald-500/10 text-emerald-600 p-2.5 rounded-xl border border-emerald-50/50 shrink-0">
+            <CheckCircle className="w-5 h-5" />
+          </div>
         </div>
-        <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-xs">
-          <span className="text-[10px] text-slate-400 font-bold font-mono uppercase tracking-wider">Clearance Pending</span>
-          <h3 className="text-xl font-bold text-amber-650 mt-1">{pendingShopsCount}</h3>
+
+        <div className="bg-white border border-slate-200/80 p-5 rounded-2xl flex items-center justify-between shadow-xs hover:shadow-md transition">
+          <div className="space-y-1">
+            <span className="text-xs text-slate-450 font-bold block tracking-tight">Clearance Pending</span>
+            <h3 className="text-2xl font-black text-amber-600">{pendingShopsCount}</h3>
+          </div>
+          <div className="bg-amber-500/10 text-amber-600 p-2.5 rounded-xl border border-amber-50/50 shrink-0">
+            <Clock className="w-5 h-5 animate-pulse" />
+          </div>
         </div>
-        <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-xs">
-          <span className="text-[10px] text-slate-400 font-bold font-mono uppercase tracking-wider">Total Area Transactions</span>
-          <h3 className="text-xl font-bold text-blue-600 mt-1">{transactionsCount}</h3>
+
+        <div className="bg-white border border-slate-200/80 p-5 rounded-2xl flex items-center justify-between shadow-xs hover:shadow-md transition">
+          <div className="space-y-1">
+            <span className="text-xs text-slate-450 font-bold block tracking-tight">Area Transactions</span>
+            <h3 className="text-2xl font-black text-blue-600">{transactionsCount}</h3>
+          </div>
+          <div className="bg-purple-500/10 text-purple-600 p-2.5 rounded-xl border border-purple-50/50 shrink-0">
+            <TrendingUp className="w-5 h-5" />
+          </div>
         </div>
       </div>
 

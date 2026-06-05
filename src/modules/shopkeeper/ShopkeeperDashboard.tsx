@@ -848,10 +848,10 @@ export default function ShopkeeperDashboard({ currentUser, activeTab }: Shopkeep
       </div>
 
       {/* Prominent Search Bar (Moved out of logs to the main dashboard for quick access) */}
-      <div className="bg-white border-2 border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col md:flex-row items-center gap-4">
+      <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs flex flex-col md:flex-row items-center gap-4">
         <div className="flex items-center gap-2 shrink-0">
           <Search className="w-4 h-4 text-blue-600" />
-          <span className="text-xs font-bold font-mono tracking-wider text-slate-700 uppercase">Live Registry Search:</span>
+          <span className="text-xs font-bold text-slate-700 uppercase">Live Registry Search:</span>
         </div>
         <div className="relative w-full">
           <input
@@ -859,12 +859,12 @@ export default function ShopkeeperDashboard({ currentUser, activeTab }: Shopkeep
             placeholder="Search by IMEI number, model, phone coordinates, or buyer/seller name..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-slate-50 hover:bg-slate-100 focus:bg-white border border-slate-250 rounded-xl pl-4 pr-10 py-2.5 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 font-medium tracking-wide transition-all"
+            className="w-full bg-slate-100/50 hover:bg-slate-100 focus:bg-white border border-slate-205 rounded-xl pl-4 pr-10 py-2.5 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 font-medium tracking-wide transition-all"
           />
           {searchQuery && (
             <button 
               onClick={() => setSearchQuery('')}
-              className="absolute right-3 top-2.5 p-0.5 text-xs text-slate-400 hover:text-slate-600 font-bold"
+              className="absolute right-3 top-2.5 p-1 text-xs text-slate-400 hover:text-slate-600 font-bold"
               title="Clear search query"
             >
               ×
@@ -874,13 +874,13 @@ export default function ShopkeeperDashboard({ currentUser, activeTab }: Shopkeep
       </div>
 
       {/* CPLC Sindh Stolen Device Checker */}
-      <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 shadow-xs space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200">
+      <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-xs space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
           <div className="space-y-0.5">
-            <h3 className="text-xs font-extrabold text-slate-900 tracking-wider font-mono uppercase flex items-center gap-1.5">
-              <ShieldCheck className="w-4 h-4 text-emerald-600" /> CPLC Sindh Verify Portal
+            <h3 className="text-xs font-black text-slate-900 uppercase flex items-center gap-1.5">
+              <ShieldCheck className="w-4 h-4 text-blue-600" /> CPLC Sindh Verify Portal
             </h3>
-            <p className="text-[11px] text-slate-600 font-medium">
+            <p className="text-[11px] text-slate-500 font-medium font-sans">
               Verify device models and IMEI status before buying or selling to ensure they are not reported stolen or blacklisted.
             </p>
           </div>
@@ -890,8 +890,8 @@ export default function ShopkeeperDashboard({ currentUser, activeTab }: Shopkeep
         </div>
 
         <form onSubmit={handleVerifyImeiStatus} className="grid grid-cols-1 md:grid-cols-4 gap-3 items-end">
-          <div className="md:col-span-3 space-y-1">
-            <label className="text-[9px] text-slate-500 font-bold uppercase font-mono tracking-wider block">IMEI verification number (14-15 Digits)</label>
+          <div className="md:col-span-3 space-y-1.5">
+            <label className="text-[10px] text-slate-450 font-bold uppercase tracking-wider block">IMEI verification number (14-15 Digits)</label>
             <input
               type="text"
               required
@@ -899,13 +899,13 @@ export default function ShopkeeperDashboard({ currentUser, activeTab }: Shopkeep
               placeholder="Enter active IMEI number to search or click on any demo below to test..."
               value={verifyImei}
               onChange={(e) => setVerifyImei(e.target.value.replace(/[^0-9]/g, ''))}
-              className="w-full bg-white border border-slate-300 rounded-xl px-4 py-2 text-xs text-slate-800 focus:outline-none focus:border-blue-500 font-mono tracking-widest placeholder:tracking-normal placeholder:font-sans"
+              className="w-full bg-slate-50 hover:bg-slate-100/80 focus:bg-white border border-slate-205 rounded-xl px-4 py-2.5 text-xs text-slate-800 focus:outline-none focus:border-blue-500 font-mono tracking-widest placeholder:tracking-normal placeholder:font-sans"
             />
           </div>
           <button
             type="submit"
             disabled={checkingImei}
-            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-xl text-xs uppercase font-mono duration-150 shadow-xs cursor-pointer disabled:opacity-50 select-none flex items-center justify-center gap-1.5"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-4 rounded-xl text-xs uppercase duration-150 shadow-xs cursor-pointer disabled:opacity-50 select-none flex items-center justify-center gap-1.5"
           >
             {checkingImei ? (
               <>
@@ -1018,35 +1018,35 @@ export default function ShopkeeperDashboard({ currentUser, activeTab }: Shopkeep
         )}
       </div>
 
-      {/* 2. Quick statistics banner */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4" id="stats-banner">
-        <div className="bg-white border border-slate-200 p-5 rounded-2xl flex items-center justify-between shadow-xs">
-          <div className="space-y-1">
-            <span className="text-[10px] text-slate-400 font-bold font-mono uppercase tracking-wider">Acquisitions (Buy)</span>
-            <h3 className="text-2xl font-extrabold text-slate-800">{totalBuy}</h3>
+      {/* 2. Quick statistics banner - Clean Figma Medicare Style */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6" id="stats-banner">
+        <div className="bg-white border border-slate-200/80 p-6 rounded-2xl flex items-center justify-between shadow-xs hover:shadow-md transition">
+          <div className="space-y-1.5">
+            <span className="text-xs text-slate-450 font-bold block tracking-tight">Total Acquisitions (Buy)</span>
+            <h3 className="text-3xl font-black text-slate-900 leading-none">{totalBuy}</h3>
           </div>
-          <div className="bg-emerald-50 p-2.5 rounded-xl border border-emerald-100 text-emerald-600 shadow-sm">
-            <TrendingUp className="w-5 h-5" />
-          </div>
-        </div>
-
-        <div className="bg-white border border-slate-200 p-5 rounded-2xl flex items-center justify-between shadow-xs">
-          <div className="space-y-1">
-            <span className="text-[10px] text-slate-400 font-bold font-mono uppercase tracking-wider">Disposals (Sell)</span>
-            <h3 className="text-2xl font-extrabold text-slate-800">{totalSell}</h3>
-          </div>
-          <div className="bg-blue-50 p-2.5 rounded-xl border border-blue-100 text-blue-600 shadow-sm">
-            <TrendingDown className="w-5 h-5" />
+          <div className="bg-emerald-500/10 text-emerald-600 h-14 w-14 rounded-2xl flex items-center justify-center border border-emerald-50 shadow-xs shrink-0">
+            <TrendingUp className="w-6 h-6 text-emerald-650" />
           </div>
         </div>
 
-        <div className="bg-white border border-slate-200 p-5 rounded-2xl flex items-center justify-between shadow-xs">
-          <div className="space-y-1">
-            <span className="text-[10px] text-slate-400 font-bold font-mono uppercase tracking-wider">Pending Upload queue</span>
-            <h3 className="text-2xl font-bold text-amber-600 animate-pulse">{pendingSync}</h3>
+        <div className="bg-white border border-slate-200/80 p-6 rounded-2xl flex items-center justify-between shadow-xs hover:shadow-md transition">
+          <div className="space-y-1.5">
+            <span className="text-xs text-slate-450 font-bold block tracking-tight">Total Disposals (Sell)</span>
+            <h3 className="text-3xl font-black text-slate-900 leading-none">{totalSell}</h3>
           </div>
-          <div className="bg-amber-50 p-2.5 rounded-xl border border-amber-100 text-amber-600 shadow-sm">
-            <Clock className="w-5 h-5 animate-pulse" />
+          <div className="bg-blue-500/10 text-blue-600 h-14 w-14 rounded-2xl flex items-center justify-center border border-blue-50 shadow-xs shrink-0">
+            <TrendingDown className="w-6 h-6 text-blue-650" />
+          </div>
+        </div>
+
+        <div className="bg-white border border-slate-200/80 p-6 rounded-2xl flex items-center justify-between shadow-xs hover:shadow-md transition">
+          <div className="space-y-1.5">
+            <span className="text-xs text-slate-450 font-bold block tracking-tight">Pending Sync Queue</span>
+            <h3 className="text-3xl font-black text-amber-600 leading-none animate-pulse">{pendingSync}</h3>
+          </div>
+          <div className="bg-amber-500/10 text-amber-600 h-14 w-14 rounded-2xl flex items-center justify-center border border-amber-55/70 shadow-xs shrink-0">
+            <Clock className="w-6 h-6 text-amber-600 animate-pulse" />
           </div>
         </div>
       </div>
