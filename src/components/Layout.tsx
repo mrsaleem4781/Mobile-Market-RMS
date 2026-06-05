@@ -33,6 +33,8 @@ interface LayoutProps {
   onRoleSwitch: (role: UserRole) => void;
   activeTab: string;
   setActiveTab: (tab: string) => void;
+  originalUser?: AppUser | null;
+  onRestoreOriginalUser?: () => void;
 }
 
 export default function Layout({
@@ -41,7 +43,9 @@ export default function Layout({
   onLogout,
   onRoleSwitch,
   activeTab,
-  setActiveTab
+  setActiveTab,
+  originalUser = null,
+  onRestoreOriginalUser = () => {}
 }: LayoutProps) {
   const [online, setOnline] = useState(typeof navigator !== 'undefined' ? navigator.onLine : true);
   const [syncStatus, setSyncStatus] = useState<SyncState>('idle');
@@ -204,6 +208,7 @@ export default function Layout({
       items.push(
         { id: 'market-shops', label: 'Market Shops Registry', icon: Store },
         { id: 'kmeda-hub', label: 'KMEDA Quaidabad Hub', icon: Sparkles },
+        { id: 'market-reported', label: 'Snatched Devices Registry', icon: ShieldAlert },
         { id: 'market-approvals', label: 'Merchant Approvals', icon: ClipboardCheck },
         { id: 'market-reports', label: 'Market Compliance', icon: Building }
       );
@@ -230,6 +235,27 @@ export default function Layout({
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col font-sans" id="layout-root">
+      {/* Interactive return path when sandboxed */}
+      {originalUser && currentUser && currentUser.id !== originalUser.id && (
+        <div className="bg-amber-600 text-white text-xs px-4 py-2.5 flex flex-col sm:flex-row items-center justify-between gap-3 font-sans font-semibold tracking-wide border-b border-amber-500 shadow-sm" id="sandbox-active-banner">
+          <div className="flex items-center gap-2">
+            <span className="relative flex h-2 w-2 shrink-0">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+            </span>
+            <span>
+              SIMULATED SESSION ACTIVE: Operating as <strong className="uppercase font-mono font-bold">{currentUser.name} ({currentUser.role})</strong>. Your authentic inspector/admin credentials belong to <strong>{originalUser.name}</strong>.
+            </span>
+          </div>
+          <button
+            onClick={onRestoreOriginalUser}
+            className="bg-white hover:bg-amber-50 text-amber-700 hover:text-amber-800 px-3 py-1.5 rounded-xl text-xs font-bold cursor-pointer duration-150 shadow-xs uppercase font-mono tracking-wider flex items-center gap-1.5"
+          >
+            ↩️ Restore my {originalUser.role === 'MARKET_ADMIN' ? 'Inspector' : 'Super Admin'} Account
+          </button>
+        </div>
+      )}
+
       {/* 1. Header Row */}
       <header className="h-16 bg-white border-b border-slate-200 px-4 md:px-8 flex items-center justify-between sticky top-0 z-50 shadow-xs" id="app-header">
         <div className="flex items-center gap-3">
@@ -294,7 +320,7 @@ export default function Layout({
           )}
 
           {/* Super Power User Sandbox Quick Switch Button */}
-          {currentUser && currentUser.role !== 'SHOPKEEPER' && (
+          {currentUser && (currentUser.role !== 'SHOPKEEPER' || (originalUser && originalUser.id !== currentUser.id)) && (
             <button
               onClick={() => setShowSandboxCenter(!showSandboxCenter)}
               className="flex items-center gap-1.5 text-xs bg-purple-50 text-purple-700 border border-purple-200 px-3 py-1.5 rounded-lg hover:bg-purple-100 cursor-pointer duration-150 font-semibold"
@@ -308,7 +334,7 @@ export default function Layout({
       </header>
 
       {/* 2. SaaS Sandbox Swapper Drawer (Interactive Preview Help) */}
-      {showSandboxCenter && currentUser && currentUser.role !== 'SHOPKEEPER' && (
+      {showSandboxCenter && currentUser && (currentUser.role !== 'SHOPKEEPER' || (originalUser && originalUser.id !== currentUser.id)) && (
         <div className="bg-gradient-to-r from-purple-50 via-indigo-50 to-slate-100 border-b border-purple-100 p-4 relative" id="sandbox-drawer">
           <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
@@ -327,10 +353,16 @@ export default function Layout({
                 [1] Shopkeeper Mode
               </button>
               <button
+                onClick={() => { onRoleSwitch('MARKET_ADMIN'); setActiveTab('market-shops'); }}
+                className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold duration-150 cursor-pointer ${(currentUser?.role as string) === 'MARKET_ADMIN' ? 'bg-amber-600 text-white shadow-xs' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'}`}
+              >
+                [2] Market Inspector
+              </button>
+              <button
                 onClick={() => { onRoleSwitch('SUPER_ADMIN'); setActiveTab('super-overview'); }}
                 className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold duration-150 cursor-pointer ${(currentUser?.role as string) === 'SUPER_ADMIN' ? 'bg-blue-600 text-white shadow-xs' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'}`}
               >
-                [2] Super Admin
+                [3] Super Admin
               </button>
             </div>
           </div>

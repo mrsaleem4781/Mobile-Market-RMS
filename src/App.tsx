@@ -17,6 +17,7 @@ import SuperAdminDashboard from './modules/superAdmin/SuperAdminDashboard';
 
 export default function App() {
   const [currentUser, setCurrentUser] = useState<AppUser | null>(null);
+  const [originalUser, setOriginalUser] = useState<AppUser | null>(null);
   const [activeTab, setActiveTab] = useState<string>('merchant-ops');
   const [isDbReady, setIsDbReady] = useState(false);
 
@@ -38,6 +39,8 @@ export default function App() {
         }
         
         // 2. Do not auto-load persistent session to ensure login screen is shown on reload/open
+        await db.setConfig('currentUser', null);
+        await db.setConfig('originalUser', null);
         // const savedUser = await db.getConfig<AppUser>('currentUser');
         // if (savedUser) {
         //   setCurrentUser(savedUser);
@@ -71,13 +74,25 @@ export default function App() {
 
   const handleLoginSuccess = async (user: AppUser) => {
     setCurrentUser(user);
+    setOriginalUser(user);
     setInitialTabForRole(user.role);
     await db.setConfig('currentUser', user);
+    await db.setConfig('originalUser', user);
   };
 
   const handleLogout = async () => {
     setCurrentUser(null);
+    setOriginalUser(null);
     await db.setConfig('currentUser', null);
+    await db.setConfig('originalUser', null);
+  };
+
+  const handleRestoreOriginalUser = async () => {
+    if (originalUser) {
+      setCurrentUser(originalUser);
+      setInitialTabForRole(originalUser.role);
+      await db.setConfig('currentUser', originalUser);
+    }
   };
 
   const handleSandboxRoleSwitch = async (role: UserRole) => {
@@ -122,6 +137,8 @@ export default function App() {
       onRoleSwitch={handleSandboxRoleSwitch}
       activeTab={activeTab}
       setActiveTab={setActiveTab}
+      originalUser={originalUser}
+      onRestoreOriginalUser={handleRestoreOriginalUser}
     >
       {activeTab === 'kmeda-hub' && <KmedaHub />}
 

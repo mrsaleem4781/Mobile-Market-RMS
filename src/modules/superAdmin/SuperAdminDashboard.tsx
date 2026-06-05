@@ -26,6 +26,7 @@ import { db } from '../../offline/db';
 import { syncEngine } from '../../sync/syncEngine';
 import { Transaction, Shop, Market, AuditLog, AppUser } from '../../types';
 import { encryptData, decryptData, maskCNIC, maskIMEI, validateAndCleanCNIC, formatCNICInput } from '../../utils/security';
+import ImeiVerifyPortal from '../../components/ImeiVerifyPortal';
 
 interface SuperAdminDashboardProps {
   currentUser: AppUser;
@@ -745,7 +746,7 @@ export default function SuperAdminDashboard({ currentUser, activeTab }: SuperAdm
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 text-xs text-slate-705 bg-white border border-slate-200/60 rounded-xl p-3 font-medium">
                         <div>Complainant: <strong className="text-slate-905">{rep.ownerName}</strong></div>
-                        <div>CNIC Identity: <strong className="text-slate-905">{maskCNIC(rep.ownerCnic)}</strong></div>
+                        <div>CNIC Identity: <strong className="text-slate-905 font-mono">{rep.ownerCnic}</strong></div>
                         <div>Contact Phone: <strong className="text-slate-905 font-mono">{rep.ownerContact}</strong></div>
                         <div>Origin PS: <strong className="text-rose-700">{rep.policeStation || 'N/A'} PS</strong></div>
                       </div>
@@ -1023,6 +1024,9 @@ export default function SuperAdminDashboard({ currentUser, activeTab }: SuperAdm
           </div>
         </div>
       )}
+
+      {/* Search & Verification Portal */}
+      <ImeiVerifyPortal />
 
       {/* 4. Recent trade flow lists */}
       <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs" id="recent-flow-panel">
