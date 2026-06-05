@@ -171,7 +171,7 @@ export default function MarketAdminDashboard({ currentUser, activeTab }: MarketA
           <div className="space-y-4">
             <div className="border-b border-slate-100 pb-2.5 flex justify-between items-center gap-4">
               <h3 className="text-xs font-bold text-slate-800 font-mono uppercase tracking-wider flex items-center gap-1.5">
-                📁 Current Snatched Databases Archive ({reportedMobilesList.length})
+                Current Snatched Devices Database ({reportedMobilesList.length})
               </h3>
               <span className="text-[10px] text-slate-400 font-bold font-mono">REAL-TIME INSPECTOR ACCESS</span>
             </div>
@@ -232,7 +232,7 @@ export default function MarketAdminDashboard({ currentUser, activeTab }: MarketA
                               : 'bg-emerald-600 hover:bg-emerald-700 text-white'
                           }`}
                         >
-                          {rep.status === 'RECOVERED' ? '⚠️ Reopen Case' : '✔️ Resolve & Recover'}
+                          {rep.status === 'RECOVERED' ? 'Reopen Case' : 'Resolve & Recover'}
                         </button>
                         <button
                           onClick={() => handleDeleteReportedMobile(rep.id)}
