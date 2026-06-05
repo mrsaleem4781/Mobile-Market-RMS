@@ -1005,7 +1005,7 @@ export default function SuperAdminDashboard({ currentUser, activeTab }: SuperAdm
     return (
       <div className="space-y-8 animate-fadeIn" id="super-customization-scope">
         {/* Header Title */}
-        <div className="bg-gradient-to-r from-blue-650 to-indigo-800 text-white p-6 rounded-2xl shadow-md flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="bg-gradient-to-r from-blue-700 to-indigo-900 text-white p-6 rounded-2xl shadow-md flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
             <h2 className="text-base font-bold uppercase tracking-wider flex items-center gap-2 font-mono">
               <Sparkles className="w-5 h-5 text-indigo-200" /> Public Portal Customization Hub
