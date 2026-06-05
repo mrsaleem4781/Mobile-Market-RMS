@@ -204,7 +204,7 @@ export default function AuthModule({ onLoginSuccess }: AuthModuleProps) {
     
     if (profile) {
       setEnteredEmail(profile.email);
-      const pHelp = profile.password || (profile.role === 'SUPER_ADMIN' ? 'admin123' : profile.role === 'MARKET_ADMIN' ? 'quaidabad123' : 'saleem123');
+      const pHelp = profile.password || (profile.role === 'SUPER_ADMIN' ? 'admin123' : 'saleem123');
       setEnteredPassword(pHelp);
       
       triggerAlert(
@@ -244,7 +244,7 @@ export default function AuthModule({ onLoginSuccess }: AuthModuleProps) {
         }
 
         if (profile) {
-          const correctPass = profile.password || (profile.role === 'SUPER_ADMIN' ? 'admin123' : profile.role === 'MARKET_ADMIN' ? 'quaidabad123' : 'saleem123');
+          const correctPass = profile.password || (profile.role === 'SUPER_ADMIN' ? 'admin123' : 'saleem123');
           if (correctPass !== enteredPassword) {
             setIsLoading(false);
             triggerAlert(
@@ -255,7 +255,7 @@ export default function AuthModule({ onLoginSuccess }: AuthModuleProps) {
             return;
           }
 
-          if (profile.role === 'SHOPKEEPER' || profile.role === 'MARKET_ADMIN') {
+          if (profile.role === 'SHOPKEEPER') {
             if (profile.status === 'PENDING') {
               setIsLoading(false);
               triggerAlert(

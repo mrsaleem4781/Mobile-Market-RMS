@@ -10,6 +10,7 @@ import {
   WifiOff, 
   RotateCw, 
   Users, 
+  User,
   Store, 
   ClipboardList, 
   LogOut, 
@@ -182,8 +183,6 @@ export default function Layout({
     switch (role) {
       case 'SUPER_ADMIN':
         return 'Regulatory Super Admin';
-      case 'MARKET_ADMIN':
-        return 'Market Inspector / Admin';
       case 'SHOPKEEPER':
         return 'Authorized Merchant';
       default:
@@ -201,14 +200,8 @@ export default function Layout({
       items.push(
         { id: 'merchant-ops', label: 'Buy/Sell Entries', icon: Smartphone },
         { id: 'merchant-reported', label: 'Report Snatched Mobile', icon: ShieldAlert },
-        { id: 'merchant-history', label: 'Transaction Logs', icon: ClipboardList }
-      );
-    } else if (currentUser.role === 'MARKET_ADMIN') {
-      items.push(
-        { id: 'market-shops', label: 'Market Shops Registry', icon: Store },
-        { id: 'market-reported', label: 'Snatched Devices Registry', icon: ShieldAlert },
-        { id: 'market-approvals', label: 'Merchant Approvals', icon: ClipboardCheck },
-        { id: 'market-reports', label: 'Market Compliance', icon: Building }
+        { id: 'merchant-history', label: 'Transaction Logs', icon: ClipboardList },
+        { id: 'profile-settings', label: 'My Profile Settings', icon: User }
       );
     } else if (currentUser.role === 'SUPER_ADMIN') {
       items.push(
@@ -216,7 +209,8 @@ export default function Layout({
         { id: 'super-reported', label: 'Stolen/Snatched Registry', icon: ShieldAlert },
         { id: 'super-search', label: 'National IMEI Search', icon: Smartphone },
         { id: 'super-shops', label: 'All Registered Shops', icon: Store },
-        { id: 'super-audits', label: 'Compliance Audit Logs', icon: ClipboardList }
+        { id: 'super-audits', label: 'Compliance Audit Logs', icon: ClipboardList },
+        { id: 'profile-settings', label: 'My Profile Settings', icon: User }
       );
     }
     
@@ -241,14 +235,14 @@ export default function Layout({
               <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
             </span>
             <span>
-              SIMULATED SESSION ACTIVE: Operating as <strong className="uppercase font-mono font-bold">{currentUser.name} ({currentUser.role})</strong>. Your authentic inspector/admin credentials belong to <strong>{originalUser.name}</strong>.
+              SIMULATED SESSION ACTIVE: Operating as <strong className="uppercase font-mono font-bold">{currentUser.name} ({currentUser.role})</strong>. Your authentic admin credentials belong to <strong>{originalUser.name}</strong>.
             </span>
           </div>
           <button
             onClick={onRestoreOriginalUser}
             className="bg-white hover:bg-amber-50 text-amber-700 hover:text-amber-800 px-3 py-1.5 rounded-xl text-xs font-bold cursor-pointer duration-150 shadow-xs uppercase font-mono tracking-wider flex items-center gap-1.5"
           >
-            ↩️ Restore my {originalUser.role === 'MARKET_ADMIN' ? 'Inspector' : 'Super Admin'} Account
+            ↩️ Restore my Super Admin Account
           </button>
         </div>
       )}
@@ -265,6 +259,16 @@ export default function Layout({
             </h1>
             <p className="text-[9.5px] uppercase tracking-wider text-slate-400 font-bold font-sans mt-0.5">Mobile Compliance Audit System</p>
           </div>
+          {currentUser && (
+            <div className="hidden md:flex flex-col ml-4 pl-4 border-l border-slate-200" id="header-user-badge">
+              <span className="text-xs font-black text-slate-800 flex items-center gap-1">
+                👤 {currentUser.name} {currentUser.designation ? <span className="text-slate-500 font-medium">({currentUser.designation})</span> : ''}
+              </span>
+              <span className="text-[9.5px] font-mono leading-none font-bold text-blue-600 uppercase tracking-widest">
+                {currentUser.role === 'SUPER_ADMIN' ? 'Super Admin Office' : 'Registered Merchant'}
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Sync Controls and State Badges */}
@@ -350,16 +354,10 @@ export default function Layout({
                 [1] Shopkeeper Mode
               </button>
               <button
-                onClick={() => { onRoleSwitch('MARKET_ADMIN'); setActiveTab('market-shops'); }}
-                className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold duration-150 cursor-pointer ${(currentUser?.role as string) === 'MARKET_ADMIN' ? 'bg-amber-600 text-white shadow-xs' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'}`}
-              >
-                [2] Market Inspector
-              </button>
-              <button
                 onClick={() => { onRoleSwitch('SUPER_ADMIN'); setActiveTab('super-overview'); }}
                 className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold duration-150 cursor-pointer ${(currentUser?.role as string) === 'SUPER_ADMIN' ? 'bg-blue-600 text-white shadow-xs' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'}`}
               >
-                [3] Super Admin
+                [2] Super Admin
               </button>
             </div>
           </div>
@@ -388,7 +386,6 @@ export default function Layout({
               <span className="text-xs font-bold text-slate-800 block truncate">{currentUser?.name}</span>
               <span className={`text-[10px] font-bold px-2 py-0.5 rounded self-start ${
                 currentUser?.role === 'SUPER_ADMIN' ? 'bg-blue-50 text-blue-700 border border-blue-200' :
-                currentUser?.role === 'MARKET_ADMIN' ? 'bg-amber-50 text-amber-700 border border-amber-200' :
                 'bg-emerald-50 text-emerald-700 border border-emerald-200'
               }`}>{getRoleLabel(currentUser?.role)}</span>
               {currentUser?.marketName && (

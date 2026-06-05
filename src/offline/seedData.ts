@@ -102,21 +102,6 @@ export const SEED_USERS: AppUser[] = [
     createdAt: new Date(Date.now() - 40 * 24 * 60 * 60 * 1000).toISOString()
   },
   {
-    id: 'usr-mktadmin-quaid',
-    name: 'Zia Khan Mehsood',
-    email: 'quaidabad@compliance.gov.pk',
-    password: 'quaidabad123',
-    securityQuestion: 'birth_city',
-    securityAnswer: 'karachi',
-    role: 'MARKET_ADMIN',
-    status: 'APPROVED',
-    marketId: 'mkt-kara-quaid',
-    marketName: 'Quaidabad Mobile Market, Karachi',
-    cnic: '42101-5555555-5',
-    contactNumber: '03215555555',
-    createdAt: new Date(Date.now() - 35 * 24 * 60 * 60 * 1000).toISOString()
-  },
-  {
     id: 'usr-shopkeeper-saleem',
     name: 'Muhammad Saleem',
     email: 'mrsaleem4781@gmail.com', // Pre-configuring matching user email from runtime context!

@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-export type UserRole = 'SUPER_ADMIN' | 'MARKET_ADMIN' | 'SHOPKEEPER';
+export type UserRole = 'SUPER_ADMIN' | 'SHOPKEEPER';
 
 export type AccountStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
 
@@ -12,6 +12,7 @@ export interface AppUser {
   name: string;
   email: string;
   password?: string;
+  designation?: string;
   securityQuestion?: string;
   securityAnswer?: string;
   role: UserRole;

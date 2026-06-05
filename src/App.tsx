@@ -12,14 +12,23 @@ import Layout from './components/Layout';
 import KmedaHub from './components/KmedaHub';
 import AuthModule from './modules/auth/AuthModule';
 import ShopkeeperDashboard from './modules/shopkeeper/ShopkeeperDashboard';
-import MarketAdminDashboard from './modules/marketAdmin/MarketAdminDashboard';
 import SuperAdminDashboard from './modules/superAdmin/SuperAdminDashboard';
+import UserProfileSettings from './components/UserProfileSettings';
 
 export default function App() {
   const [currentUser, setCurrentUser] = useState<AppUser | null>(null);
   const [originalUser, setOriginalUser] = useState<AppUser | null>(null);
   const [activeTab, setActiveTab] = useState<string>('merchant-ops');
   const [isDbReady, setIsDbReady] = useState(false);
+
+  const handleUserUpdate = async (updatedUser: AppUser) => {
+    setCurrentUser(updatedUser);
+    if (originalUser && originalUser.id === updatedUser.id) {
+      setOriginalUser(updatedUser);
+      await db.setConfig('originalUser', updatedUser);
+    }
+    await db.setConfig('currentUser', updatedUser);
+  };
 
   useEffect(() => {
     const initApp = async () => {
@@ -65,8 +74,6 @@ export default function App() {
   const setInitialTabForRole = (role: UserRole) => {
     if (role === 'SHOPKEEPER') {
       setActiveTab('merchant-ops');
-    } else if (role === 'MARKET_ADMIN') {
-      setActiveTab('market-shops');
     } else if (role === 'SUPER_ADMIN') {
       setActiveTab('super-overview');
     }
@@ -102,8 +109,6 @@ export default function App() {
     
     if (role === 'SHOPKEEPER') {
       targetUser = await db.users.get('usr-shopkeeper-saleem');
-    } else if (role === 'MARKET_ADMIN') {
-      targetUser = await db.users.get('usr-mktadmin-quaid');
     } else if (role === 'SUPER_ADMIN') {
       targetUser = await db.users.get('usr-superadmin');
     }
@@ -142,14 +147,15 @@ export default function App() {
     >
       {activeTab === 'kmeda-hub' && <KmedaHub />}
 
+      {activeTab === 'profile-settings' && (
+        <UserProfileSettings currentUser={currentUser} onUserUpdate={handleUserUpdate} />
+      )}
+
       {/* Contextual dashboard panels rendering based on User SaaS roles */}
-      {activeTab !== 'kmeda-hub' && currentUser.role === 'SHOPKEEPER' && (
+      {activeTab !== 'kmeda-hub' && activeTab !== 'profile-settings' && currentUser.role === 'SHOPKEEPER' && (
         <ShopkeeperDashboard currentUser={currentUser} activeTab={activeTab} />
       )}
-      {activeTab !== 'kmeda-hub' && currentUser.role === 'MARKET_ADMIN' && (
-        <MarketAdminDashboard currentUser={currentUser} activeTab={activeTab} />
-      )}
-      {activeTab !== 'kmeda-hub' && currentUser.role === 'SUPER_ADMIN' && (
+      {activeTab !== 'kmeda-hub' && activeTab !== 'profile-settings' && currentUser.role === 'SUPER_ADMIN' && (
         <SuperAdminDashboard currentUser={currentUser} activeTab={activeTab} />
       )}
     </Layout>
