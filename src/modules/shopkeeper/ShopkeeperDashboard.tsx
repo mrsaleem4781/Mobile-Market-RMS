@@ -740,32 +740,6 @@ export default function ShopkeeperDashboard({ currentUser, activeTab }: Shopkeep
         </button>
       </div>
 
-      {/* Prominent Search Bar (Moved out of logs to the main dashboard for quick access) */}
-      <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs flex flex-col md:flex-row items-center gap-4">
-        <div className="flex items-center gap-2 shrink-0">
-          <Search className="w-4 h-4 text-blue-600" />
-          <span className="text-xs font-bold text-slate-700 uppercase">Live Registry Search:</span>
-        </div>
-        <div className="relative w-full">
-          <input
-            type="text"
-            placeholder="Search by IMEI number, model, phone coordinates, or buyer/seller name..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-slate-100/50 hover:bg-slate-100 focus:bg-white border border-slate-205 rounded-xl pl-4 pr-10 py-2.5 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 font-medium tracking-wide transition-all"
-          />
-          {searchQuery && (
-            <button 
-              onClick={() => setSearchQuery('')}
-              className="absolute right-3 top-2.5 p-1 text-xs text-slate-400 hover:text-slate-600 font-bold"
-              title="Clear search query"
-            >
-              ×
-            </button>
-          )}
-        </div>
-      </div>
-
       {/* CPLC Sindh Stolen Device Checker */}
       <ImeiVerifyPortal />
 
@@ -787,28 +761,49 @@ export default function ShopkeeperDashboard({ currentUser, activeTab }: Shopkeep
             <h3 className="text-3xl font-black text-slate-900 leading-none">{totalSell}</h3>
           </div>
           <div className="bg-blue-500/10 text-blue-600 h-14 w-14 rounded-2xl flex items-center justify-center border border-blue-50 shadow-xs shrink-0">
-            <TrendingDown className="w-6 h-6 text-blue-650" />
+            <TrendingDown className="w-6 h-6 text-blue-655" />
           </div>
         </div>
 
         <div className="bg-white border border-slate-200/80 p-6 rounded-2xl flex items-center justify-between shadow-xs hover:shadow-md transition">
           <div className="space-y-1.5">
             <span className="text-xs text-slate-450 font-bold block tracking-tight">Pending Sync Queue</span>
-            <h3 className="text-3xl font-black text-amber-600 leading-none animate-pulse">{pendingSync}</h3>
+            <h3 className="text-3xl font-black text-amber-600 leading-none {pendingSync > 0 ? 'animate-pulse' : ''}">{pendingSync}</h3>
           </div>
           <div className="bg-amber-500/10 text-amber-600 h-14 w-14 rounded-2xl flex items-center justify-center border border-amber-55/70 shadow-xs shrink-0">
-            <Clock className="w-6 h-6 text-amber-600 animate-pulse" />
+            <Clock className={`w-6 h-6 text-amber-600 ${pendingSync > 0 ? 'animate-pulse' : ''}`} />
           </div>
         </div>
       </div>
 
       {/* 3. Overview of recent entries */}
       <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-xs" id="recent-listings">
-        <div className="p-4 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
-          <h3 className="text-[10px] font-bold tracking-wider text-slate-500 uppercase font-mono">
-            {searchQuery ? `Search Results (${filteredTransactions.length} matches)` : `Recent Daily Actions (${filteredTransactions.slice(0, 5).length})`}
-          </h3>
-          <span className="text-slate-400 text-[10px] font-mono font-medium">Last updated: Just now</span>
+        <div className="p-4 border-b border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+          <div className="space-y-0.5">
+            <h3 className="text-[10px] font-bold tracking-wider text-slate-500 uppercase font-mono">
+              {searchQuery ? `Search Results (${filteredTransactions.length} matches)` : `Recent Daily Actions (${filteredTransactions.slice(0, 5).length})`}
+            </h3>
+            <span className="text-slate-400 text-[10px] font-mono font-medium block">Last updated: Just now</span>
+          </div>
+
+          {/* Compact Local Entry Filter Bar */}
+          <div className="relative w-full sm:w-72">
+            <input
+              type="text"
+              placeholder="Search local transactions..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-white border border-slate-205 rounded-xl px-3 py-1.5 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 font-sans"
+            />
+            {searchQuery && (
+              <button 
+                onClick={() => setSearchQuery('')}
+                className="absolute right-2.5 top-1.5 p-0.5 text-xs text-slate-400 hover:text-slate-650 font-black cursor-pointer"
+              >
+                ×
+              </button>
+            )}
+          </div>
         </div>
 
         {filteredTransactions.length === 0 ? (

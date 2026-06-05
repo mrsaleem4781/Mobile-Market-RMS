@@ -200,14 +200,12 @@ export default function Layout({
     if (currentUser.role === 'SHOPKEEPER') {
       items.push(
         { id: 'merchant-ops', label: 'Buy/Sell Entries', icon: Smartphone },
-        { id: 'kmeda-hub', label: 'KMEDA Quaidabad Hub', icon: Sparkles },
         { id: 'merchant-reported', label: 'Report Snatched Mobile', icon: ShieldAlert },
         { id: 'merchant-history', label: 'Transaction Logs', icon: ClipboardList }
       );
     } else if (currentUser.role === 'MARKET_ADMIN') {
       items.push(
         { id: 'market-shops', label: 'Market Shops Registry', icon: Store },
-        { id: 'kmeda-hub', label: 'KMEDA Quaidabad Hub', icon: Sparkles },
         { id: 'market-reported', label: 'Snatched Devices Registry', icon: ShieldAlert },
         { id: 'market-approvals', label: 'Merchant Approvals', icon: ClipboardCheck },
         { id: 'market-reports', label: 'Market Compliance', icon: Building }
@@ -215,7 +213,6 @@ export default function Layout({
     } else if (currentUser.role === 'SUPER_ADMIN') {
       items.push(
         { id: 'super-overview', label: 'Global Dashboard', icon: Sliders },
-        { id: 'kmeda-hub', label: 'KMEDA Quaidabad Hub', icon: Sparkles },
         { id: 'super-reported', label: 'Stolen/Snatched Registry', icon: ShieldAlert },
         { id: 'super-search', label: 'National IMEI Search', icon: Smartphone },
         { id: 'super-shops', label: 'All Registered Shops', icon: Store },
@@ -426,31 +423,24 @@ export default function Layout({
 
             {/* PWA Mobile App Card */}
             {!isInstalled && (
-              <div className="bg-gradient-to-br from-slate-900 to-indigo-950 text-white p-4 rounded-xl border border-indigo-950/40 shadow-inner space-y-3" id="pwa-sidebar-card">
+              <div className="bg-emerald-50/50 border border-emerald-150 p-4 rounded-xl space-y-2.5" id="pwa-sidebar-card">
                 <div className="flex items-center gap-2">
-                  <div className="bg-emerald-500/10 text-emerald-400 p-1.5 rounded-lg border border-emerald-500/20">
-                    <Smartphone className="w-4 h-4 text-emerald-400" />
-                  </div>
+                  <Smartphone className="w-4 h-4 text-emerald-600 shrink-0" />
                   <div>
-                    <span className="text-[9px] text-indigo-300 font-bold block uppercase font-mono tracking-wider">KMEDA MOBILE APP</span>
-                    <h4 className="text-xs font-black text-white leading-tight">Install KMEDA App</h4>
+                    <span className="text-[9px] text-emerald-700 font-bold block uppercase font-mono tracking-wider">KMEDA MOBILE APP</span>
+                    <h4 className="text-xs font-black text-slate-800 leading-tight">Install Offline App</h4>
                   </div>
                 </div>
-                <p className="text-[10px] text-slate-300 leading-normal font-sans">
-                  اپنے موبائل پر انسٹال کریں اور بغیر انٹرنیٹ کے بھی خرید و فروخت کا تصدیقی ریکارڈ درج کریں۔
+                <p className="text-[10.5px] text-slate-600 leading-normal font-sans">
+                  اپنے موبائل پر انسٹال کریں اور بغیر انٹرنیٹ کے بھی تصدیقی ریکارڈ درج کریں۔
                 </p>
-                
                 <button
+                  type="button"
                   onClick={handleInstallApp}
-                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-2 px-3 rounded-lg text-[10px] uppercase font-mono tracking-widest duration-150 shadow-sm cursor-pointer flex items-center justify-center gap-2"
+                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1.5 px-3 rounded-lg text-[10px] uppercase duration-150 cursor-pointer flex items-center justify-center gap-1.5"
                 >
-                  <Smartphone className="w-3.5 h-3.5 animate-pulse" />
-                  INSTALL NOW / ابھی انسٹال کریں
+                  INSTALL / ابھی انسٹال کریں
                 </button>
-                
-                <p className="text-[9px] text-slate-400 font-medium leading-relaxed">
-                  💡 <strong>موبائل پر انسٹالیشن:</strong> براؤزر مینیو میں <strong className="text-slate-300">Add to Home Screen</strong> پر کلک کریں۔
-                </p>
               </div>
             )}
           </div>
