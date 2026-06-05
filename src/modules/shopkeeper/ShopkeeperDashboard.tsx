@@ -128,7 +128,7 @@ export default function ShopkeeperDashboard({ currentUser, activeTab }: Shopkeep
       };
 
       await db.reportedMobiles.put(newReport);
-      setStolenSuccessMessage("✔️ Success: Mobile theft / snatching incident recorded successfully.");
+      setStolenSuccessMessage("Success: Mobile theft / snatching incident recorded successfully.");
       
       // Clear Form
       setStolenBrand('');
@@ -183,7 +183,7 @@ export default function ShopkeeperDashboard({ currentUser, activeTab }: Shopkeep
         .first();
 
       if (matchedReported) {
-        setImeiDuplicateWarning(`🚨 POLICE & CPLC CRITICAL CHECK Match: This device (IMEI ${cleaned}) is registered in the Security Database as ${matchedReported.status}! Owner: ${matchedReported.ownerName}, FIR: ${matchedReported.firNumber || 'N/A'}. DO NOT PURCHASE OR SELL!`);
+        setImeiDuplicateWarning(`POLICE & CPLC CRITICAL CHECK Match: This device (IMEI ${cleaned}) is registered in the Security Database as ${matchedReported.status}! Owner: ${matchedReported.ownerName}, FIR: ${matchedReported.firNumber || 'N/A'}. DO NOT PURCHASE OR SELL!`);
         return;
       }
 
@@ -353,182 +353,190 @@ export default function ShopkeeperDashboard({ currentUser, activeTab }: Shopkeep
           </span>
         </div>
 
-        <div className="max-w-xl mx-auto bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-4" id="custom-incident-centered-form">
-          <div className="border-b border-slate-100 pb-2.5">
-            <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
-              Record Theft Incident File
+        <div className="max-w-xl mx-auto bg-white border border-slate-200/80 rounded-2xl p-6 shadow-xs space-y-6" id="custom-incident-centered-form">
+          <div className="space-y-1">
+            <h3 className="text-sm font-bold text-slate-900 tracking-tight">
+              Report Snatched or Stolen Mobile
             </h3>
+            <p className="text-slate-450 text-[11px] font-medium leading-normal">
+              Please enter the correct device details, owner information, and police report number below to block the device.
+            </p>
           </div>
 
           {stolenMessage && (
-            <div className="p-3 bg-rose-50 text-rose-800 border-l-4 border-rose-500 text-[11px] font-medium rounded-lg">
+            <div className="p-3 bg-rose-50 text-rose-800 border-l-4 border-rose-500 text-[11px] font-medium rounded-xl">
               {stolenMessage}
             </div>
           )}
 
           {stolenSuccessMessage && (
-            <div className="p-3 bg-emerald-50 text-emerald-800 border-l-4 border-emerald-500 text-[11px] font-medium rounded-lg">
+            <div className="p-3 bg-emerald-50 text-emerald-800 border-l-4 border-emerald-500 text-[11px] font-medium rounded-xl">
               {stolenSuccessMessage}
             </div>
           )}
 
-          <form onSubmit={handleReportStolenMobile} className="space-y-4 text-xs">
-            {/* Type toggle status */}
-            <div className="space-y-1">
-              <label className="text-[10px] text-slate-500 font-bold uppercase block tracking-wider font-sans">Incident Status *</label>
-              <div className="flex gap-2">
+          <form onSubmit={handleReportStolenMobile} className="space-y-5 text-xs">
+            {/* Status Selector */}
+            <div className="space-y-1.5">
+              <label className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Incident Type *</label>
+              <div className="grid grid-cols-2 gap-2 bg-slate-50 p-1.5 rounded-2xl border border-slate-100">
                 <button
                   type="button"
                   onClick={() => setStolenStatus('SNATCHED')}
-                  className={`flex-1 py-2 rounded-xl text-xs font-bold transition-colors cursor-pointer ${stolenStatus === 'SNATCHED' ? 'bg-rose-600 text-white shadow-xs' : 'bg-slate-50 border border-slate-205 text-slate-600 hover:bg-slate-100'}`}
+                  className={`py-2 rounded-xl text-xs font-bold transition-all duration-150 cursor-pointer ${stolenStatus === 'SNATCHED' ? 'bg-white border border-slate-200/60 text-rose-600 shadow-xs' : 'text-slate-500 hover:text-slate-800'}`}
                 >
-                  SNATCHED (Robbery)
+                  Snatched (Robbery)
                 </button>
                 <button
                   type="button"
                   onClick={() => setStolenStatus('STOLEN')}
-                  className={`flex-1 py-2 rounded-xl text-xs font-bold transition-colors cursor-pointer ${stolenStatus === 'STOLEN' ? 'bg-amber-600 text-white shadow-xs' : 'bg-slate-50 border border-slate-205 text-slate-600 hover:bg-slate-100'}`}
+                  className={`py-2 rounded-xl text-xs font-bold transition-all duration-150 cursor-pointer ${stolenStatus === 'STOLEN' ? 'bg-white border border-slate-200/60 text-amber-600 shadow-xs' : 'text-slate-500 hover:text-slate-800'}`}
                 >
-                  STOLEN (Theft/Lost)
+                  Stolen / Lost
                 </button>
               </div>
             </div>
 
-            {/* Brand & Model */}
-            <div className="grid grid-cols-2 gap-2">
-              <div className="space-y-1">
-                <label className="text-[10px] text-slate-500 font-bold block uppercase tracking-wider font-sans">Brand *</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Samsung, Apple"
-                  value={stolenBrand}
-                  onChange={(e) => setStolenBrand(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-250 rounded-xl px-3 py-2 text-slate-800 focus:outline-none focus:bg-white focus:border-blue-500"
-                />
-              </div>
-              <div className="space-y-1">
-                <label className="text-[10px] text-slate-500 font-bold block uppercase tracking-wider font-sans">Model *</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. S24, iPhone 15"
-                  value={stolenModel}
-                  onChange={(e) => setStolenModel(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-250 rounded-xl px-3 py-2 text-slate-800 focus:outline-none focus:bg-white focus:border-blue-500"
-                />
-              </div>
-            </div>
-
-            {/* IMEI 1 and 2 */}
-            <div className="space-y-1">
-              <label className="text-[10px] text-slate-500 font-bold block font-sans uppercase tracking-wider">Primary IMEI (14-15 Digits) *</label>
-              <input
-                type="text"
-                required
-                maxLength={15}
-                placeholder="Enter primary electronic IMEI"
-                value={stolenImei1}
-                onChange={(e) => setStolenImei1(e.target.value.replace(/[^0-9]/g, ''))}
-                className="w-full bg-slate-50 border border-slate-250 rounded-xl px-3 py-2 font-mono tracking-widest font-bold text-slate-800 focus:outline-none focus:bg-white focus:border-blue-500"
-              />
-            </div>
-
-            <div className="space-y-1">
-              <label className="text-[10px] text-slate-500 font-bold block font-sans uppercase tracking-wider">IMEI Slot 2 (Optional)</label>
-              <input
-                type="text"
-                maxLength={15}
-                placeholder="Enter secondary IMEI if available"
-                value={stolenImei2}
-                onChange={(e) => setStolenImei2(e.target.value.replace(/[^0-9]/g, ''))}
-                className="w-full bg-slate-50 border border-slate-250 rounded-xl px-3 py-2 font-mono tracking-widest text-slate-850 focus:outline-none focus:bg-white focus:border-blue-500"
-              />
-            </div>
-
-            <div className="border-t border-slate-100 pt-3 shrink-0">
-              <p className="text-[10px] text-slate-400 font-mono font-bold uppercase tracking-wider mb-2">Owner Identity Credentials</p>
-              <div className="space-y-2.5">
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="space-y-1">
-                    <label className="text-[10px] text-slate-500 font-bold block uppercase tracking-wider font-sans">Owner Full Name *</label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="Name on CNIC card"
-                      value={stolenOwnerName}
-                      onChange={(e) => setStolenOwnerName(e.target.value)}
-                      className="w-full bg-slate-50 border border-slate-250 rounded-xl px-3 py-2 text-slate-800 focus:outline-none focus:bg-white focus:border-blue-500"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-[10px] text-slate-500 font-bold block uppercase tracking-wider font-sans">Owner Phone *</label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="Phone contact"
-                      value={stolenOwnerContact}
-                      onChange={(e) => setStolenOwnerContact(e.target.value)}
-                      className="w-full bg-slate-50 border border-slate-250 rounded-xl px-3 py-2 font-mono text-slate-800 focus:outline-none focus:bg-white focus:border-blue-500"
-                    />
-                  </div>
-                </div>
+            {/* Part 1: Device Specs */}
+            <div className="space-y-3 pt-1">
+              <h4 className="text-[10px] text-slate-400 font-bold uppercase tracking-widest border-b border-slate-100 pb-1">1. Device Specifications</h4>
+              <div className="grid grid-cols-2 gap-2.5">
                 <div className="space-y-1">
-                  <label className="text-[10px] text-slate-500 font-bold block font-sans uppercase tracking-wider">Owner CNIC Number *</label>
+                  <label className="text-[10px] text-slate-500 font-bold block">Brand Name *</label>
                   <input
                     type="text"
                     required
-                    placeholder="13 Numeric digits"
+                    placeholder="e.g. Samsung, Apple"
+                    value={stolenBrand}
+                    onChange={(e) => setStolenBrand(e.target.value)}
+                    className="w-full bg-white border border-slate-200 hover:border-slate-300 focus:border-rose-500 focus:ring-1 focus:ring-rose-500 rounded-xl px-3 py-2 text-xs font-medium text-slate-800 focus:outline-none transition duration-150"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] text-slate-500 font-bold block">Model Name *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. S24, iPhone 15"
+                    value={stolenModel}
+                    onChange={(e) => setStolenModel(e.target.value)}
+                    className="w-full bg-white border border-slate-200 hover:border-slate-300 focus:border-rose-500 focus:ring-1 focus:ring-rose-500 rounded-xl px-3 py-2 text-xs font-medium text-slate-800 focus:outline-none transition duration-150"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <div className="space-y-1">
+                  <label className="text-[10px] text-slate-500 font-bold block">Primary IMEI (Slot 1) *</label>
+                  <input
+                    type="text"
+                    required
                     maxLength={15}
-                    value={stolenOwnerCnic}
-                    onChange={(e) => setStolenOwnerCnic(formatCNICInput(e.target.value))}
-                    className="w-full bg-slate-50 border border-slate-250 rounded-xl px-3 py-2 font-mono text-slate-850 focus:outline-none focus:bg-white focus:border-blue-500"
+                    placeholder="15-digit IMEI check number"
+                    value={stolenImei1}
+                    onChange={(e) => setStolenImei1(e.target.value.replace(/[^0-9]/g, ''))}
+                    className="w-full bg-white border border-slate-200 hover:border-slate-300 focus:border-rose-500 focus:ring-1 focus:ring-rose-500 rounded-xl px-3 py-2 text-xs font-mono font-bold tracking-wider text-slate-800 focus:outline-none transition duration-150"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] text-slate-500 font-bold block">Secondary IMEI (Slot 2)</label>
+                  <input
+                    type="text"
+                    maxLength={15}
+                    placeholder="Optional 15-digit IMEI"
+                    value={stolenImei2}
+                    onChange={(e) => setStolenImei2(e.target.value.replace(/[^0-9]/g, ''))}
+                    className="w-full bg-white border border-slate-200 hover:border-slate-300 focus:border-rose-500 focus:ring-1 focus:ring-rose-500 rounded-xl px-3 py-2 text-xs font-mono text-slate-800 focus:outline-none transition duration-150"
                   />
                 </div>
               </div>
             </div>
 
-            <div className="border-t border-slate-100 pt-3 shrink-0">
-              <p className="text-[10px] text-slate-400 font-mono font-bold uppercase tracking-wider mb-2">Legal Incident Records</p>
-              <div className="grid grid-cols-2 gap-2">
+            {/* Part 2: Owner Verification */}
+            <div className="space-y-3 pt-2">
+              <h4 className="text-[10px] text-slate-400 font-bold uppercase tracking-widest border-b border-slate-100 pb-1">2. Owner Identification</h4>
+              <div className="grid grid-cols-2 gap-2.5">
                 <div className="space-y-1">
-                  <label className="text-[10px] text-slate-500 font-bold block uppercase tracking-wider font-sans">FIR / Diary No.</label>
+                  <label className="text-[10px] text-slate-500 font-bold block">Full Name *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Owner's legal name"
+                    value={stolenOwnerName}
+                    onChange={(e) => setStolenOwnerName(e.target.value)}
+                    className="w-full bg-white border border-slate-200 hover:border-slate-300 focus:border-rose-500 focus:ring-1 focus:ring-rose-500 rounded-xl px-3 py-2 text-xs font-medium text-slate-800 focus:outline-none transition duration-150"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] text-slate-500 font-bold block">Contact Number *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Active mobile number"
+                    value={stolenOwnerContact}
+                    onChange={(e) => setStolenOwnerContact(e.target.value)}
+                    className="w-full bg-white border border-slate-200 hover:border-slate-300 focus:border-rose-500 focus:ring-1 focus:ring-rose-500 rounded-xl px-3 py-2 text-xs font-medium text-slate-800 focus:outline-none transition duration-150"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[10px] text-slate-500 font-bold block">CNIC Number *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="13-digit CNIC card number (XXXXX-XXXXXXX-X)"
+                  maxLength={15}
+                  value={stolenOwnerCnic}
+                  onChange={(e) => setStolenOwnerCnic(formatCNICInput(e.target.value))}
+                  className="w-full bg-white border border-slate-200 hover:border-slate-300 focus:border-rose-500 focus:ring-1 focus:ring-rose-500 rounded-xl px-3 py-2 text-xs font-mono font-medium text-slate-800 focus:outline-none transition duration-150"
+                />
+              </div>
+            </div>
+
+            {/* Part 3: Incident Details */}
+            <div className="space-y-3 pt-2">
+              <h4 className="text-[10px] text-slate-400 font-bold uppercase tracking-widest border-b border-slate-100 pb-1">3. Incident & Legal Documents</h4>
+              <div className="grid grid-cols-2 gap-2.5">
+                <div className="space-y-1">
+                  <label className="text-[10px] text-slate-500 font-bold block">FIR / Complaint Code</label>
                   <input
                     type="text"
                     placeholder="e.g. 104/26"
                     value={stolenFir}
                     onChange={(e) => setStolenFir(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-250 rounded-xl px-3 py-2 text-slate-800 focus:outline-none focus:bg-white focus:border-blue-500"
+                    className="w-full bg-white border border-slate-200 hover:border-slate-300 focus:border-rose-500 focus:ring-1 focus:ring-rose-500 rounded-xl px-3 py-2 text-xs font-medium text-slate-800 focus:outline-none transition duration-150"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] text-slate-500 font-bold block uppercase tracking-wider font-sans">Incident Date *</label>
+                  <label className="text-[10px] text-slate-500 font-bold block">Incident Date *</label>
                   <input
                     type="date"
                     required
                     value={stolenDate}
                     onChange={(e) => setStolenDate(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-250 rounded-xl px-3 py-1.5 text-slate-800 focus:outline-none focus:bg-white focus:border-blue-500"
+                    className="w-full bg-white border border-slate-200 hover:border-slate-300 focus:border-rose-500 focus:ring-1 focus:ring-rose-500 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none transition duration-150"
                   />
                 </div>
               </div>
-              <div className="space-y-1 mt-2.5">
-                <label className="text-[10px] text-slate-500 font-bold block uppercase tracking-wider font-sans">Police Station Location</label>
+
+              <div className="space-y-1">
+                <label className="text-[10px] text-slate-500 font-bold block">Police Station Name</label>
                 <input
                   type="text"
-                  placeholder="e.g. Saddar PS, Quaidabad PS"
+                  placeholder="e.g. Quaidabad PS, Saddar PS"
                   value={stolenPS}
                   onChange={(e) => setStolenPS(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-250 rounded-xl px-3 py-2 text-slate-800 focus:outline-none focus:bg-white focus:border-blue-500"
+                  className="w-full bg-white border border-slate-200 hover:border-slate-300 focus:border-rose-500 focus:ring-1 focus:ring-rose-500 rounded-xl px-3 py-2 text-xs font-medium text-slate-800 focus:outline-none transition duration-150"
                 />
               </div>
             </div>
 
             <button
               type="submit"
-              className="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-3 px-4 rounded-xl text-xs uppercase duration-150 cursor-pointer text-center"
+              className="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-3 px-4 rounded-xl text-xs uppercase duration-150 cursor-pointer text-center tracking-wider shadow-sm transition-all"
             >
-              Log Incident & Synchronize
+              Block Device & Submit Incident Report
             </button>
           </form>
         </div>

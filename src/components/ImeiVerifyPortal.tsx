@@ -179,28 +179,28 @@ export default function ImeiVerifyPortal() {
           onClick={() => { setVerifyImei('352001122334455'); setVerifyResult('IDLE'); }}
           className="px-2 py-1 text-[9px] font-mono font-bold border border-rose-205 bg-rose-50/50 hover:bg-rose-50 rounded-lg text-rose-700 transition duration-150 cursor-pointer"
         >
-          🚨 Stolen Samsung (352001122334455)
+          Stolen Samsung (352001122334455)
         </button>
         <button
           type="button"
           onClick={() => { setVerifyImei('861122003344556'); setVerifyResult('IDLE'); }}
           className="px-2 py-1 text-[9px] font-mono font-bold border border-rose-205 bg-rose-50/50 hover:bg-rose-50 rounded-lg text-rose-700 transition duration-150 cursor-pointer"
         >
-          🚨 Snatched Infinix (861122003344556)
+          Snatched Infinix (861122003344556)
         </button>
         <button
           type="button"
           onClick={() => { setVerifyImei('358249622915834'); setVerifyResult('IDLE'); }}
           className="px-2 py-1 text-[9px] font-mono font-bold border border-amber-205 bg-amber-50/30 hover:bg-amber-50 rounded-lg text-amber-700 transition duration-150 cursor-pointer"
         >
-          ⚖️ Double-shop IMEI Check
+          Double-shop IMEI Check
         </button>
         <button
           type="button"
           onClick={() => { setVerifyImei('358249622915999'); setVerifyResult('IDLE'); }}
           className="px-2 py-1 text-[9px] font-mono font-bold border border-emerald-205 bg-emerald-50/30 hover:bg-emerald-50 rounded-lg text-emerald-700 transition duration-150 cursor-pointer"
         >
-          ✔️ Clean IMEI Check
+          Clean IMEI Check
         </button>
       </div>
 
@@ -211,7 +211,7 @@ export default function ImeiVerifyPortal() {
             <ShieldCheck className="w-5 h-5" />
           </span>
           <div className="space-y-1">
-            <h4 className="text-xs font-extrabold text-emerald-800 tracking-wide font-mono uppercase">✅ NO ACTIVE BLACKLIST COMPLAINTS FOUND (SAFE TO TRADE)</h4>
+            <h4 className="text-xs font-extrabold text-emerald-800 tracking-wide font-mono uppercase">NO ACTIVE BLACKLIST COMPLAINTS FOUND (SAFE TO TRADE)</h4>
             <p className="text-[11px] text-emerald-700 font-medium leading-relaxed font-sans">
               This device/IMEI is reported <strong>completely CLEAN</strong>. No active theft, snatching, or blocking complaints are found against this IMEI on the Citizens-Police Liaison Committee (CPLC) Sindh registry or national security checklists. You may safely buy or sell this device.
             </p>
@@ -228,7 +228,7 @@ export default function ImeiVerifyPortal() {
             <AlertTriangle className="w-5 h-5" />
           </span>
           <div className="space-y-1.5">
-            <h4 className="text-xs font-extrabold text-rose-800 tracking-wide font-mono uppercase">🚨 ILLEGAL DEVICE CRITICAL WARNING: REPORTED STOLEN / BLOCKED</h4>
+            <h4 className="text-xs font-extrabold text-rose-800 tracking-wide font-mono uppercase">ILLEGAL DEVICE CRITICAL WARNING: REPORTED STOLEN / BLOCKED</h4>
             <p className="text-[11px] text-rose-700 font-semibold leading-relaxed font-sans">
               This device is registered on the blacklisted / stolen database. An active police FIR or theft report is recorded on this IMEI. Trading this device is a serious legal violation and SOP non-compliance.
             </p>
@@ -243,7 +243,7 @@ export default function ImeiVerifyPortal() {
             </div>
 
             <div className="text-[9px] text-rose-600 font-bold block pt-1.5 text-center sm:text-left font-sans">
-              ⚠️ CPLC SINDH INSTRUCTIONS: Do not trade this device. Immediately report this match to the nearest CPLC Sindh cell or local police authority.
+              CPLC SINDH INSTRUCTIONS: Do not trade this device. Immediately report this match to the nearest CPLC Sindh cell or local police authority.
             </div>
           </div>
         </div>
@@ -255,7 +255,7 @@ export default function ImeiVerifyPortal() {
             <AlertTriangle className="w-5 h-5" />
           </span>
           <div className="space-y-1.5">
-            <h4 className="text-xs font-extrabold text-amber-800 tracking-wide font-mono uppercase">⚠️ DUPLICATE INTERNAL REGISTRY MATCH (SOP WARNING)</h4>
+            <h4 className="text-xs font-extrabold text-amber-800 tracking-wide font-mono uppercase">DUPLICATE INTERNAL REGISTRY MATCH (SOP WARNING)</h4>
             <p className="text-[11px] text-amber-700 font-medium leading-relaxed font-sans">
               This device has already been logged in our active internal registry database. Multiple trades of the same serial/IMEI across different shops within a short time interval indicate high suspicion.
             </p>
