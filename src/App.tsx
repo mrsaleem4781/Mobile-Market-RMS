@@ -37,13 +37,12 @@ export default function App() {
           await bootstrapSeedData();
         }
         
-        // 2. Load active persistent session if logged in
-        const savedUser = await db.getConfig<AppUser>('currentUser');
-        if (savedUser) {
-          setCurrentUser(savedUser);
-          // Set standard starting tab matching role
-          setInitialTabForRole(savedUser.role);
-        }
+        // 2. Do not auto-load persistent session to ensure login screen is shown on reload/open
+        // const savedUser = await db.getConfig<AppUser>('currentUser');
+        // if (savedUser) {
+        //   setCurrentUser(savedUser);
+        //   setInitialTabForRole(savedUser.role);
+        // }
         
         // 3. Kick off sync engine auto background processor
         syncEngine.startPeriodicSync();

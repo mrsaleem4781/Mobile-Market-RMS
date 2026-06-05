@@ -393,158 +393,200 @@ export default function KmedaHub() {
           </div>
 
           {showAddForm && (
-            <form onSubmit={handleCreateStory} className="bg-white border-2 border-emerald-500/30 rounded-2xl p-5 md:p-6 space-y-4 shadow-md animate-fade-in text-slate-800">
-              <div className="bg-gradient-to-r from-emerald-500/10 to-transparent p-3 -m-5 md:-m-6 mb-4 rounded-t-xl border-b border-emerald-500/10 flex items-center justify-between">
-                <span className="text-xs font-extrabold text-emerald-800 font-mono tracking-widest uppercase flex items-center gap-1.5">
-                  <Sparkles className="w-4 h-4 text-emerald-600" /> New Success Story / کامیابی کی نئی رپورٹ
-                </span>
-                <span className="text-[9.5px] text-slate-400 font-mono italic">KMEDA Quaidabad Registry Control</span>
-              </div>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* Title (English) */}
-                <div className="space-y-1">
-                  <label className="text-[11px] text-slate-500 font-bold block uppercase font-mono">Incident Title (English)</label>
-                  <input 
-                    type="text" 
-                    required
-                    value={newTitle}
-                    onChange={(e) => setNewTitle(e.target.value)}
-                    placeholder="e.g. iPhone 13 Pro Recovered in 24 Hours" 
-                    className="w-full text-xs font-semibold px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 focus:outline-hidden focus:ring-1 focus:ring-emerald-500"
-                  />
+            <form onSubmit={handleCreateStory} className="bg-white border border-slate-200 rounded-3xl p-6 md:p-8 space-y-6 shadow-md animate-fade-in text-slate-800">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+                <div className="flex items-center gap-2.5">
+                  <div className="h-9 w-9 bg-emerald-500/10 text-emerald-600 rounded-xl flex items-center justify-center">
+                    <Sparkles className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-black text-slate-900 uppercase tracking-tight">New Success Story Registry</h3>
+                    <p className="text-[10px] text-slate-400 font-bold block uppercase tracking-wider mt-0.5">کامیابی کی نئی رپورٹ کا باقاعدہ اندراج</p>
+                  </div>
                 </div>
-                
-                {/* Title (Urdu) */}
-                <div className="space-y-1">
-                  <label className="text-[11px] text-slate-500 font-bold block text-right font-mono font-sans">رپورٹ کا عنوان (اردو)</label>
-                  <input 
-                    type="text" 
-                    dir="rtl"
-                    value={newTitleUrdu}
-                    onChange={(e) => setNewTitleUrdu(e.target.value)}
-                    placeholder="مثال: ایک دن میں آئی فون 13 کی کامیاب بازیابی" 
-                    className="w-full text-xs font-extrabold px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 text-right focus:outline-hidden focus:ring-1 focus:ring-emerald-500"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                {/* Brand */}
-                <div className="space-y-1">
-                  <label className="text-[11px] text-slate-500 font-bold block uppercase font-mono">Device Brand / برانڈ</label>
-                  <input 
-                    type="text" 
-                    value={newBrand}
-                    onChange={(e) => setNewBrand(e.target.value)}
-                    placeholder="e.g. Samsung, Apple, Tecno" 
-                    className="w-full text-xs font-semibold px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-hidden focus:ring-1 focus:ring-emerald-500"
-                  />
-                </div>
-                {/* Model */}
-                <div className="space-y-1">
-                  <label className="text-[11px] text-slate-500 font-bold block uppercase font-mono">Device Model / ماڈل</label>
-                  <input 
-                    type="text" 
-                    value={newModel}
-                    onChange={(e) => setNewModel(e.target.value)}
-                    placeholder="e.g. Galaxy S24, Spark Go" 
-                    className="w-full text-xs font-semibold px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-hidden focus:ring-1 focus:ring-emerald-500"
-                  />
-                </div>
-                {/* Badge Status */}
-                <div className="space-y-1">
-                  <label className="text-[11px] text-slate-500 font-bold block uppercase font-mono">Resolution status / پوزیشن</label>
-                  <select
-                    value={newBadge}
-                    onChange={(e) => setNewBadge(e.target.value as any)}
-                    className="w-full text-xs font-semibold px-2 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-hidden focus:ring-1 focus:ring-emerald-500"
-                  >
-                    <option value="RECOVERED">RECOVERED / بازیاب شدہ</option>
-                    <option value="RETURNED">RETURNED / سپرد شدہ</option>
-                    <option value="ARRESTED">ARRESTED / گرفتار مجرم</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Key Actors */}
-              <div className="space-y-1">
-                <label className="text-[11px] text-slate-500 font-bold block uppercase font-mono">Key Actors Involved / شریک برادری و پولیس</label>
-                <input 
-                  type="text" 
-                  value={newActors}
-                  onChange={(e) => setNewActors(e.target.value)}
-                  placeholder="e.g. Shopkeeper Bilal, Sadar Zia Khan Mehsood, Quaidabad Police" 
-                  className="w-full text-xs font-semibold px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-hidden focus:ring-1 focus:ring-emerald-500"
-                />
-              </div>
-
-              {/* Summaries */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="text-[11px] text-slate-500 font-bold block uppercase font-mono">Brief Summary (English)</label>
-                  <textarea 
-                    value={newSummary}
-                    onChange={(e) => setNewSummary(e.target.value)}
-                    rows={2}
-                    placeholder="Brief 1-sentence summary of what happened." 
-                    className="w-full text-xs font-medium px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-hidden focus:ring-1 focus:ring-emerald-500"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-[11px] text-slate-500 font-bold block text-right font-mono font-sans">مختصر خلاصہ (اردو)</label>
-                  <textarea 
-                    value={newSummaryUrdu}
-                    onChange={(e) => setNewSummaryUrdu(e.target.value)}
-                    rows={2}
-                    dir="rtl"
-                    placeholder="کیس کی مختصر صورتحال اردو میں تحریر کریں۔" 
-                    className="w-full text-xs font-semibold px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-right focus:outline-hidden focus:ring-1 focus:ring-emerald-500"
-                  />
-                </div>
-              </div>
-
-              {/* Full Stories */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="text-[11px] text-slate-500 font-bold block uppercase font-mono">Full Incident Story (English)</label>
-                  <textarea 
-                    required
-                    value={newFullStory}
-                    onChange={(e) => setNewFullStory(e.target.value)}
-                    rows={4}
-                    placeholder="Comprehensive description of tracking process, database verifications, and KMEDA return Ceremony..." 
-                    className="w-full text-xs font-medium px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-hidden focus:ring-1 focus:ring-emerald-500"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-[11px] text-slate-500 font-bold block text-right font-mono font-sans">تفصیلی رپورٹ (اردو)</label>
-                  <textarea 
-                    value={newFullStoryUrdu}
-                    onChange={(e) => setNewFullStoryUrdu(e.target.value)}
-                    rows={4}
-                    dir="rtl"
-                    placeholder="پوری کہانی، اور صڈر ضیاء خان محسود صاحب کی موجودگی میں واپس ملنے کی تقریب کی تفصیل..." 
-                    className="w-full text-xs font-semibold px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-right focus:outline-hidden focus:ring-1 focus:ring-emerald-500"
-                  />
-                </div>
-              </div>
-
-              <div className="flex justify-end gap-2 pt-2">
                 <button
                   type="button"
                   onClick={() => setShowAddForm(false)}
-                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg cursor-pointer transition duration-150"
+                  className="text-xs text-rose-500 hover:text-rose-600 font-bold bg-rose-50 hover:bg-rose-100/80 px-2.5 py-1.5 rounded-lg transition"
                 >
                   Cancel / منسوخ
                 </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg cursor-pointer flex items-center gap-1.5 transition duration-150 shadow-sm"
-                >
-                  <CheckCircle className="w-4 h-4 text-emerald-100" />
-                  <span>Publish / شائع کریں</span>
-                </button>
+              </div>
+
+              {/* CARD 1: Core Device & Actor Details */}
+              <div className="bg-slate-50/75 border border-slate-200/60 rounded-2xl p-5 space-y-4">
+                <div className="border-b border-slate-100/60 pb-2 flex items-center gap-1.5 text-xs font-extrabold text-slate-700 uppercase">
+                  <span>1. Core Device & Case Details / ڈیوائس کی معلومات</span>
+                </div>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  {/* Brand */}
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] text-slate-450 font-bold block uppercase tracking-wide">Device Brand / برانڈ</label>
+                    <input 
+                      type="text" 
+                      value={newBrand}
+                      onChange={(e) => setNewBrand(e.target.value)}
+                      placeholder="e.g. Samsung, Apple, Tecno" 
+                      className="w-full text-xs font-semibold px-3.5 py-2.5 bg-white border border-slate-205 rounded-xl focus:outline-hidden focus:ring-1 focus:ring-emerald-500 transition-all font-sans"
+                    />
+                  </div>
+                  {/* Model */}
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] text-slate-450 font-bold block uppercase tracking-wide">Device Model / ماڈل</label>
+                    <input 
+                      type="text" 
+                      value={newModel}
+                      onChange={(e) => setNewModel(e.target.value)}
+                      placeholder="e.g. Galaxy S24, Spark Go" 
+                      className="w-full text-xs font-semibold px-3.5 py-2.5 bg-white border border-slate-205 rounded-xl focus:outline-hidden focus:ring-1 focus:ring-emerald-500 transition-all font-sans"
+                    />
+                  </div>
+                  {/* Badge Status */}
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] text-slate-450 font-bold block uppercase tracking-wide">Resolution status / پوزیشن</label>
+                    <select
+                      value={newBadge}
+                      onChange={(e) => setNewBadge(e.target.value as any)}
+                      className="w-full text-xs font-bold px-3 py-2.5 bg-white border border-slate-205 rounded-xl focus:outline-hidden focus:ring-1 focus:ring-emerald-500 transition-all"
+                    >
+                      <option value="RECOVERED">RECOVERED / بازیاب شدہ</option>
+                      <option value="RETURNED">RETURNED / سپرد شدہ</option>
+                      <option value="ARRESTED">ARRESTED / گرفتار مجرم</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Key Actors */}
+                <div className="space-y-1.5">
+                  <label className="text-[10px] text-slate-450 font-bold block uppercase tracking-wide">Key Actors Involved / شریک برادری و پولیس</label>
+                  <input 
+                    type="text" 
+                    value={newActors}
+                    onChange={(e) => setNewActors(e.target.value)}
+                    placeholder="e.g. Shopkeeper Bilal, Sadar Zia Khan Mehsood, Quaidabad Police" 
+                    className="w-full text-xs font-semibold px-3.5 py-2.5 bg-white border border-slate-205 rounded-xl focus:outline-hidden focus:ring-1 focus:ring-emerald-500 transition-all font-sans"
+                  />
+                </div>
+              </div>
+
+              {/* TWO COLUMN English / Urdu details grid - Clean, separate columns with generous gap to avoid overlapping */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 font-sans">
+                
+                {/* COLUMN 1: English Details Card */}
+                <div className="bg-white border border-slate-200/80 rounded-2xl p-5 space-y-4 shadow-3xs">
+                  <div className="border-b border-slate-100 pb-2 flex items-center justify-between text-xs font-black text-indigo-900 uppercase">
+                    <span>2. English Documentation</span>
+                    <span className="text-[9px] bg-indigo-50 px-2 py-0.5 rounded text-indigo-700 font-mono font-bold">EN Form</span>
+                  </div>
+
+                  {/* Title (English) */}
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] text-slate-450 font-bold block uppercase tracking-wide">Incident Title</label>
+                    <input 
+                      type="text" 
+                      required
+                      value={newTitle}
+                      onChange={(e) => setNewTitle(e.target.value)}
+                      placeholder="e.g. iPhone 13 Pro Recovered in 24 Hours" 
+                      className="w-full text-xs font-semibold px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:bg-white focus:outline-hidden focus:ring-1 focus:ring-indigo-500 transition-all font-sans"
+                    />
+                  </div>
+
+                  {/* Summaries */}
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] text-slate-450 font-bold block uppercase tracking-wide">Brief Summary</label>
+                    <textarea 
+                      value={newSummary}
+                      onChange={(e) => setNewSummary(e.target.value)}
+                      rows={2}
+                      placeholder="Brief 1-sentence summary of what happened." 
+                      className="w-full text-xs font-medium px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:bg-white focus:outline-hidden focus:ring-1 focus:ring-indigo-500 transition-all font-sans"
+                    />
+                  </div>
+
+                  {/* Full Stories */}
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] text-slate-450 font-bold block uppercase tracking-wide">Full Incident Story</label>
+                    <textarea 
+                      required
+                      value={newFullStory}
+                      onChange={(e) => setNewFullStory(e.target.value)}
+                      rows={4}
+                      placeholder="Comprehensive description of tracking process, database verifications, and KMEDA return Ceremony..." 
+                      className="w-full text-xs font-medium px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:bg-white focus:outline-hidden focus:ring-1 focus:ring-indigo-500 transition-all font-sans"
+                    />
+                  </div>
+                </div>
+
+                {/* COLUMN 2: Urdu Details Card (RTL aligned, colored border) */}
+                <div className="bg-blue-50/10 border border-blue-100 rounded-2xl p-5 space-y-4 shadow-3xs">
+                  <div className="border-b border-blue-100/50 pb-2 flex items-center justify-between text-xs font-black text-blue-900">
+                    <span className="text-[9px] bg-blue-100/80 px-2 py-0.5 rounded text-blue-800 font-sans font-bold">اردو فارم</span>
+                    <span className="font-sans font-extrabold text-blue-950">3. بازیابی اور تفصیلی رپورٹ (اردو)</span>
+                  </div>
+
+                  {/* Title (Urdu) */}
+                  <div className="space-y-1.5 text-right">
+                    <label className="text-[10px] text-slate-500 font-extrabold block">رپورٹ کا عنوان (اردو)</label>
+                    <input 
+                      type="text" 
+                      dir="rtl"
+                      value={newTitleUrdu}
+                      onChange={(e) => setNewTitleUrdu(e.target.value)}
+                      placeholder="مثال: ایک دن میں آئی فون 13 کی کامیاب بازیابی" 
+                      className="w-full text-xs font-extrabold px-3.5 py-2.5 bg-white border border-slate-205 rounded-xl text-slate-800 text-right focus:outline-hidden focus:ring-1 focus:ring-blue-500 transition-all"
+                    />
+                  </div>
+
+                  {/* Summaries (Urdu) */}
+                  <div className="space-y-1.5 text-right">
+                    <label className="text-[10px] text-slate-500 font-extrabold block">مختصر خلاصہ (اردو)</label>
+                    <textarea 
+                      value={newSummaryUrdu}
+                      onChange={(e) => setNewSummaryUrdu(e.target.value)}
+                      rows={2}
+                      dir="rtl"
+                      placeholder="کیس کی مختصر صورتحال اردو میں تحریر کریں۔" 
+                      className="w-full text-xs font-extrabold px-3.5 py-2.5 bg-white border border-slate-205 rounded-xl text-right focus:outline-hidden focus:ring-1 focus:ring-blue-500 transition-all"
+                    />
+                  </div>
+
+                  {/* Full Stories (Urdu) */}
+                  <div className="space-y-1.5 text-right">
+                    <label className="text-[10px] text-slate-500 font-extrabold block">تفصیلی رپورٹ (اردو)</label>
+                    <textarea 
+                      value={newFullStoryUrdu}
+                      onChange={(e) => setNewFullStoryUrdu(e.target.value)}
+                      rows={4}
+                      dir="rtl"
+                      placeholder="پوری کہانی، اور صدر ضیاء خان محسود صاحب کی موجودگی میں واپس ملنے کی تقریب کی تفصیل..." 
+                      className="w-full text-xs font-extrabold px-3.5 py-2.5 bg-white border border-slate-205 rounded-xl text-right focus:outline-hidden focus:ring-1 focus:ring-blue-500 transition-all"
+                    />
+                  </div>
+                </div>
+
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex items-center justify-between pt-4 border-t border-slate-100">
+                <span className="text-[10px] text-slate-400 font-medium font-sans italic">All recovery logs are instantly validated against local database records.</span>
+                <div className="flex gap-2.5">
+                  <button
+                    type="button"
+                    onClick={() => setShowAddForm(false)}
+                    className="px-4.5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl cursor-pointer transition duration-150"
+                  >
+                    Cancel / منسوخ
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl cursor-pointer flex items-center gap-1.5 transition duration-150 shadow-md shadow-emerald-500/10 hover:shadow-lg"
+                  >
+                    <CheckCircle className="w-4 h-4 text-emerald-100" />
+                    <span>Publish Case / رپورٹ شائع کریں</span>
+                  </button>
+                </div>
               </div>
             </form>
           )}
