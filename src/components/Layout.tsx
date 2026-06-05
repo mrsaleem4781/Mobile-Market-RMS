@@ -210,6 +210,7 @@ export default function Layout({
         { id: 'super-search', label: 'National IMEI Search', icon: Smartphone },
         { id: 'super-shops', label: 'All Registered Shops', icon: Store },
         { id: 'super-audits', label: 'Compliance Audit Logs', icon: ClipboardList },
+        { id: 'super-customization', label: 'Portal Customization', icon: Sparkles },
         { id: 'profile-settings', label: 'My Profile Settings', icon: User }
       );
     }

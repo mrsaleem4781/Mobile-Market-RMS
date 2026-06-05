@@ -140,3 +140,24 @@ export interface ReportedMobile {
   status: 'STOLEN' | 'SNATCHED' | 'RECOVERED';
 }
 
+export interface KmedaOfficer {
+  id: string;
+  name: string;
+  nameUrdu?: string;
+  designation: string; // e.g. "President / صدر"
+  designationUrdu?: string;
+  contactNumber: string;
+  status: 'ACTIVE' | 'INACTIVE';
+}
+
+export interface KmedaGalleryItem {
+  id: string;
+  title: string;
+  titleUrdu?: string;
+  imageUrl: string;
+  description: string;
+  descriptionUrdu?: string;
+  createdAt: string;
+}
+
+

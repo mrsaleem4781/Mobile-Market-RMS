@@ -35,8 +35,68 @@ import {
 } from 'lucide-react';
 import { db } from '../../offline/db';
 import { SEED_USERS, SEED_MARKETS } from '../../offline/seedData';
-import { AppUser, UserRole, Market } from '../../types';
+import { AppUser, UserRole, Market, KmedaOfficer, KmedaGalleryItem } from '../../types';
 import ImeiVerifyPortal from '../../components/ImeiVerifyPortal';
+
+export const DEFAULT_OFFICERS: KmedaOfficer[] = [
+  {
+    id: 'off-1',
+    name: 'Zia Khan Mehsood',
+    nameUrdu: 'ضیاء خان محسود',
+    designation: 'President Market Saddar',
+    designationUrdu: 'صدر مارکیٹ صدر',
+    contactNumber: '0333-2819389',
+    status: 'ACTIVE'
+  },
+  {
+    id: 'off-2',
+    name: 'Muhammad Saleem',
+    nameUrdu: 'محمد سلیم',
+    designation: 'Senior Advisor & Advisor',
+    designationUrdu: 'سینئر مشیر اور ایڈوائزر',
+    contactNumber: '0316-8910150',
+    status: 'ACTIVE'
+  },
+  {
+    id: 'off-3',
+    name: 'Shahid Mehmood',
+    nameUrdu: 'شاہد محمود',
+    designation: 'General Secretary',
+    designationUrdu: 'جنرل سیکرٹری',
+    contactNumber: '0321-9988776',
+    status: 'ACTIVE'
+  }
+];
+
+export const DEFAULT_GALLERY_ITEMS: KmedaGalleryItem[] = [
+  {
+    id: 'gal-1',
+    title: 'KMEDA Recovery handover with CPLC Officers',
+    titleUrdu: 'سی پی ایل سی افسران کے ساتھ موبائل واپسی کی تقریب',
+    imageUrl: 'https://picsum.photos/seed/kmeda-handover/800/600',
+    description: 'Special administrative session with Sindh Police representative verifying and returning lost mobile devices to legal owners.',
+    descriptionUrdu: 'سندھ پولیس کے نمائندوں کے ساتھ قانونی مالکان کو بازیاب شدہ موبائل فون واپس کرنے کی خصوصی تقریب۔',
+    createdAt: new Date().toISOString()
+  },
+  {
+    id: 'gal-2',
+    title: 'Market Merchants SOP Compliance Briefing',
+    titleUrdu: 'مارکیٹ تاجروں کے لیے ایس او پی تعمیل کانفرنس',
+    imageUrl: 'https://picsum.photos/seed/kmeda-briefing/800/600',
+    description: 'President Zia Mehsood addressing local retailers on strict CNIC collection guidelines to ensure legal safety across Quaidabad.',
+    descriptionUrdu: 'صدر ضیاء محسود دکانداروں کو شناختی کارڈ جمع کرنے کی سخت ہدایات سے متعلق بریفنگ دیتے ہوئے تاکہ سب کی سلامتی یقینی رہے۔',
+    createdAt: new Date().toISOString()
+  },
+  {
+    id: 'gal-3',
+    title: 'Digital Portal Launch & Training Session',
+    titleUrdu: 'ڈیجیٹل پورٹل لانچ اور تربیتی تربیتی سیشن',
+    imageUrl: 'https://picsum.photos/seed/kmeda-portal/800/600',
+    description: 'Hands-on instruction session illustrating offline database logging and central CPLC search synchronizations for retail shops.',
+    descriptionUrdu: 'ریٹیل دکانوں کے لیے آف لائن ڈیٹا بیس لاگنگ اور مرکزی سی پی ایل سی سنکرونائزیشن کا تربیتی سیشن۔',
+    createdAt: new Date().toISOString()
+  }
+];
 
 export const defaultPortalStories = [
   {
@@ -86,6 +146,8 @@ export default function AuthModule({ onLoginSuccess }: AuthModuleProps) {
   const [markets, setMarkets] = useState<Market[]>([]);
   const [customUsers, setCustomUsers] = useState<AppUser[]>([]);
   const [newsFeed, setNewsFeed] = useState<any[]>([]);
+  const [officers, setOfficers] = useState<KmedaOfficer[]>([]);
+  const [galleryItems, setGalleryItems] = useState<KmedaGalleryItem[]>([]);
   
   // Navigation active tab / screen
   const [viewState, setViewState] = useState<'LANDING' | 'LOGIN' | 'REGISTER' | 'RECOVERY'>('LANDING');
@@ -183,9 +245,36 @@ export default function AuthModule({ onLoginSuccess }: AuthModuleProps) {
         }
 
         setNewsFeed([...newsItems, ...fallbackStories].slice(0, 10));
+
+        try {
+          let localOfficers = await db.getConfig<KmedaOfficer[]>('kmeda_officers');
+          if (!localOfficers || localOfficers.length === 0) {
+            localOfficers = DEFAULT_OFFICERS;
+            await db.setConfig('kmeda_officers', DEFAULT_OFFICERS);
+          }
+          setOfficers(localOfficers);
+        } catch (err) {
+          console.error("Error loading officers config:", err);
+          setOfficers(DEFAULT_OFFICERS);
+        }
+
+        try {
+          let localGallery = await db.getConfig<KmedaGalleryItem[]>('kmeda_gallery');
+          if (!localGallery || localGallery.length === 0) {
+            localGallery = DEFAULT_GALLERY_ITEMS;
+            await db.setConfig('kmeda_gallery', DEFAULT_GALLERY_ITEMS);
+          }
+          setGalleryItems(localGallery);
+        } catch (err) {
+          console.error("Error loading gallery config:", err);
+          setGalleryItems(DEFAULT_GALLERY_ITEMS);
+        }
+
       } catch (err) {
         console.error("Error rendering dynamic news feed indices:", err);
         setNewsFeed(defaultPortalStories);
+        setOfficers(DEFAULT_OFFICERS);
+        setGalleryItems(DEFAULT_GALLERY_ITEMS);
       }
     };
     loadData();
@@ -645,18 +734,33 @@ export default function AuthModule({ onLoginSuccess }: AuthModuleProps) {
                       <span className="text-[10px] text-slate-400 font-bold">Sindh Police</span>
                     </div>
 
-                    <div className="p-3 bg-indigo-50/80 hover:bg-indigo-50 rounded-2xl border border-indigo-100 flex items-center justify-between gap-4 transition duration-150">
-                      <div>
-                        <span className="text-[9.5px] text-indigo-700 font-bold uppercase block">KMEDA Quaidabad Desk</span>
-                        <strong className="text-xs font-bold text-slate-800">0333-2819389 (Zia Mehsood)</strong>
+                    {officers && officers.filter(o => o.status === 'ACTIVE').slice(0, 2).map((off) => {
+                      const primaryContact = off.contactNumber;
+                      return (
+                        <div key={off.id} className="p-3 bg-indigo-50/80 hover:bg-indigo-50 rounded-2xl border border-indigo-100 flex items-center justify-between gap-4 transition duration-150">
+                          <div>
+                            <span className="text-[9.5px] text-indigo-705 font-black uppercase block">{off.designation} {off.designationUrdu ? `/ ${off.designationUrdu}` : ''}</span>
+                            <strong className="text-xs font-bold text-slate-800">{primaryContact} ({off.name})</strong>
+                          </div>
+                          <span className="text-[10px] text-indigo-700 font-bold">SMS/WA</span>
+                        </div>
+                      );
+                    })}
+
+                    {(!officers || officers.filter(o => o.status === 'ACTIVE').length === 0) && (
+                      <div className="p-3 bg-indigo-50/80 hover:bg-indigo-50 rounded-2xl border border-indigo-100 flex items-center justify-between gap-4 transition duration-150">
+                        <div>
+                          <span className="text-[9.5px] text-indigo-705 font-black uppercase block">KMEDA Quaidabad Desk</span>
+                          <strong className="text-xs font-bold text-slate-800">0333-2819389 (Zia Mehsood)</strong>
+                        </div>
+                        <span className="text-[10px] text-indigo-700 font-bold">SMS/WA</span>
                       </div>
-                      <span className="text-[10px] text-indigo-700 font-bold">SMS/WA</span>
-                    </div>
+                    )}
 
                   </div>
 
                   <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 text-slate-500 text-[10px] leading-relaxed">
-                    <strong>Report Direct Complaint:</strong> If a device is snatched or gunpoint robbery occurs, call <strong>1102</strong> or report details to your respective Market President (Zia Khan Mehsood or designees) instantly.
+                    <strong>Report Direct Complaint:</strong> If a device is snatched or gunpoint robbery occurs, call <strong>1102</strong> or report details to your respective Market President/Officers {(officers && officers.length > 0) ? officers[0].name : "Zia Khan Mehsood"} instantly.
                   </div>
                 </div>
 
@@ -733,6 +837,144 @@ export default function AuthModule({ onLoginSuccess }: AuthModuleProps) {
                 ) : (
                   <div className="col-span-3 p-12 text-center bg-white border border-slate-200 rounded-2xl text-slate-400 font-mono text-xs">
                     No active success bulletins posted today.
+                  </div>
+                )}
+              </div>
+            </section>
+
+            {/* DYNAMIC COMPLIANCE PHOTO GALLERY (Galary Section) */}
+            <section className="max-w-7xl mx-auto px-4 md:px-8 space-y-6" id="kmeda-photo-gallery-section">
+              <div className="border-b border-slate-200 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="space-y-1">
+                  <h3 className="text-base font-extrabold text-slate-900 uppercase flex items-center gap-2 tracking-tight">
+                    <Sparkles className="w-5 h-5 text-blue-600 shrink-0" />
+                    KMEDA Quaidabad Photo Gallery & Events / گیلری اور تقاریب
+                  </h3>
+                  <p className="text-xs text-slate-500 font-medium font-sans">
+                    Showcasing compliance check briefings, device handover ceremonies, and trade association meetings.
+                  </p>
+                </div>
+                <span className="bg-blue-50 text-blue-700 border border-blue-150 rounded px-2.5 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider self-start sm:self-auto">
+                  LIVE PORTFOLIO
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {galleryItems && galleryItems.length > 0 ? (
+                  galleryItems.map((item) => (
+                    <div 
+                      key={item.id} 
+                      className="bg-white border border-slate-200 hover:border-blue-400 p-4 rounded-2xl space-y-4 hover:shadow-md transition duration-250 flex flex-col h-full group"
+                    >
+                      {/* Image container with exact parameters and referrerPolicy */}
+                      <div className="relative aspect-video rounded-xl overflow-hidden bg-slate-100 border border-slate-100">
+                        <img 
+                          src={item.imageUrl} 
+                          alt={item.title}
+                          referrerPolicy="no-referrer"
+                          className="w-full h-full object-cover group-hover:scale-105 duration-350 ease-out transition"
+                        />
+                      </div>
+
+                      <div className="space-y-2 flex-1 flex flex-col justify-between">
+                        <div className="space-y-1.5">
+                          <h4 className="text-sm font-extrabold text-slate-900 leading-snug tracking-tight font-sans">
+                            {item.title}
+                          </h4>
+                          {item.titleUrdu && (
+                            <p className="text-xs font-black text-blue-700 leading-normal text-right font-sans" dir="rtl">
+                              {item.titleUrdu}
+                            </p>
+                          )}
+                          <p className="text-xs text-slate-650 leading-relaxed font-sans font-medium line-clamp-3">
+                            {item.description}
+                          </p>
+                          {item.descriptionUrdu && (
+                            <p className="text-[11px] text-slate-500 leading-normal text-right font-sans" dir="rtl">
+                              {item.descriptionUrdu}
+                            </p>
+                          )}
+                        </div>
+                        <div className="text-[9.5px] text-slate-400 font-mono font-bold uppercase tracking-wider pt-2 border-t border-slate-50 block mt-auto">
+                          Published: KMEDA Office • {new Date(item.createdAt || Date.now()).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="col-span-3 p-12 text-center bg-white border border-slate-200 rounded-3xl text-slate-400 font-mono text-sm leading-relaxed shadow-xs">
+                    No pictures uploaded in the public gallery yet. Setup from Super Admin dashboard!
+                  </div>
+                )}
+              </div>
+            </section>
+
+            {/* DYNAMIC ASSOCIATION OFFICERS & EXECUTIVE MEMBERS (Sadar, President, etc.) */}
+            <section className="max-w-7xl mx-auto px-4 md:px-8 space-y-6" id="kmeda-officers-directory-section">
+              <div className="border-b border-slate-200 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="space-y-1">
+                  <h3 className="text-base font-extrabold text-slate-900 uppercase flex items-center gap-2 tracking-tight">
+                    <Users className="w-5 h-5 text-indigo-655 shrink-0" />
+                    KMEDA Cabinet Members & Leaders / کمیٹی کے ارکان
+                  </h3>
+                  <p className="text-xs text-slate-500 font-medium font-sans">
+                    Verified representatives of the Quaidabad Mobile Market Association managing compliance and security coordination.
+                  </p>
+                </div>
+                <span className="bg-indigo-50 text-indigo-705 border border-indigo-150 rounded px-2.5 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider self-start sm:self-auto">
+                  VERIFIED DIRECTORY
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {officers && officers.length > 0 ? (
+                  officers.map((off) => (
+                    <div 
+                      key={off.id} 
+                      className="bg-gradient-to-br from-white to-slate-50/50 border border-slate-200 hover:border-indigo-300 p-5 rounded-2xl space-y-4 hover:shadow-xs transition duration-200 flex items-start gap-4"
+                    >
+                      {/* Stylized Avatar Icon with Initial */}
+                      <div className="w-12 h-12 bg-indigo-50 border border-indigo-100 rounded-2xl flex items-center justify-center text-indigo-700 font-black font-sans shrink-0 uppercase text-lg">
+                        {off.name.charAt(0)}
+                      </div>
+                      
+                      <div className="space-y-1.5 flex-1 min-w-0">
+                        <div className="flex justify-between items-start gap-2">
+                          <div>
+                            <h4 className="text-sm font-extrabold text-slate-905 tracking-tight truncate leading-tight">
+                              {off.name}
+                            </h4>
+                            {off.nameUrdu && (
+                              <p className="text-xs font-black text-indigo-700 font-sans tracking-wide leading-none mt-0.5" dir="rtl">
+                                {off.nameUrdu}
+                              </p>
+                            )}
+                          </div>
+                          <span className={`px-2 py-0.5 rounded text-[8px] font-mono font-bold uppercase ${off.status === 'ACTIVE' ? 'bg-emerald-50 text-emerald-700 border border-emerald-150' : 'bg-slate-100 text-slate-500'}`}>
+                            {off.status === 'ACTIVE' ? "🟢 Active" : "🔴 Inactive"}
+                          </span>
+                        </div>
+
+                        <div className="text-[11px] text-slate-500 font-sans mt-1">
+                          <span className="font-bold text-slate-700 block text-xs">{off.designation}</span>
+                          {off.designationUrdu && <span className="text-[10px] text-slate-500 block text-right font-sans font-medium" dir="rtl">{off.designationUrdu}</span>}
+                        </div>
+
+                        <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px]">
+                          <span className="text-slate-400 font-mono font-bold">Liaison Phone:</span>
+                          <a 
+                            href={`tel:${off.contactNumber}`} 
+                            className="text-indigo-650 hover:text-indigo-800 font-mono font-black text-left tracking-wide"
+                          >
+                            {off.contactNumber}
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="col-span-3 p-12 text-center bg-white border border-slate-200 rounded-3xl text-slate-400 font-mono text-sm leading-relaxed shadow-xs">
+                    No dynamic cabinet directory loaded. Setting fallback representatives.
                   </div>
                 )}
               </div>

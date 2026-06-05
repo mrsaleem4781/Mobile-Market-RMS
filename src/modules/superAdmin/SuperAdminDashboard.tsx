@@ -20,11 +20,14 @@ import {
   Download,
   CheckCircle,
   Hash,
-  X
+  X,
+  Sparkles,
+  Users
 } from 'lucide-react';
 import { db } from '../../offline/db';
 import { syncEngine } from '../../sync/syncEngine';
-import { Transaction, Shop, Market, AuditLog, AppUser } from '../../types';
+import { Transaction, Shop, Market, AuditLog, AppUser, KmedaOfficer, KmedaGalleryItem } from '../../types';
+import { DEFAULT_OFFICERS, DEFAULT_GALLERY_ITEMS } from '../auth/AuthModule';
 import { encryptData, decryptData, maskCNIC, maskIMEI, validateAndCleanCNIC, formatCNICInput } from '../../utils/security';
 import ImeiVerifyPortal from '../../components/ImeiVerifyPortal';
 
@@ -74,6 +77,27 @@ export default function SuperAdminDashboard({ currentUser, activeTab }: SuperAdm
   // Feedbacks
   const [dashboardMessage, setDashboardMessage] = useState<string | null>(null);
 
+  // Portal Customization States
+  const [officers, setOfficers] = useState<KmedaOfficer[]>([]);
+  const [galleryItems, setGalleryItems] = useState<KmedaGalleryItem[]>([]);
+  
+  // Officer form states
+  const [editingOfficer, setEditingOfficer] = useState<KmedaOfficer | null>(null);
+  const [offName, setOffName] = useState('');
+  const [offNameUrdu, setOffNameUrdu] = useState('');
+  const [offDesignation, setOffDesignation] = useState('');
+  const [offDesignationUrdu, setOffDesignationUrdu] = useState('');
+  const [offContact, setOffContact] = useState('');
+  const [offStatus, setOffStatus] = useState<'ACTIVE' | 'INACTIVE'>('ACTIVE');
+
+  // Gallery form states
+  const [editingGallery, setEditingGallery] = useState<KmedaGalleryItem | null>(null);
+  const [galTitle, setGalTitle] = useState('');
+  const [galTitleUrdu, setGalTitleUrdu] = useState('');
+  const [galImageUrl, setGalImageUrl] = useState('');
+  const [galDescription, setGalDescription] = useState('');
+  const [galDescriptionUrdu, setGalDescriptionUrdu] = useState('');
+
   useEffect(() => {
     fetchGlobalDatabase();
   }, [currentUser, activeTab]);
@@ -94,6 +118,28 @@ export default function SuperAdminDashboard({ currentUser, activeTab }: SuperAdm
 
     const reps = await db.reportedMobiles.toArray();
     setReportedMobilesList(reps.reverse());
+
+    try {
+      let localOfficers = await db.getConfig<KmedaOfficer[]>('kmeda_officers');
+      if (!localOfficers || localOfficers.length === 0) {
+        localOfficers = DEFAULT_OFFICERS;
+        await db.setConfig('kmeda_officers', DEFAULT_OFFICERS);
+      }
+      setOfficers(localOfficers);
+    } catch (e) {
+      console.error("Failed loading customization officers:", e);
+    }
+
+    try {
+      let localGallery = await db.getConfig<KmedaGalleryItem[]>('kmeda_gallery');
+      if (!localGallery || localGallery.length === 0) {
+        localGallery = DEFAULT_GALLERY_ITEMS;
+        await db.setConfig('kmeda_gallery', DEFAULT_GALLERY_ITEMS);
+      }
+      setGalleryItems(localGallery);
+    } catch (e) {
+      console.error("Failed loading customization gallery:", e);
+    }
 
     analyzeSuspiciousPatterns(txs);
   };
@@ -180,6 +226,155 @@ export default function SuperAdminDashboard({ currentUser, activeTab }: SuperAdm
       await fetchGlobalDatabase();
     } catch (err) {
       setDashboardMessage("Failed deleting reported mobile index.");
+    }
+  };
+
+  // Portal Customization Actions
+  const handleSaveOfficer = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!offName || !offDesignation || !offContact) {
+      alert("Please enter Name, Designation and Phone Number.");
+      return;
+    }
+
+    try {
+      let updatedOfficers = [...officers];
+      if (editingOfficer) {
+        // Update
+        updatedOfficers = updatedOfficers.map(o => o.id === editingOfficer.id ? {
+          ...o,
+          name: offName,
+          nameUrdu: offNameUrdu || undefined,
+          designation: offDesignation,
+          designationUrdu: offDesignationUrdu || undefined,
+          contactNumber: offContact,
+          status: offStatus
+        } : o);
+        setDashboardMessage(`Officer ${offName} updated successfully.`);
+      } else {
+        // Create
+        const newOff: KmedaOfficer = {
+          id: `off-${Math.random().toString(36).substr(2, 9)}`,
+          name: offName,
+          nameUrdu: offNameUrdu || undefined,
+          designation: offDesignation,
+          designationUrdu: offDesignationUrdu || undefined,
+          contactNumber: offContact,
+          status: offStatus
+        };
+        updatedOfficers.push(newOff);
+        setDashboardMessage(`Officer ${offName} registered successfully.`);
+      }
+
+      await db.setConfig('kmeda_officers', updatedOfficers);
+      setEditingOfficer(null);
+      setOffName('');
+      setOffNameUrdu('');
+      setOffDesignation('');
+      setOffDesignationUrdu('');
+      setOffContact('');
+      setOffStatus('ACTIVE');
+      await fetchGlobalDatabase();
+    } catch (err) {
+      console.error(err);
+      alert("Failed to save officer data.");
+    }
+  };
+
+  const handleEditOfficerClick = (off: KmedaOfficer) => {
+    setEditingOfficer(off);
+    setOffName(off.name);
+    setOffNameUrdu(off.nameUrdu || '');
+    setOffDesignation(off.designation);
+    setOffDesignationUrdu(off.designationUrdu || '');
+    setOffContact(off.contactNumber);
+    setOffStatus(off.status);
+  };
+
+  const handleDeleteOfficer = async (id: string) => {
+    if (!window.confirm("Are you sure you want to remove this cabinet officer?")) {
+      return;
+    }
+    try {
+      const updated = officers.filter(o => o.id !== id);
+      await db.setConfig('kmeda_officers', updated);
+      setDashboardMessage("Officer deleted.");
+      await fetchGlobalDatabase();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // Gallery Management
+  const handleSaveGalleryItem = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!galTitle || !galImageUrl || !galDescription) {
+      alert("Please enter Gallery Title, Image URL, and Description.");
+      return;
+    }
+
+    try {
+      let updatedGallery = [...galleryItems];
+      if (editingGallery) {
+        // Update
+        updatedGallery = updatedGallery.map(g => g.id === editingGallery.id ? {
+          ...g,
+          title: galTitle,
+          titleUrdu: galTitleUrdu || undefined,
+          imageUrl: galImageUrl,
+          description: galDescription,
+          descriptionUrdu: galDescriptionUrdu || undefined
+        } : g);
+        setDashboardMessage("Gallery item updated.");
+      } else {
+        // Create
+        const newItem: KmedaGalleryItem = {
+          id: `gal-${Math.random().toString(36).substr(2, 9)}`,
+          title: galTitle,
+          titleUrdu: galTitleUrdu || undefined,
+          imageUrl: galImageUrl,
+          description: galDescription,
+          descriptionUrdu: galDescriptionUrdu || undefined,
+          createdAt: new Date().toISOString()
+        };
+        updatedGallery.push(newItem);
+        setDashboardMessage("Gallery item created.");
+      }
+
+      await db.setConfig('kmeda_gallery', updatedGallery);
+      setEditingGallery(null);
+      setGalTitle('');
+      setGalTitleUrdu('');
+      setGalImageUrl('');
+      setGalDescription('');
+      setGalDescriptionUrdu('');
+      await fetchGlobalDatabase();
+    } catch (err) {
+      console.error(err);
+      alert("Failed to save gallery item.");
+    }
+  };
+
+  const handleEditGalleryClick = (item: KmedaGalleryItem) => {
+    setEditingGallery(item);
+    setGalTitle(item.title);
+    setGalTitleUrdu(item.titleUrdu || '');
+    setGalImageUrl(item.imageUrl);
+    setGalDescription(item.description);
+    setGalDescriptionUrdu(item.descriptionUrdu || '');
+  };
+
+  const handleDeleteGalleryItem = async (id: string) => {
+    if (!window.confirm("Are you sure you want to remove this photo gallery item?")) {
+      return;
+    }
+    try {
+      const updated = galleryItems.filter(g => g.id !== id);
+      await db.setConfig('kmeda_gallery', updated);
+      setDashboardMessage("Gallery item removed successfully.");
+      await fetchGlobalDatabase();
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -801,6 +996,371 @@ export default function SuperAdminDashboard({ currentUser, activeTab }: SuperAdm
               </table>
             </div>
           )}
+        </div>
+      </div>
+    );
+  }
+
+  if (activeTab === 'super-customization') {
+    return (
+      <div className="space-y-8 animate-fadeIn" id="super-customization-scope">
+        {/* Header Title */}
+        <div className="bg-gradient-to-r from-blue-650 to-indigo-800 text-white p-6 rounded-2xl shadow-md flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <h2 className="text-base font-bold uppercase tracking-wider flex items-center gap-2 font-mono">
+              <Sparkles className="w-5 h-5 text-indigo-200" /> Public Portal Customization Hub
+            </h2>
+            <p className="text-xs text-indigo-100 leading-normal max-w-xl">
+              Dynamically design the public landing page. Modify executive cabinet members, update names (like Zia Mehsood), and upload verified compliance photos or activity highlights.
+            </p>
+          </div>
+          <span className="bg-white/10 border border-white/20 text-white px-3 py-1 rounded-full text-[10px] font-mono uppercase font-bold tracking-widest">
+            PORTAL DESIGN
+          </span>
+        </div>
+
+        {dashboardMessage && (
+          <div className="p-3 bg-emerald-50 border border-emerald-250 text-emerald-800 rounded-xl text-xs font-sans font-semibold">
+            {dashboardMessage}
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          
+          {/* SECTION 1: CABIN OFFICERS MANAGEMENT */}
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-6">
+            <div className="border-b border-slate-105 pb-3">
+              <h3 className="text-sm font-extrabold text-slate-900 uppercase flex items-center gap-2">
+                <Users className="w-4.5 h-4.5 text-indigo-650" /> Cabinet Representative Officers
+              </h3>
+              <p className="text-[11px] text-slate-500 font-medium">Add, update, or deactivate members of the regulatory committee displayed on the landing page and emergency dialers.</p>
+            </div>
+
+            {/* Form */}
+            <form onSubmit={handleSaveOfficer} className="bg-slate-50/50 p-4 rounded-xl border border-slate-100 space-y-4 text-xs font-sans">
+              <h4 className="font-bold text-slate-800 uppercase text-[10.5px] border-b border-slate-205 pb-1 font-mono">
+                {editingOfficer ? "✏️ Edit Officer / عہدیدار کی ترمیم کریں" : "➕ Add New Liaison Officer / نیا عہدیدار شامل کریں"}
+              </h4>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-[10px] text-slate-500 font-bold uppercase">Officer Name (English) *</label>
+                  <input 
+                    type="text" 
+                    required 
+                    placeholder="e.g. Zia Khan Mehsood"
+                    value={offName}
+                    onChange={(e) => setOffName(e.target.value)}
+                    className="w-full bg-white border border-slate-250 rounded-lg px-3 py-2 text-slate-800 text-xs focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] text-slate-550 font-bold uppercase block text-right font-sans" dir="rtl">نام (اردو)</label>
+                  <input 
+                    type="text" 
+                    placeholder="مثال: ضیاء خان محسود"
+                    value={offNameUrdu}
+                    onChange={(e) => setOffNameUrdu(e.target.value)}
+                    className="w-full bg-white border border-slate-250 rounded-lg px-3 py-2 text-slate-800 text-xs text-right focus:outline-none focus:border-blue-500 font-sans"
+                    dir="rtl"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-[10px] text-slate-500 font-bold uppercase">Designation (English) *</label>
+                  <input 
+                    type="text" 
+                    required 
+                    placeholder="e.g. President Market Saddar"
+                    value={offDesignation}
+                    onChange={(e) => setOffDesignation(e.target.value)}
+                    className="w-full bg-white border border-slate-250 rounded-lg px-3 py-2 text-slate-800 text-xs focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] text-slate-550 font-bold uppercase block text-right font-sans" dir="rtl">عہدہ (اردو)</label>
+                  <input 
+                    type="text" 
+                    placeholder="مثال: صدر مارکیٹ صدر"
+                    value={offDesignationUrdu}
+                    onChange={(e) => setOffDesignationUrdu(e.target.value)}
+                    className="w-full bg-white border border-slate-250 rounded-lg px-3 py-2 text-slate-800 text-xs text-right focus:outline-none focus:border-blue-500 font-sans"
+                    dir="rtl"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 items-end">
+                <div className="space-y-1">
+                  <label className="text-[10px] text-slate-550 font-bold uppercase">Contact Phone *</label>
+                  <input 
+                    type="text" 
+                    required 
+                    placeholder="e.g. 0333-2819389"
+                    value={offContact}
+                    onChange={(e) => setOffContact(e.target.value)}
+                    className="w-full bg-white border border-slate-250 rounded-lg px-3 py-2 text-slate-800 font-mono text-xs focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] text-slate-500 font-bold uppercase">Operational Status</label>
+                  <select 
+                    value={offStatus}
+                    onChange={(e) => setOffStatus(e.target.value as any)}
+                    className="w-full bg-white border border-slate-250 rounded-lg px-3 py-2 text-slate-800 text-xs focus:outline-none focus:border-blue-500"
+                  >
+                    <option value="ACTIVE">🟢 Active representative</option>
+                    <option value="INACTIVE">🔴 Inactive representative</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="flex gap-2 pt-2">
+                <button 
+                  type="submit"
+                  className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold font-mono uppercase tracking-wider text-[10.5px] transition cursor-pointer"
+                >
+                  {editingOfficer ? "Update Officer Profile" : "Add Officer Register"}
+                </button>
+                {editingOfficer && (
+                  <button 
+                    type="button"
+                    onClick={() => {
+                      setEditingOfficer(null);
+                      setOffName('');
+                      setOffNameUrdu('');
+                      setOffDesignation('');
+                      setOffDesignationUrdu('');
+                      setOffContact('');
+                      setOffStatus('ACTIVE');
+                    }}
+                    className="px-3 bg-slate-200 hover:bg-slate-350 text-slate-700 rounded-lg font-bold font-mono uppercase text-[10.5px] cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                )}
+              </div>
+            </form>
+
+            {/* List */}
+            <div className="space-y-3 pt-2">
+              <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider">Current Representatives List</h4>
+              <div className="divide-y divide-slate-100 max-h-96 overflow-y-auto pr-1">
+                {officers && officers.length > 0 ? (
+                  officers.map(off => (
+                    <div key={off.id} className="py-3 flex items-center justify-between gap-4 text-xs">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <strong className="text-slate-900 font-sans">{off.name}</strong>
+                          {off.nameUrdu && <span className="text-indigo-700 font-bold font-sans text-[11px]">({off.nameUrdu})</span>}
+                          <span className={`px-1.5 py-0.2 rounded text-[7.5px] uppercase font-bold ${off.status === 'ACTIVE' ? 'bg-emerald-50 text-emerald-700 border border-emerald-150' : 'bg-slate-100 text-slate-500'}`}>
+                            {off.status}
+                          </span>
+                        </div>
+                        <div className="text-slate-500 text-[11px] mt-0.5">
+                          {off.designation} {off.designationUrdu ? `• ${off.designationUrdu}` : ''}
+                        </div>
+                        <div className="text-slate-400 font-mono text-[9.5px] mt-0.5">
+                          Dialer Hotline: {off.contactNumber}
+                        </div>
+                      </div>
+                      <div className="flex gap-1 shrink-0">
+                        <button 
+                          onClick={() => handleEditOfficerClick(off)}
+                          className="p-1 px-2 text-[10px] uppercase font-bold font-mono bg-indigo-50 border border-indigo-150 text-indigo-700 rounded hover:bg-indigo-100 cursor-pointer"
+                        >
+                          Edit
+                        </button>
+                        <button 
+                          onClick={() => handleDeleteOfficer(off.id)}
+                          className="p-1 px-2 text-[10px] uppercase font-bold font-mono bg-rose-50 border border-rose-150 text-rose-700 rounded hover:bg-rose-100 cursor-pointer"
+                        >
+                          Del
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-slate-400 text-center py-6">No representatives registered.</p>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* SECTION 2: COMPLIANCE GALLERY MANAGEMENT */}
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-6">
+            <div className="border-b border-slate-105 pb-3">
+              <h3 className="text-sm font-extrabold text-slate-900 uppercase flex items-center gap-2">
+                <Sparkles className="w-4.5 h-4.5 text-blue-600" /> Compliance Incident Gallery
+              </h3>
+              <p className="text-[11px] text-slate-500 font-medium">Add or manage public event pictures showing recovery handover and SOP merchant enforcement campaigns.</p>
+            </div>
+
+            {/* Form */}
+            <form onSubmit={handleSaveGalleryItem} className="bg-slate-50/50 p-4 rounded-xl border border-slate-100 space-y-4 text-xs font-sans">
+              <h4 className="font-bold text-slate-800 uppercase text-[10.5px] border-b border-slate-205 pb-1 font-mono">
+                {editingGallery ? "✏️ Edit Gallery Photo / گیلری ترمیم کریں" : "➕ Upload Gallery Photo / نئی تصویر اپلوڈ کریں"}
+              </h4>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-[10px] text-slate-500 font-bold uppercase">Photo Title (English) *</label>
+                  <input 
+                    type="text" 
+                    required 
+                    placeholder="e.g. Device Recovery Handover"
+                    value={galTitle}
+                    onChange={(e) => setGalTitle(e.target.value)}
+                    className="w-full bg-white border border-slate-250 rounded-lg px-3 py-2 text-slate-800 text-xs focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] text-slate-550 font-bold block uppercase text-right font-sans" dir="rtl">عنوان (اردو)</label>
+                  <input 
+                    type="text" 
+                    placeholder="مثال: موبائل واپسی تقریب"
+                    value={galTitleUrdu}
+                    onChange={(e) => setGalTitleUrdu(e.target.value)}
+                    className="w-full bg-white border border-slate-250 rounded-lg px-3 py-2 text-slate-800 text-xs text-right focus:outline-none focus:border-blue-500"
+                    dir="rtl"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[10px] text-slate-550 font-bold uppercase">Image Address (URL or Base64) *</label>
+                <input 
+                  type="text" 
+                  required 
+                  placeholder="https://picsum.photos/seed/kmeda-handover/800/600"
+                  value={galImageUrl}
+                  onChange={(e) => setGalImageUrl(e.target.value)}
+                  className="w-full bg-white border border-slate-250 rounded-lg px-3 py-2 text-slate-800 font-mono text-xs focus:outline-none focus:border-blue-500"
+                />
+                
+                {/* Visual template helpers */}
+                <div className="pt-1 flex flex-wrap gap-1.5 items-center">
+                  <span className="text-[9px] text-slate-400 font-semibold uppercase">Quick Image presets:</span>
+                  <button 
+                    type="button"
+                    onClick={() => setGalImageUrl("https://picsum.photos/seed/kmeda-ceremony/800/600")}
+                    className="text-[9px] font-mono font-bold bg-white border border-slate-200 px-1.5 py-0.5 rounded text-indigo-705 hover:bg-slate-100 cursor-pointer"
+                  >
+                    Handover Ceremony
+                  </button>
+                  <button 
+                    type="button"
+                    onClick={() => setGalImageUrl("https://picsum.photos/seed/kmeda-meeting1/800/600")}
+                    className="text-[9px] font-mono font-bold bg-white border border-slate-200 px-1.5 py-0.5 rounded text-indigo-705 hover:bg-slate-100 cursor-pointer"
+                  >
+                    Merchant SOP Forum
+                  </button>
+                  <button 
+                    type="button"
+                    onClick={() => setGalImageUrl("https://picsum.photos/seed/kmeda-techinspection/800/600")}
+                    className="text-[9px] font-mono font-bold bg-white border border-slate-200 px-1.5 py-0.5 rounded text-indigo-705 hover:bg-slate-100 cursor-pointer"
+                  >
+                    IT Inspection Room
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="space-y-1">
+                  <label className="text-[10px] text-slate-500 font-bold uppercase">Description (English) *</label>
+                  <textarea 
+                    required 
+                    rows={2}
+                    placeholder="Short summary of compliance inspection or handover details..."
+                    value={galDescription}
+                    onChange={(e) => setGalDescription(e.target.value)}
+                    className="w-full bg-white border border-slate-250 rounded-lg px-3 py-2 text-slate-800 text-xs focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] text-slate-550 font-bold block uppercase text-right font-sans" dir="rtl">تفصیل (اردو)</label>
+                  <textarea 
+                    rows={2}
+                    placeholder="تفصیل اردو میں تحریر کریں..."
+                    value={galDescriptionUrdu}
+                    onChange={(e) => setGalDescriptionUrdu(e.target.value)}
+                    className="w-full bg-white border border-slate-250 rounded-lg px-3 py-2 text-slate-800 text-xs text-right focus:outline-none focus:border-blue-500"
+                    dir="rtl"
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-2 pt-1">
+                <button 
+                  type="submit"
+                  className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold font-mono uppercase tracking-wider text-[10.5px] transition cursor-pointer"
+                >
+                  {editingGallery ? "Update Event Photo" : "Commit to Portal Gallery"}
+                </button>
+                {editingGallery && (
+                  <button 
+                    type="button"
+                    onClick={() => {
+                      setEditingGallery(null);
+                      setGalTitle('');
+                      setGalTitleUrdu('');
+                      setGalImageUrl('');
+                      setGalDescription('');
+                      setGalDescriptionUrdu('');
+                    }}
+                    className="px-3 bg-slate-200 hover:bg-slate-350 text-slate-700 rounded-lg font-bold font-mono uppercase text-[10.5px] cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                )}
+              </div>
+            </form>
+
+            {/* List */}
+            <div className="space-y-3 pt-2">
+              <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider">Current Photos list</h4>
+              <div className="space-y-3 max-h-96 overflow-y-auto pr-1">
+                {galleryItems && galleryItems.length > 0 ? (
+                  galleryItems.map(item => (
+                    <div key={item.id} className="p-3 bg-slate-50/70 border border-slate-200/50 rounded-xl flex gap-3 text-xs">
+                      <div className="w-16 h-12 bg-slate-200 rounded-lg overflow-hidden shrink-0">
+                        <img 
+                          src={item.imageUrl} 
+                          alt={item.title}
+                          referrerPolicy="no-referrer"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex justify-between items-start gap-1">
+                          <strong className="text-slate-900 truncate block">{item.title}</strong>
+                          <div className="flex gap-1">
+                            <button 
+                              onClick={() => handleEditGalleryClick(item)}
+                              className="text-[9.5px] uppercase font-mono font-bold text-blue-600 hover:underline cursor-pointer"
+                            >
+                              Edit
+                            </button>
+                            <button 
+                              onClick={() => handleDeleteGalleryItem(item.id)}
+                              className="text-[9.5px] uppercase font-mono font-bold text-rose-600 hover:underline cursor-pointer"
+                            >
+                              Del
+                            </button>
+                          </div>
+                        </div>
+                        <p className="text-[11px] text-slate-450 truncate mt-0.5">{item.description}</p>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-slate-400 text-center py-6">No gallery items uploaded.</p>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
