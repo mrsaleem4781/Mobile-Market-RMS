@@ -506,10 +506,10 @@ export default function AuthModule({ onLoginSuccess }: AuthModuleProps) {
           </div>
           <div className="leading-tight">
             <h1 className="text-sm md:text-base font-black text-slate-900 tracking-tight uppercase flex items-center gap-1.5 font-sans">
-              Pak CPLC Sindh <span className="bg-blue-600 text-white text-[9px] px-2 py-0.5 rounded-full font-mono font-bold font-sans">OFFICIAL</span>
+              KMEDA QUAIDABAD <span className="bg-blue-600 text-white text-[9px] px-2 py-0.5 rounded-full font-mono font-bold font-sans">PORTAL</span>
             </h1>
             <p className="text-[9.5px] md:text-[10.5px] font-black text-slate-500 uppercase tracking-wide font-sans">
-              Mobile Merchant Compliance & Security Portal
+              Mobile & Electronics Market Association • CPLC Sync
             </p>
           </div>
         </div>
@@ -558,20 +558,20 @@ export default function AuthModule({ onLoginSuccess }: AuthModuleProps) {
                 {/* Brand Statement and Bilingual Title */}
                 <div className="lg:col-span-7 space-y-6">
                   <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-150 rounded-full px-3 py-1 text-[10.5px] font-black text-blue-700 font-mono tracking-wider uppercase">
-                    <ShieldAlert className="w-3.5 h-3.5 text-blue-600 animate-pulse" /> SINDH GOVERNMENT COMPLIANCE DIRECTIVE
+                    <ShieldAlert className="w-3.5 h-3.5 text-blue-600 animate-pulse" /> KMEDA QUAIDABAD & ELECTRONICS ASSOCIATION SYSTEM
                   </div>
 
                   <div className="space-y-3">
                     <h1 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight leading-none">
-                      Securing Mobile Commerce Through CPLC Trust Network
+                      KMEDA Mobile & Electronics Security Network
                     </h1>
                     <h2 className="text-lg md:text-2xl font-black text-indigo-700 leading-snug tracking-tight font-sans text-left" dir="rtl">
-                      عوام کی سیکیورٹی کے لیے مستند موبائل فارنزک اور رجسٹرڈ تجارتی ریکارڈ
+                      کمیڈا قائدآباد موبائل اینڈ الیکٹرانکس ایسوسی ایشن • سی پی ایل سی ویریفکیشن پورٹل
                     </h2>
                   </div>
 
                   <p className="text-sm md:text-base text-slate-600 leading-relaxed font-normal">
-                    Designed in synchronization with <strong>Sindh Police Technical Department</strong>, the <strong>Citizens-Police Liaison Committee (CPLC)</strong>, and <strong>KMEDA Quaidabad Division</strong>. This verified platform serves to protect merchants from dealing with snatched/stolen items by registering customer trade contracts securely.
+                    This advanced trade verification system is proudly built and commissioned by the <strong>KMEDA Quaidabad Mobile & Electronics Market Association</strong>. Operating in direct synchronization with the <strong>Citizens-Police Liaison Committee (CPLC) Sindh</strong> and <strong>Sindh Police Technical Department</strong>, this verified portal protects local merchants, electronics dealers, and public customers from trading snatched or stolen electronics by preserving legal, secure sales contracts.
                   </p>
 
                   <div className="flex flex-col sm:flex-row gap-3 pt-3">
@@ -1197,7 +1197,7 @@ export default function AuthModule({ onLoginSuccess }: AuthModuleProps) {
                     </div>
                   )}
 
-                  <div className="text-center">
+                  <div className="text-center pb-2">
                     <button
                       type="button"
                       onClick={() => { setViewState('LOGIN'); clearAlert(); }}
@@ -1206,17 +1206,18 @@ export default function AuthModule({ onLoginSuccess }: AuthModuleProps) {
                       ← Back to Login / لاگ ان کریں
                     </button>
                   </div>
+
                 </div>
               )}
 
               {/* Back to landing page button inside auth card */}
-              <div className="pt-4 border-t border-slate-100 flex items-center justify-center">
+              <div className="pt-2 border-t border-slate-100 flex items-center justify-center">
                 <button
                   type="button"
                   onClick={() => { setViewState('LANDING'); clearAlert(); }}
-                  className="text-slate-505 hover:text-slate-800 text-xs font-black tracking-tight flex items-center gap-1 cursor-pointer duration-150"
+                  className="text-slate-500 hover:text-slate-800 text-xs font-bold tracking-tight inline-flex items-center gap-1 cursor-pointer duration-150"
                 >
-                  <ArrowLeft className="w-3.5 h-3.5 text-slate-450" />
+                  <ArrowLeft className="w-3.5 h-3.5 text-slate-400" />
                   Return to Home Landing Page / ہوم پیج پر واپس جائیں
                 </button>
               </div>
@@ -1231,7 +1232,7 @@ export default function AuthModule({ onLoginSuccess }: AuthModuleProps) {
       <footer className="bg-white border-t border-slate-200 py-8 px-4 md:px-8 mt-auto" id="portal-public-footer">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
           <p className="text-xs text-slate-400 font-medium text-center md:text-left">
-            © 2026 Citizens-Police Liaison Committee (CPLC) Sindh & Karachi Mobile Phone Merchants Association. All Rights Reserved.
+            © 2026 KMEDA Quaidabad Mobile & Electronics Market Association • Integrated with CPLC Sindh Compliance Registry. All Rights Reserved.
           </p>
           
           <div className="flex flex-wrap items-center justify-center gap-4">
@@ -1259,7 +1260,7 @@ export default function AuthModule({ onLoginSuccess }: AuthModuleProps) {
               <span className="bg-red-50 text-red-650 border border-red-150 uppercase font-mono tracking-widest text-[8px] font-bold px-2 py-0.5 rounded">Compliance Sandbox</span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <button
                 type="button"
                 onClick={() => { setViewState('LOGIN'); setTimeout(() => handlePresetLogin('usr-shopkeeper-saleem'), 100); }}
@@ -1279,23 +1280,6 @@ export default function AuthModule({ onLoginSuccess }: AuthModuleProps) {
 
               <button
                 type="button"
-                onClick={() => { setViewState('LOGIN'); setTimeout(() => handlePresetLogin('usr-mktadmin-quaid'), 100); }}
-                className="flex items-center gap-2.5 bg-white hover:bg-amber-50 border border-slate-200 hover:border-amber-305 rounded-xl p-3 text-left duration-200 cursor-pointer shadow-3xs"
-              >
-                <div className="bg-amber-100 text-amber-800 p-1.5 rounded-lg shrink-0">
-                  <UserCheck className="w-4 h-4 text-amber-700" />
-                </div>
-                <div>
-                  <p className="font-extrabold text-slate-800 text-[11px] leading-tight flex items-center gap-1">
-                    [2] Zia Mehsood
-                  </p>
-                  <p className="text-[10px] text-slate-400 font-mono italic mt-0.5">zia@kmeda.com | quaidabad123</p>
-                  <span className="text-[9px] bg-amber-50 text-amber-705 font-mono font-bold px-1.5 py-0.2 rounded block mt-1 w-max">Market Inspector</span>
-                </div>
-              </button>
-
-              <button
-                type="button"
                 onClick={() => { setViewState('LOGIN'); setTimeout(() => handlePresetLogin('usr-superadmin'), 100); }}
                 className="flex items-center gap-2.5 bg-white hover:bg-blue-50 border border-slate-200 hover:border-blue-305 rounded-xl p-3 text-left duration-200 cursor-pointer shadow-3xs"
               >
@@ -1304,10 +1288,10 @@ export default function AuthModule({ onLoginSuccess }: AuthModuleProps) {
                 </div>
                 <div>
                   <p className="font-extrabold text-slate-800 text-[11px] leading-tight flex items-center gap-1">
-                    [3] Super Admin
+                    [2] Super Admin (Zia Khan Mehsood)
                   </p>
                   <p className="text-[10px] text-slate-400 font-mono italic mt-0.5">admin@cplc.gov.pk | admin123</p>
-                  <span className="text-[9px] bg-blue-50 text-blue-700 font-mono font-bold px-1.5 py-0.2 rounded block mt-1 w-max">CPLC Super Admin</span>
+                  <span className="text-[9px] bg-blue-50 text-blue-700 font-mono font-bold px-1.5 py-0.2 rounded block mt-1 w-max">Super Admin</span>
                 </div>
               </button>
             </div>
