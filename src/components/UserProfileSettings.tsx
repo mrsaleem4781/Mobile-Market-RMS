@@ -163,8 +163,13 @@ export default function UserProfileSettings({
 
         {/* Section 1: Personal Details */}
         <div className="space-y-4">
-          <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest font-mono border-b border-slate-100 pb-2">
-            1. Personal Directory Information / ذاتی معلومات
+          <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest font-mono border-b border-slate-100 pb-2 flex justify-between items-center">
+            <span>1. Personal Directory Information / ذاتی معلومات</span>
+            {currentUser.role === 'SHOPKEEPER' && (
+              <span className="text-[10px] text-amber-600 font-bold bg-amber-50 px-2.5 py-0.5 rounded border border-amber-200">
+                🔒 Core profile locked for merchants
+              </span>
+            )}
           </h3>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -178,12 +183,22 @@ export default function UserProfileSettings({
                 <input
                   type="text"
                   required
+                  disabled={currentUser.role === 'SHOPKEEPER'}
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Enter full name"
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-2 text-xs text-slate-800 font-bold focus:outline-none focus:border-blue-500"
+                  className={`w-full border rounded-xl pl-10 pr-4 py-2 text-xs font-bold focus:outline-none focus:border-blue-500 ${
+                    currentUser.role === 'SHOPKEEPER' 
+                      ? 'bg-slate-100 border-slate-200 text-slate-500 cursor-not-allowed select-none' 
+                      : 'bg-slate-50 border-slate-200 text-slate-800'
+                  }`}
                 />
               </div>
+              {currentUser.role === 'SHOPKEEPER' && (
+                <p className="text-[10px] text-slate-400 select-none">
+                  Locked for security / یہ تبدیل نہیں ہو سکتا۔
+                </p>
+              )}
             </div>
 
             {/* Title / Designation Input */}
@@ -195,10 +210,15 @@ export default function UserProfileSettings({
                 <Briefcase className="absolute left-3.5 top-2.5 text-slate-400 w-4 h-4" />
                 <input
                   type="text"
+                  disabled={currentUser.role === 'SHOPKEEPER'}
                   value={designation}
                   onChange={(e) => setDesignation(e.target.value)}
                   placeholder="e.g. Director Regulatory Control"
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-2 text-xs text-slate-800 font-bold focus:outline-none focus:border-blue-500"
+                  className={`w-full border rounded-xl pl-10 pr-4 py-2 text-xs font-bold focus:outline-none focus:border-blue-500 ${
+                    currentUser.role === 'SHOPKEEPER' 
+                      ? 'bg-slate-100 border-slate-200 text-slate-500 cursor-not-allowed select-none' 
+                      : 'bg-slate-50 border-slate-200 text-slate-800'
+                  }`}
                 />
               </div>
             </div>
@@ -219,6 +239,9 @@ export default function UserProfileSettings({
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-2 text-xs text-slate-800 font-bold focus:outline-none focus:border-blue-500"
                 />
               </div>
+              <p className="text-[10px] text-slate-400">
+                You can change this anytime / آپ اسے تبديل کر سکتے ہیں۔
+              </p>
             </div>
 
             {/* Contact Telephone Number */}
@@ -230,12 +253,22 @@ export default function UserProfileSettings({
                 <Smartphone className="absolute left-3.5 top-2.5 text-slate-400 w-4 h-4" />
                 <input
                   type="text"
+                  disabled={currentUser.role === 'SHOPKEEPER'}
                   value={contactNumber}
                   onChange={(e) => setContactNumber(e.target.value)}
                   placeholder="e.g. 03001234567"
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-2 text-xs text-slate-800 font-bold focus:outline-none focus:border-blue-500"
+                  className={`w-full border rounded-xl pl-10 pr-4 py-2 text-xs font-bold focus:outline-none focus:border-blue-500 ${
+                    currentUser.role === 'SHOPKEEPER' 
+                      ? 'bg-slate-100 border-slate-200 text-slate-500 cursor-not-allowed select-none' 
+                      : 'bg-slate-50 border-slate-200 text-slate-800'
+                  }`}
                 />
               </div>
+              {currentUser.role === 'SHOPKEEPER' && (
+                <p className="text-[10px] text-slate-400 select-none">
+                  Locked for security / یہ تبدیل نہیں ہو سکتا۔
+                </p>
+              )}
             </div>
 
             {/* National Identity CNIC */}
@@ -248,14 +281,76 @@ export default function UserProfileSettings({
                   <CreditCard className="absolute left-3.5 top-2.5 text-slate-400 w-4 h-4" />
                   <input
                     type="text"
+                    disabled={currentUser.role === 'SHOPKEEPER'}
                     value={cnic}
                     onChange={(e) => setCnic(e.target.value)}
                     placeholder="e.g. 42101-1234567-3"
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-2 text-xs text-slate-800 font-bold focus:outline-none focus:border-blue-500"
+                    className={`w-full border rounded-xl pl-10 pr-4 py-2 text-xs font-bold focus:outline-none focus:border-blue-500 ${
+                      currentUser.role === 'SHOPKEEPER' 
+                        ? 'bg-slate-100 border-slate-200 text-slate-500 cursor-not-allowed select-none' 
+                        : 'bg-slate-50 border-slate-200 text-slate-800'
+                    }`}
                   />
                 </div>
+                {currentUser.role === 'SHOPKEEPER' && (
+                  <p className="text-[10px] text-slate-400 select-none">
+                    Locked for security / شناختی کارڈ نمبر تبدیل نہیں ہو سکتا۔
+                  </p>
+                )}
               </div>
             </div>
+
+            {/* Shop Details - exclusively for Shopkeeper role */}
+            {currentUser.role === 'SHOPKEEPER' && (
+              <div className="grid grid-cols-1 col-span-1 md:col-span-2 gap-4 pt-2">
+                <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-3.5">
+                  <span className="text-[11px] font-bold text-slate-500 uppercase tracking-widest font-mono">
+                    🏢 Merchant Store Assignment info
+                  </span>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-extrabold text-slate-500 block uppercase tracking-tight">
+                        Shop Name / دکان کا نام
+                      </label>
+                      <input
+                        type="text"
+                        disabled
+                        value={currentUser.shopName || 'N/A'}
+                        className="w-full bg-slate-100 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-500 cursor-not-allowed"
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-extrabold text-slate-500 block uppercase tracking-tight">
+                        Market Jurisdiction / متعلقہ مارکیٹ
+                      </label>
+                      <input
+                        type="text"
+                        disabled
+                        value={currentUser.marketName || 'N/A'}
+                        className="w-full bg-slate-100 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-500 cursor-not-allowed"
+                      />
+                    </div>
+
+                    <div className="space-y-1 col-span-1 md:col-span-2">
+                      <label className="text-[10px] font-extrabold text-slate-500 block uppercase tracking-tight">
+                        Shop Address / دکان کا مکمل پتہ
+                      </label>
+                      <input
+                        type="text"
+                        disabled
+                        value={currentUser.shopAddress || 'N/A'}
+                        className="w-full bg-slate-100 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-500 cursor-not-allowed"
+                      />
+                    </div>
+                  </div>
+                  <p className="text-[10.5px] font-semibold text-amber-700 bg-amber-50 rounded-lg p-2.5 border border-amber-100 selection:bg-amber-100">
+                    ℹ️ Shop details are assigned by the Super Admin and cannot be changed here to prevent unauthorized updates.
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
